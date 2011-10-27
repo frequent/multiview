@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html class="no-js multiview">
+<head>
+		
+		<title>multiview plugin - page 5</title>
+		
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		
+		 <link rel="stylesheet" href="http://code.jquery.com/mobile/1.0rc2/jquery.mobile-1.0rc2.min.css" />	
+         <link rel="stylesheet" type="text/css" href="LOC/style/jquery.mobile.scrollview.css" />
+         <link rel="stylesheet" type="text/css" href="LOC/style/jquery.mobile.multiview.css" />
+
+</head>
+<body>
+	
+<!-- the wrapper page loaded through AJAX -->				
+<div data-role="page" id="wrap5" class="type-home" data-show="first">
+		
+	
+		<!-- ////////////// embedded fullwidth panel ///////////////  -->		
+		<div class="content-fullwidth type-home" data-role="panel" data-id="fullwidthWithPops" data-panel="fullwidth" data-hash="history">		
+			
+			<div data-role="page" id="fw2-page1" data-show="first" class="">	
+				<div data-role="header" data-position="fixed" data-theme="a">
+					<h1>single page with popups</h1>
+					<div data-role="controlgroup" data-type="horizontal" class="headLogg headerMenuRight iconposSwitcher-div">
+						<a href="#" data-theme="a" data-role="button" data-panel="popover3" data-icon="lang" data-inline="true" data-iconpos="left" class="toggle_popover">Pop3</a>
+						<a href="#" data-theme="a" data-role="button" data-panel="popover4" data-icon="exit" data-inline="true" data-iconpos="left" class="toggle_popover">Pop4</a>
+					</div>					
+				</div>
+				<div data-role="content" data-theme="a">
+					<h3 style="text-align: center">multiview</h3>
+					<br>
+					<p style="text-align: center">This page is a single page inside a wrapper panel and page. It has two popover boxes.</p>
+					<br>
+					<br>
+					
+					
+						<div data-role="collapsible-set">
+								<div data-role="collapsible" data-collapsed="true">
+										<h3 class="col_Head blockHeading">Setup</h3>																			
+<pre>
+  &lt;!-- wrapper page --&gt;
+  &lt;div data-role="page" id="type-home"&gt;
+  (&lt;!-- global header --&gt;)
+    
+    &lt;!-- fullwidth panel --&gt;
+    &lt;div data-role="panel" data-panel="fullwidth" data-id="some_ID"&gt;
+      &lt;!-- regular JQM page --&gt;
+    &lt;/div&gt;
+
+    &lt;div data-role="panel" data-panel="popover" data-id="popover1"&gt;
+      &lt;!-- pages inside popover3 --&gt;
+    &lt;/div&gt;
+
+    &lt;div data-role="panel" data-panel="popover" data-id="popover2"&gt;
+      &lt;!-- pages inside popover4 --&gt;
+    &lt;/div&gt;
+
+  (&lt;!-- global footer --&gt;)
+  &lt;/div&gt;
+</pre>
+<br>
+<br>
+										
+										
+								</div>
+								<div data-role="collapsible" data-collapsed="true">
+										<h3 class="col_Head blockHeading">Info</h3>	
+										<p>Don't forget to specify <code>data-target="your panel ID"</code> on all links inside the panel! Be careful not to target to <code>data-panel</code>, which descripes the panel type, like "popover".
+										Since there can be more than one popover on page, the <code><data-target></code> always needs to point to the <code>data-id</code> of the respective panel</p>
+										<p>Popover formatting is assinged by default using the class of <code>.ui-popover</code>. Popovers are positioned absolutely, move them around by setting CSS <code>top/left/bottom/right</code> and override the default format as you please.</p>
+										<br>
+										<p>One nested page needs <code>data-show="first"</code>. This page will be shown first.</p>
+										<br>
+										<p>To keep popovers in view when scrolling long pages, just add a class of <code>.ui-element-fixed-top</code> or <code>.ui-fixed-element-bottom</code> depending on whether you want to make it behave like a fixed header or footer. If you do this, 
+										popovers will be hidden when scrolling starts and repositioned when the scroll stops. By default you have to click the popover-trigger button again to make them show up.
+										If you want them to re-appear automatically, just add <code>data-autoshow="true"</code> to the panel - not the page!</p>
+										<br>
+										<p>By default JQM creates a single history entry for the whole page including all nested pages. You can specify a history for each panel, which supercedes
+										the main history while the panel is visible(!) by setting <code>data-hash="history"</code> on the panel - not the page! Open a panel, navigate some pages,
+										click the browser back-button - you will now go back on the panel until the first page. Do it again, but close the panel before going back. This resets the panel-history. 
+										If you open the panel again, you are back at the inital page labelled with <code>data-show="first"</code>. Now clicking the browser back button will take you to the previously visited
+										webpage as the panel-history.stack = 0 and therefore the JQM history takes over.</p>
+								
+								</div>
+						</div>
+				</div>
+				
+			</div><!-- end page -->
+			
+			<div data-role="page" id="fw2-page2">	
+				<div data-role="header" data-position="fixed" data-theme="a">					
+					<h1>Full width2 page2</h1>
+					<div data-role="controlgroup" data-type="horizontal" class="headLogg headerMenuRight iconposSwitcher-div">
+						<a href="#" data-theme="a" data-role="button" data-panel="popover3" data-icon="lang" data-inline="true" data-iconpos="left" class="toggle_popover">Pop3</a>
+						<a href="#" data-theme="a" data-role="button" data-panel="popover4" data-icon="exit" data-inline="true" data-iconpos="left" class="toggle_popover">Pop4</a>
+					</div>
+				</div>
+				<div data-role="content" data-theme="a">										
+					<p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.   
+				   Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.   
+				   Ut...</p>						
+				</div>								
+			</div><!-- end page -->
+
+		</div><!-- end panel -->
+		
+		<!-- ///////////////// popover panel 3 ////////////  -->
+
+		<div data-role="panel" data-id="popover3" data-panel="popover" data-hash="history" class="ui-element-fixed pop_height ui-triangle-top popover1">
+			
+			<div data-role="page" data-show="first" id="popover3-1" class="popoverPage">
+				<div data-role="header" data-position="fixed" data-theme="a">
+					<h1>Popover3</h1>
+				</div>
+				<div data-role="content" data-theme="a">				
+					<h3>Pop3</h3>
+					<p>This is a popover. It contains two more pages</p>
+					<ul data-role="listview" data-inset="true">
+						<li><a href="#popover3-2" data-target="popover3" data-transition="flip"><span>Popover3 page2</span></a></li>
+						<li><a href="#popover3-1" data-target="popover3" data-transition="pop"><span>Popover3 page3</span></a></li>
+					</ul>						
+				</div>
+			</div><!-- end page-->
+			
+			<div data-role="page" id="popover3-2" class="popoverPage">
+				<div data-role="header" data-position="fixed" data-theme="a">
+					<h1>Popover3-page2</h1>
+				</div>
+				<div data-role="content" data-theme="a">				
+					<h3>Pop3-2</h3>
+					<p>Some more transition effects</p>
+					<ul data-role="listview" data-inset="true">
+						<li><a href="#popover3-1" data-target="popover3" data-transition="slideup"><span>Popover3 page1 </span></a></li>
+						<li><a href="#popover3-3" data-target="popover3" data-transition="fade"><span>Popover3 page3</span></a></li>
+					</ul>
+					<p>You could also load a new page in main...</p>
+					<ul data-role="listview" data-inset="true">
+						<li><a href="#fw2-page2" data-target="fullwidthWithPops" data-transition="slideup"><span>load a new main page</span></a></li>						
+					</ul>					
+				</div>
+			</div><!-- end page-->
+			
+			<div data-role="page" id="popover3-3" class="popoverPage">
+				<div data-role="header" data-position="fixed" data-theme="a">
+					<h1>Popover3-page3</h1>
+				</div>
+				<div data-role="content" data-theme="a">				
+					<h3>Pop3-3</h3>
+					
+					<p>nothing here</p>					
+				</div>
+			</div><!-- end page-->
+		</div>
+		
+		<!-- ///////////////// popover panel 4 ////////////  -->
+
+		<div data-role="panel" data-id="popover4" data-hash="history" data-panel="popover" class="ui-element-fixed pop_height ui-triangle-top popover2">
+		
+			<div data-role="page" data-show="first" id="popover4-1" class="popoverPage">
+				<div data-role="header" data-position="fixed" data-theme="a">
+					<h1>pop4 page1</h1>
+				</div>
+				<div data-role="content" data-theme="a">
+					
+					<ul data-role="listview">
+						<li><a href="#popover4-2" data-target="popover4"><span>level down</span></a></li>
+						<li><a href="#popover4-2" data-target="popover4"><span>level down</span></a></li>
+						<li><a href="#popover4-2" data-target="popover4"><span>level down</span></a></li>
+						<li><a href="#popover4-2" data-target="popover4"><span>level down</span></a></li>
+						<li><a href="#popover4-2" data-target="popover4"><span>level down</span></a></li>
+						<li><a href="#popover4-2" data-target="popover4"><span>level down</span></a></li>
+						<li><a href="#popover4-2" data-target="popover4"><span>level down</span></a></li>
+						<li><a href="#popover4-2" data-target="popover4"><span>level down</span></a></li>
+						<li><a href="#popover4-2" data-target="popover4"><span>level down</span></a></li>
+						<li><a href="#popover4-2" data-target="popover4"><span>level down</span></a></li>
+						<li><a href="#popover4-2" data-target="popover4"><span>level down</span></a></li>
+						<li><a href="#popover4-2" data-target="popover4"><span>level down</span></a></li>
+						<li><a href="#popover4-2" data-target="popover4"><span>level down</span></a></li>
+						<li><a href="#popover4-2" data-target="popover4"><span>level down</span></a></li>
+						<li><a href="#popover4-2" data-target="popover4"><span>level down</span></a></li>
+						<li><a href="#popover4-2" data-target="popover4"><span>level down</span></a></li>
+					</ul>						
+				</div>
+			</div><!-- end page-->
+			
+			<div data-role="page" id="popover4-2" class="popoverPage">
+				<div data-role="header" data-position="fixed" data-theme="a">					
+					<h1>The END</h1>
+				</div>
+				<div data-role="content" data-theme="a">				
+					<p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.   
+				   Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.   
+				   Ut...</p>
+										
+				</div>
+			</div><!-- end page-->				
+			
+		</div>
+		
+		
+
+		
+		<!-- global footer across all panel pages -->
+		<div data-role="footer" data-id="mainFooter" data-position="fixed" class="ui-footer-global">
+					<div data-role="navbar" data-grid="d">
+						<ul>						
+							<li><a href="page1.html" data-iconpos="top" data-icon="plus">page1</a></li>
+							<li><a href="page2.html" data-iconpos="top" data-icon="info">page2</a></li>
+							<li><a href="page3.html" data-iconpos="top" data-icon="plus">page3</a></li>				
+							<li><a href="page4.html" data-iconpos="top" data-icon="plus">page4</a></li>	
+							<li><a href="#" class="ui-btn-active ui-state-persist"  data-iconpos="top" data-icon="plus">page5</a></li>	
+						</ul>
+					</div>
+				</div>	
+
+</div><!-- end wrapper page -->
+				
+				
+
+
+</body>
+
+		<script type="text/javascript" src="http://code.jquery.com/jquery-1.6.4.min.js"></script>					
+		<script type="text/javascript" src="LOC/scripts/jquery.mobile-1.0rc2/jquery.mobile-1.0rc2MOD2splitview.js"></script>		
+		<script type="text/javascript" src="LOC/scripts/plugins/jquery.easing.1.3.js"></script>
+        <script type="text/javascript" src="LOC/scripts/plugins/jquery.mobile.scrollview.js"></script>
+		<script type="text/javascript" src="LOC/scripts/plugins/jquery.mobile.multiviewMOD2.js"></script>
+		
+			
+</html>
+
