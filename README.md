@@ -46,7 +46,7 @@ Panel keys:
 *****
 
 #### 2. Screen Modes
-Compared to the original splitview plugin, multiview is using three states. **(1) Fullscreen/Splitview-Mode** with main section or menu/main section visible, **(2) popover mode** on smaller screens (with toggle button) are similar to the original plugin. For smaller displays **(3) Fullscreen mode** was added. In this mode, everything that pops up (popovers or the menu in popover mode) becomes a fullscreen element layering on top of the actual page (sort of like a dialog).  
+Compared to the original splitview plugin, multiview is using three states. **(1) FullWidth/Splitview-Mode** with main section or menu/main section visible, **(2) popover mode** on smaller screens (with toggle button) are similar to the original plugin. For smaller displays **(3) Fullscreen mode** was added. In this mode, everything that pops up (popovers or the menu in popover mode) becomes a fullscreen element layering on top of the actual page (sort of like a dialog).  
 *****
 
 #### 3. Popovers
