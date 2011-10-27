@@ -46,7 +46,7 @@ Panel keys:
 *****
 
 #### 2. Screen Modes
-Compared to the original splitview plugin, multiview is using three states. **(1) Splitview-Mode** with menu and main section visible, **(2) popover mode** on smaller screens (with toggle button) are similar to the original plugin. For smaller displays **(3) Fullscreen mode** was added. In this mode, everything that pops up (popovers or the menu in popover mode) becomes a fullscreen element layering on top of the actual page (sort of like a dialog).  
+Compared to the original splitview plugin, multiview is using three states. **(1) Fullscreen/Splitview-Mode** with main section or menu/main section visible, **(2) popover mode** on smaller screens (with toggle button) are similar to the original plugin. For smaller displays **(3) Fullscreen mode** was added. In this mode, everything that pops up (popovers or the menu in popover mode) becomes a fullscreen element layering on top of the actual page (sort of like a dialog).  
 *****
 
 #### 3. Popovers
@@ -106,15 +106,15 @@ To make the plugin work a few changes have been made to JQM. Alternatively these
 The plugin still requires plenty of work, including:  
 * rework CSS reposition main/menu panel, CSS is bad  
 * rework CSS page heights  
-* rework CSS z-indexing to avoid wrong panel blinking during transitions in fullscreen mode
-* rework CSS to hide global header/footer in fullscreen mode if popover is open?
-* get changeHash to work if no pushstate support (currently not working)
+* rework CSS z-indexing to avoid wrong panel blinking during transitions in fullscreen mode  
+* rework CSS to hide global header/footer in fullscreen mode if popover is open?  
+* get changeHash to work if no pushstate support (currently not working)  
 * integrate data-context  
 * allow deeplinking  
 * integrate form submit and pefetching  
 * element-fixing and fixed toolbars are currently broken  
 * allow flexible menu/main width  
-* allow 2+ column layouts with more than two panels?
+* allow 2+ column layouts with more than two panels?  
 * find out why IE7 and Blankberry don't like multiview, while IE8 does   
 * cleanup code and testing  
 *****
