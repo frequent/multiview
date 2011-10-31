@@ -67,6 +67,8 @@ The plugin allows two types of "history" (both active in the demo).
 By adding **data-hash="crumbs"** to a panel, the plugin adds a back-button on every transitioned-to-page. Clicking this button reverses the transition (also works across panels).  
 
 Adding **data-hash="history"** to a panel allows to use the browser or device back-button. This is done by panel-history-stacks, which the plugin creates when a panel is created. As long as a panel is visible new entries are made to the respective stack on every pagechange with main/menu panels increasing together (the panel not loading a new page will get a "yield" entry). On clicking the back button, the plugin checks for the highest panel history stack(s), picks the stack to be used and transitions to the last (non-yield) stack-entry. When all panel stacks are on the same level (this should be the basic setup), normal JQM takes over and does a regular hash-change based reverse transition.  
+A possible panel history scenario might look like this:
+![multiview-2](http://www.stokkers.mobi/valuables/multiview/IMG/how3.png "multiview-concept3") 
 *****
 
 #### 6. Fullscreen Mode
