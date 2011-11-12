@@ -25,6 +25,7 @@ div[data-role="header"] .ui-btn-text, div[data-role="footer"] .ui-btn-text
 .headView div								{ line-height: 20px; vertical-align: middle;}
 .headBasket									{ position: static !important; vertical-align: middle;}
 .headLogg									{ text-align: right; margin: 0; position: absolute; top: 3px;}
+.ui-li-heading								{ font-weight: normal;}
 
 /* header controlgroups */
 .headerMenu                              				{display: inline;}
@@ -88,12 +89,14 @@ div[data-role="header"] .ui-btn-text, div[data-role="footer"] .ui-btn-text
 											{ height: inherit; overflow-y: auto; min-height: inherit !important;}
 /* fullscreen mode
 -----------------------------------------------------------------------------------------------------------*/											
+.pop_fullscreen .ui-page-active				{ z-index: 1; /* background-color: #ffffff; necessary to expand page down to bottom on smartphones */}
 .pop_fullscreen 								{ font-style:italic !important; height: 100% !important; width: 100% !important; top: 0px !important; left: 0px !important; z-index:1005; }
 .pop_fullscreen div[data-role="content"] 		{ z-index: 999 !important;}
-.popover_triangle                					{ position: absolute; top: -32px; font-size: 0px; line-height: 0%; width: 0px; border-top: 16px solid rgba(0,0,0,0); border-left: 16px solid rgba(0,0,0,0); border-right: 16px solid rgba(0,0,0,0);border-bottom: 16px solid black;}
+.ui-triangle-top  .popover_triangle             	{ position: absolute; top: -32px; font-size: 0px; line-height: 0%; width: 0px; border-top: 16px solid rgba(0,0,0,0); border-left: 16px solid rgba(0,0,0,0); border-right: 16px solid rgba(0,0,0,0);border-bottom: 16px solid black;}
+.ui-triangle-bottom  .popover_triangle         	{ position: absolute; bottom: -34px; font-size: 0px; line-height: 0%; width: 0px; border-bottom: 16px solid rgba(0,0,0,0); border-left: 16px solid rgba(0,0,0,0); border-right: 16px solid rgba(0,0,0,0);border-top: 16px solid black;}
 
 
-/* splitview CSS
+/* multiview CSS
 -----------------------------------------------------------------------------------------------------------*/
 .type-home 									{ margin: 0px; padding: 0px; height: inherit; width: inherit;}
 .content-primary 							{ /* 2x page height, cause secondary is below primary(menu), set this to display: inline or display: inline-block to fix, but messes up clean positioning...*/ }
@@ -102,11 +105,12 @@ div[data-role="header"] .ui-btn-text, div[data-role="footer"] .ui-btn-text
 .content-secondary  .ui-page					{ /* width: inherit; fixes width at 250...? */ min-width: inherit; z-index:1050; }
 
 .ui-mobile body                  					{ visibility: visible; }
-.ui-page                         						{ bottom: 0; }
+.ui-page                         						{ bottom: 0 /* makes popover pages content expand to the full available width on iPad...*/; }
 .ui-content                      						{ /* overflow: visible; overflow-x: hidden !important;  background-color: #fff;*/}
 
-.ui-panel-left                   					{ width: 25%; min-width: 250px; z-index: 55; /* hides transitions: */ position: relative; /* float: left;*/ /* position:absolute; left:0; top:0; bottom:0; */}
+.ui-panel-left                   					{ width: 25%; min-width: 250px; z-index: 55; /* hides transitions: */ position: relative; float: left; /* position:absolute; left:0; top:0; bottom:0; */}
 .ui-panel-right                  					{ z-index: 45; /* position:absolute; top:0; bottom:0;  width: 100%; */ }
+.ui-panel-fullwidth							{  /* height: 100%; needed for positioning toolbars */} 
 
 .ui-panel-right .ui-page .ui-header, .ui-panel-right .ui-page .ui-content
 											{/* margin-left: 25%; width: 75%; right: 0; */}
