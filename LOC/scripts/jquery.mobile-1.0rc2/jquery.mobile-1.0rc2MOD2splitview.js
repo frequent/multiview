@@ -2444,11 +2444,15 @@ $.widget( "mobile.page", $.mobile.widget, {
 		var active	= $.mobile.urlHistory.getActive(),
 			touchOverflow = $.support.touchOverflow && $.mobile.touchOverflowEnabled,
 			toScroll = active.lastScroll || ( touchOverflow ? 0 : $.mobile.defaultHomeScroll ),
-			screenHeight = getScreenHeight();
+			screenHeight = getScreenHeight();		
 
-		// Scroll to top, hide addr bar
-		window.scrollTo( 0, $.mobile.defaultHomeScroll );
 		
+		// XXX - FREQUENT: block scrollTop if not in fullscreen mode and page transition is inside a popover
+		if ( !$('html').hasClass('ui-fullscreen-mode ') && toPage.closest('div:jqmData(role="panel")').jqmData('panel') != 'popover' ) {			
+			// Scroll to top, hide addr bar			
+			window.scrollTo( 0, $.mobile.defaultHomeScroll );
+			}
+			
 		if( fromPage ) {		
 			//trigger before show/hide events
 			fromPage.data( "page" )._trigger( "beforehide", null, { nextPage: toPage } );
@@ -2471,10 +2475,14 @@ $.widget( "mobile.page", $.mobile.widget, {
 
 			//set page's scrollTop to remembered distance
 			if( toPage.is( ".ui-native-fixed" ) ){
+			
 				toPage.find( ".ui-content" ).scrollTop( toScroll );
+				
 			}
-			else{
+			else {
+
 				toPage.scrollTop( toScroll );
+				
 			}
 		}
 
@@ -2493,8 +2501,12 @@ $.widget( "mobile.page", $.mobile.widget, {
 			}
 
 			// Jump to top or prev scroll, sometimes on iOS the page has not rendered yet.
-			if( !touchOverflow ){
-				$.mobile.silentScroll( toScroll );
+			if( !touchOverflow ){	
+				// XXX - FREQUENT: block scrollTop if not in fullscreen mode and page transition is inside a popover
+				if ( !$('html').hasClass('ui-fullscreen-mode ') && toPage.closest('div:jqmData(role="panel")').jqmData('panel') != 'popover' ) {					
+					// Scroll to top, hide addr bar
+					$.mobile.silentScroll( toScroll );				
+					}	
 			}		
 			
 			//trigger show/hide events
@@ -2505,15 +2517,14 @@ $.widget( "mobile.page", $.mobile.widget, {
 				// XXX FREQUENT: if toPage is an internal page (and if multiview-page is loaded as external page?) 
 				// it's a panel transition, so we need to block the pageHide event, because it will
 				// remove the multiview-page from the DOM and whiteout the screen
-				// TODO this only happens when the multiview page data-external-page="true" - check for this?				
+				// TODO this only happens when the multiview page data-external-page="true" - check for this?	
+				// TODO allow page removal if external page within panel = panel cache management
 				if ( !$(toPage).jqmData('internal-page') 
 					//&& toPage.parents(":jqmData(role='page')").is(":jqmData(external-page='true')") 
 						) {  
 						
 					fromPage.data( "page" )._trigger( "hide", null, { nextPage: toPage } );
 				}
-				//fromPage.data( "page" )._trigger( "hide", null, { nextPage: toPage } );
-				// XXX FREQUENT END
 			}				
 			
 			//trigger pageshow, define prevPage as either fromPage or empty jQuery obj
@@ -2549,18 +2560,16 @@ $.widget( "mobile.page", $.mobile.widget, {
 			$page.each(function() {				
 				var $panelType = $(this).closest('div:jqmData(role="panel")').jqmData('panel');						
 				// override page height on popovers = menu/popovers in popover-mode and popovers only in splitview mode
-				if ( $panelType == 'popover' || ( $panelType == 'menu' && $html.hasClass('ui-popover-mode')  == true ) ) {		
-					// console.log("cutoff "+$(this).attr('id') );
-					$(this).css("min-height","inherit !important");  		
-					} else {						
-						// console.log("as is "+$(this).attr('id') );
+				if ( $panelType == 'popover' || ( $panelType == 'menu' && $html.hasClass('ui-popover-mode')  == true ) ) {												
+					$(this).css("min-height","inherit !important");  
+					} else {												
 						$(this).css("min-height", $height);
 						}
 				});          
 
 			$.mobile.newResetActivePageHeight = newResetActivePageHeight;								
 			}
-	/* XXX - END*/
+
 	//shared page enhancements
 	function enhancePage( $page, role ) {
 		// If a role was specified, make sure the data-role attribute
@@ -3158,7 +3167,6 @@ $.widget( "mobile.page", $.mobile.widget, {
 
 	/*XXX FREQUENT - replaced with Asyraf splitview plugin, modified to fit into JQM navigation*/
 	//The following event bindings should be bound after mobileinit has been triggered
-	//the following function is called in the init file
 	$.mobile._registerInternalEvents = function(){ 
 	
 		//bind to form submit events, handle with Ajax
@@ -3530,8 +3538,7 @@ $.widget( "mobile.page", $.mobile.widget, {
 									}				
 								} else  { 
 									// TODO: fullwidth/popover (popover always goes first until in basic mode)
-									// if ( $( $last0 ).closest(':jqmData(role="panel")') != "popover" || $( $last1 ).closest(':jqmData(role="panel")')  == "popover" )
-									// console.log("fullwidth-popover - not done yet");
+									// if ( $( $last0 ).closest(':jqmData(role="panel")') != "popover" || $( $last1 ).closest(':jqmData(role="panel")')  == "popover" )									
 									}
 	
 						}
@@ -3549,18 +3556,7 @@ $.widget( "mobile.page", $.mobile.widget, {
 					
 					// need to declare fromPage, because otherwise JQM removes .ui-page-active from the wrong panel (active page in main panel);
 					var fromPage = $( gotoPage ).closest(':jqmData(role="panel")').find('.ui-page-active'),
-						changePageOptions = { fromPage: fromPage, pageContainer: $( gotoPage ).closest('div:jqmData(role="panel")'), fromHashChange: true };																										
-										
-					console.log( "menu= "+$(':jqmData(panel="menu")').data("stack") + "  main= "+$(':jqmData(panel="main")').data("stack") );					
-					console.log("panels with data-hash='history': n="+n);
-					console.log("longest stack length: longestLen="+longestLen);
-					console.log("how many stacks are longest: longest.length="+longest.length);
-					console.log("longest array contains the following elements="+longest);
-					console.log("gotoPage = "+gotoPage);
-					console.log("fromPage, active page on panel 'gotoPage' will be loaded into = "+fromPage.attr('id'));
-					console.log("panels to be pop()ed = "+$('.stackTrigger').length );
-					console.log("===========================================================");
-					
+						changePageOptions = { fromPage: fromPage, pageContainer: $( gotoPage ).closest('div:jqmData(role="panel")'), fromHashChange: true };
 					
 					$.mobile.changePage ( gotoPage, changePageOptions ); 					
 					
@@ -6476,16 +6472,9 @@ $.mobile.fixedToolbars = (function() {
 		autoHideMode = false,
 		showDelay = 100,
 		ignoreTargets = "a,input,textarea,select,button,label,.ui-header-fixed,.ui-footer-fixed",
-		/* XXX FREQUENT - add fixed-element top and bottom mimicing fixed header and footer  */				
-		// Should be: 
-		// toolbarSelector = ".ui-header-fixed:first, .ui-elememt-fixed-top, .ui-element-fixed-bottom, .ui-footer-fixed:not(.ui-footer-duplicate):last", 
-		// this sucks but works: 
-		toolbarSelector = ".ui-header-fixed, .ui-element-fixed, .ui-footer-fixed:not(.ui-footer-duplicate):last",				 		
-		// toolbarSelector = ".ui-header-fixed:first, .content-primary .ui-header-fixed, .content-secondary .ui-header-fixed, .ui-element-fixed, .ui-popover-mode .content-secondary, .ui-popover-mode .content-secondary .ui-header-fixed, .content-primary .ui-footer-fixed, .content-secondary .ui-footer-fixed, .ui-footer-fixed:not(.ui-footer-duplicate):last",				 		
-		// original: 
-		// toolbarSelector = ".ui-header-fixed:first, .ui-footer-fixed:not(.ui-footer-duplicate):last",
-		/* XXX END */
-		// for storing quick references to duplicate footers		
+		/* XXX FREQUENT - add fixed-element top and bottom mimicing fixed header and footer  */						
+		toolbarSelector = ".ui-header-fixed, .ui-element-fixed-top, .ui-element-fixed-bottom, .ui-footer-fixed:not(.ui-footer-duplicate):last",
+		// for storing quick references to duplicate footers
 		supportTouch = $.support.touch,
 		touchStartEvent = supportTouch ? "touchstart" : "mousedown",
 		touchStopEvent = supportTouch ? "touchend" : "mouseup",
@@ -6632,42 +6621,41 @@ $.mobile.fixedToolbars = (function() {
 	//
 	// TODO: We'll need to get rid of getOffsetTop() once a fix gets folded into core.
 
-	function getOffsetTop( ele ) {
+	function getOffsetTop( ele ) {		
 		var top = 0,
 			op, body;
-
+		
 		if ( ele ) {
 			body = document.body;
 			op = ele.offsetParent;
 			top = ele.offsetTop;
-
+			
 			while ( ele && ele != body ) {
 				top += ele.scrollTop || 0;
-
 				if ( ele == op ) {
 					top += op.offsetTop;
 					op = ele.offsetParent;
 				}
-
 				ele = ele.parentNode;
 			}
-		}
+		}			
 		return top;
 	}
 
-	function setTop( el ) {
-		var fromTop = $(window).scrollTop(),
-			thisTop = getOffsetTop( el[ 0 ] ), // el.offset().top returns the wrong value on iPad iOS 3.2.1, call our workaround instead.
-			thisCSStop = el.css( "top" ) == "auto" ? 0 : parseFloat(el.css( "top" )),
+	function setTop( el ) {		
+		var fromTop = $(window).scrollTop(),			
+			// XXX FREQUENT: need to add this check to keep thisTop at 0 after changePage			
+			thisTop = el.jqmData("panel") == "popover" ? 0 : getOffsetTop( el[ 0 ] ), 
+			// el.offset().top returns the wrong value on iPad iOS 3.2.1, call our workaround instead.			
+			// XXX FREQUENT: need to add this check for popovers to avoid thisCSStop stacking up, when function is bubbling			
+			thisCSStop =  (el.css( "top" ) == "auto" || el.jqmData("panel") == "popover") ? 0 : parseFloat(el.css( "top" )),						
 			screenHeight = window.innerHeight,
 			thisHeight = el.outerHeight(),
 			useRelative = el.parents( ".ui-page:not(.ui-page-fullscreen)" ).length,
-			relval;
-
-		/* XXX FREQUENT */
-		if ( el.is( ".ui-header-fixed" ) || el.is ( ".ui-element-fixed" ) ) {
-		// if ( el.is( ".ui-header-fixed" ) ) {
-		/* XXX FREQUENT */
+			relval;		
+			
+		/* XXX FREQUENT - add fixed-top to check */
+		if ( el.is( ".ui-header-fixed" ) || el.is ( ".ui-element-fixed-top" ) ) {	
 
 			relval = fromTop - thisTop + thisCSStop;
 
@@ -6676,13 +6664,22 @@ $.mobile.fixedToolbars = (function() {
 			}
 
 			return el.css( "top", useRelative ? relval : fromTop );
-		} else {
-			// relval = -1 * (thisTop - (fromTop + screenHeight) + thisCSStop + thisHeight);
-			// if ( relval > thisTop ) { relval = 0; }
-			relval = fromTop + screenHeight - thisHeight - (thisTop - thisCSStop );
+		
+		// XXX FREQUENT - need to separate fixed footer (bottom:0) and fixed-element-bottom to add spacing from bottom
+		// TODO: not nice, try to combine the next two
+		} else if ( el.is( ".ui-footer-fixed" ) ) {
+				
+			relval = fromTop + screenHeight - thisHeight - (thisTop - thisCSStop );						
+				
+			} else {						
+				
+				$spacer = el.siblings('.ui-footer').outerHeight()+15;
+				relval = fromTop + screenHeight - thisHeight - (thisTop - thisCSStop )-$spacer;
 
-			return el.css( "top", useRelative ? relval : fromTop + screenHeight - thisHeight );
-		}
+				}			
+				
+				return el.css( "top", useRelative ? relval : fromTop + screenHeight - thisHeight );
+		
 	}
 
 	// Exposed methods
@@ -6692,31 +6689,27 @@ $.mobile.fixedToolbars = (function() {
 			
 			$.mobile.fixedToolbars.clearShowTimer();
 
-			currentstate = "overlay";						
-			
-			var $ap = page ? $( page ) :
-					( $.mobile.activePage ? $.mobile.activePage :
-						$( ".ui-page-active" ) );		
-			
-			return $ap.find( toolbarSelector ).each(function() {
+			currentstate = "overlay";
 
+			var $ap = $('.type-home');
+			
+				//page ? $( page ) :
+					//( $.mobile.activePage ? $.mobile.activePage :
+						//$( ".ui-page-active" ) );
+
+			return $ap.find( toolbarSelector ).each(function() {				
+				
 				var el = $( this ),
-					fromTop = $( window ).scrollTop(),
-					// el.offset().top returns the wrong value on iPad iOS 3.2.1, call our workaround instead.
-					thisTop = getOffsetTop( el[ 0 ] ),
+					fromTop = $( window ).scrollTop(),				
+					// XXX FREQUENT: need to add this check to keep thisTop at 0 after changePage			
+					thisTop = el.jqmData("panel") == "popover" ? 0 : getOffsetTop( el[ 0 ] ), 
 					screenHeight = window.innerHeight,
 					thisHeight = el.outerHeight(),
-					/* XXX FREQUENT include new classes 
-					 * only auto-show fixed headers. Popovers should remain hidden until toggle_button is clicked
-					 */
-					/*
-					alreadyVisible = (( el.is( ".ui-header-fixed" ) || el.is( ".ui-element-fixed" ) ) && fromTop <= thisTop + thisHeight ) ||
-														( ( el.is( ".ui-footer-fixed") || el.is( ".ui-element-fixed-bottom" ) ) && thisTop <= fromTop + screenHeight );					
-					*/
-					alreadyVisible = ( el.is( ".ui-header-fixed" ) && fromTop <= thisTop + thisHeight ) ||
-														( el.is( ".ui-footer-fixed" ) && thisTop <= fromTop + screenHeight );					
-					/* XXX FREQUENT */
-														
+					
+					/* XXX FREQUENT include new classes */
+					alreadyVisible = (( el.is( ".ui-header-fixed" ) || el.is( ".ui-element-fixed-top" ) ) && fromTop <= thisTop + thisHeight ) ||
+														( ( el.is( ".ui-footer-fixed") || el.is( ".ui-element-fixed-bottom" ) ) && thisTop <= fromTop + screenHeight );																					
+
 				// Add state class
 				el.addClass( "ui-fixed-overlay" ).removeClass( "ui-fixed-inline" );
 
@@ -6725,7 +6718,7 @@ $.mobile.fixedToolbars = (function() {
 						el.removeClass( "in" );
 					}).addClass( "in" );
 				}
-				setTop(el);
+				setTop(el);				
 			});
 		},
 
@@ -6733,42 +6726,68 @@ $.mobile.fixedToolbars = (function() {
 			
 			currentstate = "inline";
 
-			var $ap = $.mobile.activePage ? $.mobile.activePage :
-									$( ".ui-page-active" );
-									
+			var $ap = $('.type-home');
 			
+			//$.mobile.activePage ? $.mobile.activePage :
+				//					$( ".ui-page-active" );
+
 			return $ap.find( toolbarSelector ).each(function() {
 
 				var el = $(this),
 					thisCSStop = el.css( "top" ),
-					classes;
-
+					classes;					
+				
 				thisCSStop = thisCSStop == "auto" ? 0 :
-											parseFloat(thisCSStop);
-
+											parseFloat(thisCSStop);								
+				
 				// Add state class
 				el.addClass( "ui-fixed-inline" ).removeClass( "ui-fixed-overlay" );
-
-			/* XXX FREQUENT */	
-			// hide everybody
-			if ( thisCSStop < 0 || (  ( el.is( ".ui-header-fixed" ) || el.is( ".ui-element-fixed" ) ) && thisCSStop !== 0 ) ) {
-			// if ( thisCSStop < 0 || ( el.is( ".ui-header-fixed" ) && thisCSStop !== 0 ) ) {
-			/* END XXX FREQUENT */
-
-					if ( immediately ) {
-						el.css( "top", 0);
+					
+				// XXX FREQUENT - this is now a lot more complicated... and took time to get to work
+				// this is what happens: 
+				// 1. also block global-footer and fixed-element-bottom with negative position = already 
+				//    positioned correctly (I think...)
+				// 2. also add ui-element-fixed-top to second check - behaves the same as fixed-header 
+				// 3. also add global-footer and element-fixed-bottom to second check, because their 
+				//    position is >0, when outside of a panel or on pages with content<page.height,
+				//    causing their thisCSStop to stack up with every event (250px>500px>1000px)
+				//    (not sure here anymore)
+				// 4. but only include them if immediately is not true, otherwise footer 
+				//    and fix-element-bottom jump up during transitions, because they pass the 
+				//    if-statement and since immediately is true, el.top("top") will be set to 0 
+				//    before being re-set to their correct position
+				// 5. it also works with regular JQM... 
+				if ( thisCSStop < 0 && ( el.not( ".ui-footer-global" ) || el.not( ".ui-element-fixed-bottom" ) ) 
+					 ||  ( el.is( ".ui-header-fixed" ) || el.is( ".ui-element-fixed-top" ) 
+							|| ( el.is( ".ui-footer-global" ) || el.is( ".ui-element-fixed-bottom" ) && immediately != true )  ) && thisCSStop !== 0 ) {
+					
+					if ( immediately ) {							
+						el.css( "top", 0);						
 					} else {
-
+	
 						if ( el.css( "top" ) !== "auto" && parseFloat( el.css( "top" ) ) !== 0 ) {
-
+							
 							classes = "out reverse";
 
 							el.animationComplete(function() {
-								el.removeClass( classes ).css( "top", 0 );
+																		
+								// XXX FREQUENT 
+								// this additional check is needed, because if thisCSStop is positive, 
+								// on pages with content being smaller than page height, setting css.top=0 to hide 
+								// the footer/fixed-element-bottom will attach them to the end of the page (on-screen) 
+								// For example: page height 120px, screen height 600px, footer will be 
+								// positioned at top=+480px, which is the bottom of screen initially, but on 
+								// tap/click the footer will be hidden by setting top=0px, which now is right 
+								// where the 120px page ends = middle of screen. So hiding a footer with positive 
+								// thisCSStop has to be done another way. Since overriding 0 with a positive value
+								// increases the page-height, the only other way is to make thisCSStop negative
+								// thereby pushing it out of view on top. (I like this... :-)								
+								el.removeClass( classes ).css( "top", ( ( el.is( ".ui-footer-global" ) || el.is( ".ui-element-fixed-bottom" ) ) && thisCSStop > 0 ) ? -thisCSStop : 0 );
+								
 							}).addClass( classes );
 						}
 					}
-				}
+				} 
 			});
 		},
 
@@ -6938,13 +6957,13 @@ $( document ).bind( "pagecreate", function( event ) {
 		// turn on/off page loading message.
 		showPageLoadingMsg: function() {
 			if ( $.mobile.loadingMessage ) {
-				var activeBtn = $( "." + $.mobile.activeBtnClass ).first();
-
+				var activeBtn = $( "." + $.mobile.activeBtnClass ).first();				
 				$loader
 					.find( "h1" )
 						.text( $.mobile.loadingMessage )
 						.end()
-					.appendTo( $.mobile.pageContainer )
+					// XXX FREQUENT - make sure the loader is always appended to the body, not a page appended to a panel
+					.appendTo( $.mobile.pageContainer == $('body') ? $.mobile.pageContainer : $('body')  )
 					// position at y center (if scrollTop supported), above the activeBtn (if defined), or just 100px from top
 					.css({
 						top: $.support.scrollTop && $window.scrollTop() + $window.height() / 2 ||
@@ -7033,8 +7052,7 @@ $( document ).bind( "pagecreate", function( event ) {
 		// if defaultHomeScroll hasn't been set yet, see if scrollTop is 1
 		// it should be 1 in most browsers, but android treats 1 as 0 (for hiding addr bar)
 		// so if it's 1, use 0 from now on
-		$.mobile.defaultHomeScroll = ( !$.support.scrollTop || $(window).scrollTop() === 1 ) ? 0 : 1;
-
+		$.mobile.defaultHomeScroll = ( !$.support.scrollTop || $(window).scrollTop() === 1 ) ? 0 : 1;		
 		//dom-ready inits
 		if( $.mobile.autoInitializePage ){
 			$.mobile.initializePage();
