@@ -28,8 +28,8 @@
 				<div data-role="content" data-theme="a">
 					<ul data-role="listview" data-inset="true" data-theme="d" data-divider-theme="a">
 						<li data-role="list-divider">Menu Pages</li>
-						<li><a href="#menuSub1" data-target="menu">Sublevel-1 page#1</a></li>
-						<li><a href="#menuSub2" data-target="menu">Sublevel-1 page#2</a></li>					
+						<li data-icon="false"><a href="#menuSub1" data-target="menu" data-context="#mainPage2" data-context-panel="main" >menuSub1-1 +context</a></li>
+						<li data-icon="false"><a href="#menuSub2" data-target="menu">menuSub1-2</a></li>					
 					</ul>
 					<ul data-role="listview" data-inset="true" data-theme="d" data-divider-theme="a">
 						<li data-role="list-divider">Main Pages</li>
@@ -124,8 +124,8 @@
 				<div data-role="header" data-position="fixed" data-theme="a">
 					<h1>main section</h1>
 					<div data-role="controlgroup" data-type="horizontal" class="headLogg headerMenuRight iconposSwitcher-div">
-						<a href="#" data-theme="a" data-role="button" data-panel="popover1" data-icon="lang" data-inline="true" data-iconpos="left" class="toggle_popover">Pop1</a>
-						<a href="#" data-theme="a" data-role="button" data-panel="popover2" data-icon="exit" data-inline="true" data-iconpos="left" class="toggle_popover">Pop2</a>
+						<a href="#" data-transition="pop" data-theme="a" data-role="button" data-panel="popover1" data-icon="lang" data-inline="true" data-iconpos="left" class="toggle_popover">Pop1</a>
+						<a href="#" data-transition="pop" data-theme="a" data-role="button" data-panel="popover2" data-icon="exit" data-inline="true" data-iconpos="left" class="toggle_popover">Pop2</a>
 					</div>
 				</div>
 				<div data-role="content" data-theme="a">
@@ -285,7 +285,7 @@
 		
 		<!-- ///////////////// popover panel 1 ////////////  -->
 
-		<div data-role="panel" data-id="popover1" data-panel="popover" data-hash="history" class="ui-element-fixed pop_height ui-triangle-top popover1">
+		<div data-role="panel" data-id="popover1" data-panel="popover" data-hash="history" class="ui-element-fixed-top pop_height ui-triangle-top popover1">
 			
 			<div data-role="page" data-show="first" id="popover1-1" class="popoverPage">
 				<div data-role="header" data-position="fixed" data-theme="a">
@@ -297,7 +297,8 @@
 					
 					<ul data-role="listview" data-inset="true">
 						<li><a href="#popover1-2" data-target="popover1"><span>Pop1-2 fullscreen</span></a></li>
-						<li><a href="#popover1-2" data-target="popover1"><span>Pop1-3 scrolling</span></a></li>
+						<li><a href="#popover1-3" data-target="popover1"><span>Pop1-3 scrolling</span></a></li>
+						<li><a href="#popover1-4" data-target="popover1"><span>Pop1-4 external pages</span></a></li>
 					</ul>						
 				</div>
 			</div><!-- end page-->
@@ -314,6 +315,7 @@
 					<ul data-role="listview" data-inset="true">
 						<li><a href="#popover1-1" data-target="popover1"><span>Pop1-1 basics</span></a></li>
 						<li><a href="#popover1-3" data-target="popover1"><span>Pop1-3 scrolling</span></a></li>
+						<li><a href="#popover1-4" data-target="popover1"><span>Pop1-4 external pages</span></a></li>
 					</ul>						
 				</div>
 			</div><!-- end page-->
@@ -331,6 +333,21 @@
 					<ul data-role="listview" data-inset="true">
 						<li><a href="#popover1-2" data-target="popover1"><span>Pop1-2 fullscreen</span></a></li>
 						<li><a href="#popover1-3" data-target="popover1"><span>Pop1-3 scrolling</span></a></li>
+						<li><a href="#popover1-4" data-target="popover1"><span>Pop1-4 external pages</span></a></li>
+					</ul>						
+				</div>
+			</div><!-- end page-->
+			
+			<div data-role="page" id="popover1-4" class="popoverPage">
+				<div data-role="header" data-position="fixed" data-theme="a">
+					<h1>External pages</h1>
+				</div>
+				<div data-role="content" data-theme="a">					
+					<p>The following button loads an external page (not part of this multipage) into this popover. Use this technique to remove low-priority pages from your 
+					multipage document and only load them on user demand</p>
+					</p>
+					<ul data-role="listview" data-inset="true">
+						<li><a href="ext1.html" data-target="popover1" data-transition="flip"><span>external page1</span></a></li>
 					</ul>						
 				</div>
 			</div><!-- end page-->
@@ -339,7 +356,7 @@
 		
 		<!-- ///////////////// popover panel 2 ////////////  -->
 
-		<div data-role="panel" data-id="popover2" data-hash="history" data-panel="popover" class="ui-element-fixed pop_height ui-triangle-top popover2">
+		<div data-role="panel" data-id="popover2" data-hash="history" data-panel="popover" class="ui-element-fixed-top pop_height ui-triangle-top popover2">
 			<div data-role="page" data-show="first" id="popover2-1" class="popoverPage">
 				<div data-role="header" data-position="fixed" data-theme="a">
 					<h1>Fixed Toolbars</h1>
@@ -399,7 +416,7 @@
 
 		
 		<!-- global footer across all panel pages -->
-		<div data-role="footer" data-id="mainFooter" data-position="fixed" class="ui-footer-global">
+		<div data-role="footer" data-id="mainFooter" data-position="fixed">
 					<div data-role="navbar" data-grid="d">
 						<ul>						
 							<li><a href="page1.html" data-iconpos="top" data-icon="plus">page1</a></li>
