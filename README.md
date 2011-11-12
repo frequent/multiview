@@ -3,9 +3,9 @@ Jquery Mobile Multiview Plugin
 
 A. What does Multiview do?
 --------------------------
-1.enable multipage navigation (loading full multipages)  
-2.multipanel view ("splitview")  
-3.any number of popover-panels with multiple pages inside  
+1.multipage navigation (loading full multipages)  
+2.multipanel view (splitscreen)  
+3.popover-panels with nested pages inside  
 
 
 B. Concept
@@ -43,6 +43,7 @@ Panel keys:
 * any number of popovers are possible, but only one menu, main and fullwidth panel per "wrapper-page"  
 * panels use **data-id**, while JQM pages use **id**, this ensures JQM doesn't mix them up  
 * for a panel to work the first page to show needs to be specified by assigning **data-show="first"** to a page inside each panel   
+* panels can be setup empty or with only the first page. Specifying **pageContainer** on changePage will Ajax-load pages into the container (not the body!)  
 *****
 
 #### 2. Screen Modes
@@ -61,7 +62,7 @@ The plugin adds a second navigation layer which fires on any link that includes 
 To programmatically call a changePage on a panel the additional option parameter **pageContainer: target_Panel** has to be included in the function call, which specifies the target panel to load the new page into).
 *****
 
-#### 5. History (still needs work...)
+#### 5. History
 The plugin allows two types of "history" (both active in the demo).   
 
 By adding **data-hash="crumbs"** to a panel, the plugin adds a back-button on every transitioned-to-page. Clicking this button reverses the transition (also works across panels).  
@@ -85,17 +86,18 @@ Multiview uses the scrollview plugin, which will only be initiated on touch devi
 
 On desktop all panels have regular scrollbars. In fullscreen mode only the main panel device-scrolls with its height being matched to any open popover (see above). The idea is to keep scrollview use to a minimum versus device scrolling and more importantly, to not end up with device scrolling and scrollview firing at the same time.  
 
-#### 8. Fixed Elements (= potentially serious flickering, until worked out)
-Multiview adds two new fixed element classes:  
+#### 8. Fixed Elements and global header/footer
+Multiview adds two new fixed elements:  
 
 **.ui-element-fixed-top** and **.ui-fixed-element-bottom**   
 
 These can be used to attach panels (or any other element) to a fixed header/footer. This way when scrolling on a page, the panels will be re-positioned together with the fixed header/footer. Otherwise they would be stuck at their set position which is scrolled out of view. 
-
 Fixed elements will be hidden together with header/footer once scrolling starts. However, they do not re-appear automatically. The user has to click the toggle-button to make them show up again.  
+
+To setup a global header or footer, just position it outside the panel and inside the wrapper page. These elements will be used across all panel pages.
 *****
 
-#### 9. Changes inside JQM:
+#### 9. Changes inside JQM
 To make the plugin work a few changes have been made to JQM. Alternatively these could set in a file sitting before JQM and running at mobileinit. The following things have been changed:  
 * resetPageHeight: added if-clause to correctly reset height on popover panels  
 * changePage: new parameter pageContainer. Added panel navigation, which should be re-located back to plugin  
@@ -104,21 +106,12 @@ To make the plugin work a few changes have been made to JQM. Alternatively these
 * fixedToolbars: added additional elements to the selector and modified if-clauses to attach fixed behavior to fixed-elements
 *****
 
-#### 10. Todos  
-The plugin still requires plenty of work, including:  
-* rework CSS reposition main/menu panel, CSS is bad  
-* rework CSS page heights  
-* rework CSS z-indexing to avoid wrong panel blinking during transitions in fullscreen mode  
-* rework CSS to hide global header/footer in fullscreen mode if popover is open?  
-* get changeHash to work if no pushstate support (currently not working)  
-* integrate data-context  
-* allow deeplinking  
-* integrate form submit and pefetching  
-* element-fixing and fixed toolbars are currently broken  
-* allow flexible menu/main width  
-* allow 2+ column layouts with more than two panels?  
-* find out why IE7 and Blankberry don't like multiview, while IE8 does   
-* cleanup code and testing  
+#### 10. Context Loading  
+Specifying **data-context="page_name"** and **data-context-panel="panel_name"** on a link will trigger an additional (context-)changePage when this link is fired. For example calling a submenu in the menu panel could trigger a changepage in the main section to transition to a related page simultaneously. Context loading will also adds entries to the panel history, so clicking the back button twice will revert both transitions (still in wrong order).
 *****
 
-
+#### Log. Updates  
+* 2011-11-08: reworked data-context, included in panel-history, updated page2.html to show example - first link in menu
+* 2011-11-08: tested loading external pages into containers, updated page2.html to include example - popover1, page1-4 
+* 2011-11-12: reworked toolbars, added support global/local header/footer and ui-element-fixed-top/bottom 
+*****
