@@ -2548,7 +2548,7 @@ $.widget( "mobile.page", $.mobile.widget, {
 	
 	/* XXX FREQUENT - modified to fit pages on main, menu and popovers, otherwise panel pages get full screen height */	
 	function newResetActivePageHeight () {			
-			var	$page=$( "div:jqmData(role='page')" ),
+			var	$page=$( "div.ui-page-active" ),
 				$height = getScreenHeight(),
 				$html = $('html');
 				
@@ -2556,7 +2556,8 @@ $.widget( "mobile.page", $.mobile.widget, {
 			if( $.support.touchOverflow && $.mobile.touchOverflowEnabled ){
 				return;
 				}
-				
+			
+			// TODO: do I really need to run through all pages? Wasting processor
 			$page.each(function() {				
 				var $panelType = $(this).closest('div:jqmData(role="panel")').jqmData('panel');						
 				// override page height on popovers = menu/popovers in popover-mode and popovers only in splitview mode
@@ -3165,7 +3166,6 @@ $.widget( "mobile.page", $.mobile.widget, {
 		return path.makeUrlAbsolute( url, base);
 	}
 
-	/*XXX FREQUENT - replaced with Asyraf splitview plugin, modified to fit into JQM navigation*/
 	//The following event bindings should be bound after mobileinit has been triggered
 	$.mobile._registerInternalEvents = function(){ 
 	
@@ -3181,9 +3181,12 @@ $.widget( "mobile.page", $.mobile.widget, {
               target = $this.attr("target"),
               url = $this.attr( "action" );
 		  
-          var   $currPanel=$this.closest('div:jqmData(role="panel")'),
-				$currPanelActivePage=$currPanel.children('div.'+$.mobile.activePageClass);
-				
+		  
+		  // XXX FREQUENT - REMOVE when plugin is ready - define currentPanel and active Page
+          // var   $currPanel=$this.closest('div:jqmData(role="panel")'),
+		  //		$currPanelActivePage=$currPanel.children('div.'+$.mobile.activePageClass);
+		  
+		  
           // If no action is specified, browsers default to using the
           // URL of the document containing the form. Since we dynamically
           // pull in pages from external documents, the form should submit
@@ -3208,11 +3211,16 @@ $.widget( "mobile.page", $.mobile.widget, {
             return;
           }
 
-          // [Asyraf] temporarily put this here eventually should just set it immediately instead of an interim var.
-		  // TODO: Do I need this here?
+		  /*
+          // XXX FREQUENT - REMOVE when plugin is ready - from Asyraf, not sure if this is needed here
           $.mobile.activePage=$currPanelActivePage;
           $.mobile.pageContainer=$currPanel;
+		  */
 		  
+		  // XXX FREQUENT - added option pageContainer, by default (Asyraf, this was set 
+		  // to $currPanel, but since this section now only handles JQM regular transitions
+		  // it can be set to $mobile.pageContainer with panel transitions being handled by
+		  // the plugin only
           $.mobile.changePage(
               url,
               {
@@ -3221,7 +3229,7 @@ $.widget( "mobile.page", $.mobile.widget, {
                 transition: $this.jqmData("transition"),
                 direction: $this.jqmData("direction"),
                 reloadPage: true,
-                pageContainer:$currPanel
+                pageContainer:$.mobile.pageContainer
               }
           );
           event.preventDefault();
@@ -3333,14 +3341,26 @@ $.widget( "mobile.page", $.mobile.widget, {
                         // deprecated - remove by 1.0
                         $link.jqmData( "back" ),
 						
-              //this may need to be more specific as we use data-rel more
-              role = $link.attr( "data-" + $.mobile.ns + "rel" ) || undefined;
+			//this may need to be more specific as we use data-rel more
+			role = $link.attr( "data-" + $.mobile.ns + "rel" ) || undefined;
 			
-			// TODO: remove this check and panel navigation into multiview.js
-			// preventDefault() if ($targetPanel)
-			// is a targetPanel specified in the link?						
+			// XXX FREQUENT - REMOVE when plugin is ready - added page container as option
+			/* do I still need this? takes away flexibility and it is set above anyway?
+			$.mobile.pageContainer = $('body');										
+			*/
+			
+			// XXX FREQUENT - check for panel-transitions and changePage only if no data-target is specified
 			var $targetPanel=$link.jqmData('target');
 			
+			if (!$targetPanel) {				
+				$.mobile.changePage( href, { transition: transition, reverse: reverse, role: role, pageContainer:$.mobile.pageContainer } );
+				event.preventDefault();
+			}
+			
+			/*
+			// XXX FREQUENT - REMOVE when plugin is ready - check if the link has a targetPanel = panel transition
+			// preventDefault() if ($targetPanel)					
+			var $targetPanel=$link.jqmData('target');
 			
 			if ($targetPanel) { 
 				// navigating inside panels! 
@@ -3385,10 +3405,11 @@ $.widget( "mobile.page", $.mobile.widget, {
 					$.mobile.changePage( href, { transition: transition, reverse: reverse, role: role, pageContainer:$.mobile.pageContainer } );
 					}
 			  event.preventDefault();			          
+			  */
         });
 
-		//prefetch pages when anchors with data-prefetch are encountered
-		// TODO: by Asyraf, check if working like this
+		// prefetch pages when anchors with data-prefetch are encountered
+		// XXX FREQUENT - TODO: by Asyraf, check if working like this
 		$( ".ui-page" ).live( "pageshow.prefetch", function() {
 			var urls = [];
 			var $thisPageContainer = $(this).closest('div:jqmData(role="panel")');
@@ -3408,10 +3429,10 @@ $.widget( "mobile.page", $.mobile.widget, {
 		});
 		
 		$.mobile._handleHashChange = function( hash ) {
+			
 			//find first page via hash					
-			var to = path.stripHash( hash ),
-			
-			
+			var to = path.stripHash( hash );
+				
 			// XXX FREQUENT: panel-transition handler, activate if panels on the page with data-hash="history"
 			// TODO: remove this to multiview.js once working, preventDefault if panel hashChange
 				$panels = $('div:jqmData(hash="history")'),
@@ -3580,6 +3601,7 @@ $.widget( "mobile.page", $.mobile.widget, {
           $.mobile._handleHashChange( location.hash );
         });
 
+		// XXX FREQUENT - bind to newResetActivePageHeight
 		//set page min-heights to be device specific
 		$( document ).bind( "pageshow", newResetActivePageHeight );
 		$( window ).bind( "throttledresize", newResetActivePageHeight );
