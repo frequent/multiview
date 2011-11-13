@@ -25,12 +25,15 @@
  * scrollMe           initialize scrollview
  * findClosestLink    [helper] same as JQM
  * getClosestBaseURL  [helper] same as JQM
+ * removeActiveLink   [helper] same as JQM
  * gulliver           manage screen mode Small, Medium, Large, Supersize. Small = fullscreen mode
  * checkWidth         manage width of content (cause of 15px padding and content min-height)
  * heightened         [not used currently]
  * framer             [helper] get screen mode
  * expandHeight       [helper] set page height in fullscreen mode
  * stackUp			  add entries into panel-history-stacks
+ * panelTransition    handles all transition with specified targetContainer
+ * panelHash		  handles panel history on backward transitions
  * _mainEvents        event bindings for the plugin
  *
  */
@@ -38,36 +41,37 @@
 // TODOS:		
 		
 		// change to flexible trigger class, not use .type-home
-		// fullscreen mode, make header-visibility change earlier
-		// find a way to hide popovers on scrollstart... they should not be open, when the toolbars re-appear
 		// silentScroll(top) when opening a popover!	
 		// make all vars global		
 		// deeplinks not working
-		// position popover triangel relative to window or toggle button?
-		// check context handler	
+		// position popover triangel relative to window or toggle button?	
 		// integrate orientationchange
 		// add border-right
 		// find out why IE8 works (except fixed footer) and IE7 breaks...
-		// put history stack handler and panel navigation in here by preventDefault on event.binding+condition
+		// put history stack handler in here by preventDefault on event.binding+condition
 		// make bottom-spacing on fixed-element-bottom a user settable option
-		// block footer jumping to top = this should also stop jumping to top on popover-page-transitions!!!
 		// remove scrollTop blockers again from promise()
-		// add popup() in fullscreen mode
-		// make plugin more widgety
+		// add popup() effect in fullscreen mode
+		// hide popovers on scrollstart of background without hiding them on scrollTop-firing-on transitions inside panel
 		// check if stackup entry order for main/menu is responsible for backward transition in data-context handler firing at the same time
 		// reset URL path to main/fullwidth data-show="first" on hideAllPanels()
 		// find out why page lock is white-screen and misplaced loader if changepaging in popover at scrolldown-position
 		// make triangle show up on every page, not only the first time the panel is initiated
+		// find out why transitions are slow
+		// rework page-height setting. Is off by footer-height on regular JQM pages, may also have to do with JQM handling of footers? shouldn't!
+		
 		
 
 (function($,window){
 	$.widget("mobile.multiview",$.mobile.widget, {
 		vars: {
-			$html:$('html'),
-			$panel:$("div:jqmData(role='panel')"),
-			$main:$("div:jqmData(panel='main')"),
-			$menu:$("div:jqmData(panel='menu')"),
-			$popover:$("div:jqmData(panel='popover'), .ui-popover-mode div:jqmData(panel='menu')")
+			$html : $('html'),		
+			$main : $("div:jqmData(panel='main')"),
+			$menu : $("div:jqmData(panel='menu')"),
+			$head : $("head"),
+			$panel : $("div:jqmData(role='panel')"),
+			$popover : $("div:jqmData(panel='popover'), .ui-popover-mode div:jqmData(panel='menu')")					
+
 		},
 
 		_create: function() {		
@@ -628,15 +632,24 @@
 			return ele;
 			},
 			
-		getClosestBaseUrl: function ( ele ) {			
+		getClosestBaseUrl: function ( ele, documentBase ) {	
+
 			var self = this;
+						
 			// Find the closest page and extract out its url.			
 			var url = $( ele ).closest( ".ui-page" ).jqmData( "url" ),
-				base = self.vars.documentBase.hrefNoHash;
+				base = documentBase.hrefNoHash;
 			if ( !url || !$.mobile.path.isPath( url ) ) {
 				url = base;
 				}
 			return $.mobile.path.makeUrlAbsolute( url, base);
+			},
+		
+		removeActiveLinkClass: function( forceRemoval ) {		
+			if( !!$activeClickedLink && ( !$activeClickedLink.closest( '.ui-page-active' ).length || forceRemoval ) ) {		
+				$activeClickedLink.removeClass( $.mobile.activeBtnClass );
+				}		
+			$activeClickedLink = null;
 			},
 			
 			
@@ -862,22 +875,221 @@
 					
 					}								
 			}, 
+			
+		panelTransition: function (event) {
+
+			// TODO: not sure if relocating this from JQM works all-the-way, so far it does
+			
+			var self = this,
+
+			/* --------------------------- start JQM copy ------------------------ */
+			// functions prepend by $.mobile.
+			// TODO: try referencing directly
+			
+			//existing base tag?
+			$base = self.vars.$head.children( "base" ),
+
+			//tuck away the original document URL minus any fragment.
+			documentUrl = $.mobile.path.parseUrl( location.href ),
+
+			//if the document has an embedded base tag, documentBase is set to its
+			//initial value. If a base tag does not exist, then we default to the documentUrl.
+			documentBase = $base.length ? $.mobile.path.parseUrl( $.mobile.path.makeUrlAbsolute( $base.attr( "href" ), documentUrl.href ) ) : documentUrl,
+
+			//cache the comparison once.
+			documentBaseDiffers = ( documentUrl.hrefNoHash !== documentBase.hrefNoHash );
+
+			//base element management, defined depending on dynamic base tag support
+			var base = $.support.dynamicBaseTag ? {
+
+				//define base element, for use in routing asset urls that are referenced in Ajax-requested markup
+				element: ( $base.length ? $base : $( "<base>", { href: documentBase.hrefNoHash } ).prependTo( $head ) ),
+
+				//set the generated BASE element's href attribute to a new page's base path
+				set: function( href ) {
+					base.element.attr( "href", $.mobile.path.makeUrlAbsolute( href, documentBase ) );
+				},
+
+				//set the generated BASE element's href attribute to a new page's base path
+				reset: function() {
+					base.element.attr( "href", documentBase.hrefNoHash );
+				}
+
+			} : undefined;
+					
+			// link check		
+			var link = $( self.findClosestLink(event.target) );
+		  
+			// If there is no link associated with the click or its not a left
+			// click we want to ignore the click
+			if ( !link || event.which > 1) {
+				return;
+				}
+
+			var $link = $(link);
+			
+			/* --------------------------- end JQM copy ------------------------ */
+			
+			// check for target-panel specified in the link
+			var $targetPanel=$link.jqmData('target');
+			
+			if ($targetPanel) {
+				
+				// stop JQM
+				event.preventDefault();
+				
+				/* --------------------------- start JQM copy ------------------------ */
+				// call functions by adding $.mobile.
+				// TODO: do I really need all this again here? 
+			
+				//remove active link class if external (then it won't be there if you come back)
+				var httpCleanup = function(){
+					window.setTimeout( function() { self.removeActiveLinkClass( true ); }, 200 );
+					};		  
+							  
+				//if there's a data-rel=back attr, go back in history
+				if( $link.is( ":jqmData(rel='back')" ) ) {
+					window.history.back();
+					return false;
+					}
+
+				var baseUrl = self.getClosestBaseUrl( $link, documentBase ),
+
+				//get href, if defined, otherwise default to empty hash
+				href = $.mobile.path.makeUrlAbsolute( $link.attr( "href" ) || "#", baseUrl );
+	  
+				//if ajax is disabled, exit early
+				if( !$.mobile.ajaxEnabled && !$.mobile.path.isEmbeddedPage( href ) ){
+					httpCleanup();
+					//use default click handling
+					return;
+					}
+			  
+				// XXX_jblas: Ideally links to application pages should be specified as
+				// an url to the application document with a hash that is either
+				// the site relative path or id to the page. But some of the
+				// internal code that dynamically generates sub-pages for nested
+				// lists and select dialogs, just write a hash in the link they
+				// create. This means the actual URL path is based on whatever
+				// the current value of the base tag is at the time this code
+				// is called. For now we are just assuming that any url with a
+				// hash in it is an application page reference.
+				if ( href.search( "#" ) != -1 ) {
+					href = href.replace( /[^#]*#/, "" );
+					if ( !href ) {
+						//link was an empty hash meant purely
+						//for interaction, so we ignore it.
+						event.preventDefault();
+						return;
+						} else if ( $.mobile.path.isPath( href ) ) {
+							//we have apath so make it the href we want to load.
+							href = $.mobile.path.makeUrlAbsolute( href, baseUrl );
+							} else {
+								//we have a simple id so use the documentUrl as its base.
+								href = $.mobile.path.makeUrlAbsolute( "#" + href, documentUrl.hrefNoHash );
+								}
+					}
+			  
+				// Should we handle this link, or let the browser deal with it?
+				var useDefaultUrlHandling = $link.is( "[rel='external']" ) || $link.is( ":jqmData(ajax='false')" ) || $link.is( "[target]" ),
+					// Some embedded browsers, like the web view in Phone Gap, allow cross-domain XHR
+					// requests if the document doing the request was loaded via the file:// protocol.
+					// This is usually to allow the application to "phone home" and fetch app specific
+					// data. We normally let the browser handle external/cross-domain urls, but if the
+					// allowCrossDomainPages option is true, we will allow cross-domain http/https
+					// requests to go through our page loading logic.
+					isCrossDomainPageLoad = ( $.mobile.allowCrossDomainPages && documentUrl.protocol === "file:" && href.search( /^https?:/ ) != -1 ),
+
+					//check for protocol or rel and its not an embedded page
+					//TODO overlap in logic from isExternal, rel=external check should be
+					// moved into more comprehensive isExternalLink
+					isExternal = useDefaultUrlHandling || ( $.mobile.path.isExternal( href ) && !isCrossDomainPageLoad );		
+															
+				if( isExternal ) {
+					httpCleanup();
+					//use default click handling
+					return;
+					}
+
+				//use ajax		 
+				var transition = $link.jqmData( "transition" ),
+					direction = $link.jqmData("direction"),
+					reverse = (direction && direction === "reverse") ||
+								// deprecated - remove by 1.0
+								$link.jqmData( "back" ),
+							
+					//this may need to be more specific as we use data-rel more
+					role = $link.attr( "data-" + $.mobile.ns + "rel" ) || undefined;
 		
+				/* --------------------------- end JQM copy ------------------------ */
+				
+				// panel transition vars
+				var isRefresh=$link.jqmData('refresh'),				
+					$targetContainer=$('div:jqmData(id="'+$targetPanel+'")'),					
+					$targetPanelActivePage=$targetContainer.children('div.'+$.mobile.activePageClass),					
+					$currPanel = $link.parents('div:jqmData(role="panel")'),
+					$currPanelID = $currPanel.jqmData('id'),
+					$currPanelActivePage=$currPanel.children('div.'+$.mobile.activePageClass),
+					url=$.mobile.path.stripHash($link.attr("href")),
+					from = undefined,
+					hash = $currPanel.jqmData('hash');										
+						
+				//if link refers to an already active panel, stop default action and return
+				if ($targetPanelActivePage.attr('data-url') == url || $currPanelActivePage.attr('data-url') == url) {				
+					if (isRefresh) { //then changePage below because it's a pageRefresh request						
+						$.mobile.changePage(href, {fromPage:from, transition:'fade', reverse:reverse, changeHash:false, pageContainer:$targetContainer, reloadPage:isRefresh});
+						} else { //else preventDefault and return
+								event.preventDefault();
+								return;
+								}
+					}
+					//if link refers to a page on another panel, changePage on that panel
+					else if ($targetPanel != $currPanelID) {					
+						var from=$targetPanelActivePage,
+							hashChange = $targetContainer.jqmData('hash') == 'history' ? true : false;							
+						$.mobile.changePage(href, {fromPage:from, transition:transition, changeHash:hashChange, reverse:reverse, pageContainer:$targetContainer});
+						}
+						//if link refers to a page inside the same panel, changePage on that panel
+							else {								
+								var from=$currPanelActivePage,
+									hashChange = $targetContainer.jqmData('hash') == 'history' ? true : false;
+								$.mobile.pageContainer=$currPanel;														
+								$.mobile.changePage(href, {fromPage:from, transition:transition, reverse:reverse, changeHash:hashChange, pageContainer:$currPanel});
+								// [Asyraf]: active page must always point to the active page in main - for history purposes.														
+								// TODO: keep or modify							
+								$.mobile.activePage=$('div:jqmData(id="main") > div.'+$.mobile.activePageClass+', div:jqmData(id="fullwidth") > div.'+$.mobile.activePageClass);
+								}
+				
+				
+				}
+				
+		},
+		
+		panelHash: function( e, triggered, hash ) {
+
+		
+		},
 		
 		_mainEventBindings: function () {
 		
 			var self = this;
 			
-			$(document).bind( "click", function( event ) {
+			$(document).bind( "click", function( event ) {				
 				// splitview routine
 				self.splitviewOnClick(event);
 				
-				// context routine				
 				var link = $( self.findClosestLink(event.target) );
 				
+				// panel transition rountine
+				if ( link ) {
+					self.panelTransition(event);
+					}
+
+				// context routine
 				if ( link && link.jqmData('context') ) {
 					self.context( link );					
 					}
+				
 				});
 					
 			// panel history 
@@ -901,7 +1113,13 @@
 					self.stackUp(event, data);
 					}
 				});
-			}					
+			
+			// hashChange rountine
+			/* $(window).bind( "hashchange", function( e, triggered ) {				
+				self.panelHash( e, triggered, location.hash );
+				});			
+			*/
+			}	
 	});
 
 // initialize
