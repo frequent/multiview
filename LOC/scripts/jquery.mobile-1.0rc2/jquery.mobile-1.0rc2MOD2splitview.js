@@ -2443,12 +2443,14 @@ $.widget( "mobile.page", $.mobile.widget, {
 		//get current scroll distance
 		var active	= $.mobile.urlHistory.getActive(),
 			touchOverflow = $.support.touchOverflow && $.mobile.touchOverflowEnabled,
-			toScroll = active.lastScroll || ( touchOverflow ? 0 : $.mobile.defaultHomeScroll ),
-			screenHeight = getScreenHeight();		
+			toScroll = active.lastScroll || ( touchOverflow ? 0 : $.mobile.defaultHomeScroll ),					
+			screenHeight = getScreenHeight(),
+			// XXX FREQUENT: add closest panel
+			$closestPanel = toPage.closest('div:jqmData(role="panel")').jqmData('panel');
 
 		
 		// XXX - FREQUENT: block scrollTop if not in fullscreen mode and page transition is inside a popover
-		if ( !$('html').hasClass('ui-fullscreen-mode ') && toPage.closest('div:jqmData(role="panel")').jqmData('panel') != 'popover' ) {			
+		if ( !$('html').hasClass('ui-fullscreen-mode ') && $closestPanel != 'popover' ) {			
 			// Scroll to top, hide addr bar			
 			window.scrollTo( 0, $.mobile.defaultHomeScroll );
 			}
@@ -2545,32 +2547,28 @@ $.widget( "mobile.page", $.mobile.widget, {
 			return pageMin;
 			}	
 	
-	
-	/* XXX FREQUENT - modified to fit pages on main, menu and popovers, otherwise panel pages get full screen height */	
-	function newResetActivePageHeight () {			
-			var	$page=$( "div.ui-page-active" ),
-				$height = getScreenHeight(),
-				$html = $('html');
-				
-			// Don't apply this height in touch overflow enabled mode
-			if( $.support.touchOverflow && $.mobile.touchOverflowEnabled ){
-				return;
-				}
+	$.mobile.getScreenHeight = getScreenHeight;
+
+	//simply set the active page's minimum height to screen height, depending on orientation
+	function resetActivePageHeight(){
+		// Don't apply this height in touch overflow enabled mode
+		if( $.support.touchOverflow && $.mobile.touchOverflowEnabled ){
+			return;
+		}
+		// XXX FREQUENT - check for popovers, which need min-height: inherit, 
+		// otherwise popover pages will get screen height and overlap outside of border		
+		$( "." + $.mobile.activePageClass ).each(function() {
+			var $panelType = $(this).closest('div:jqmData(role="panel")').jqmData('panel');				
 			
-			// TODO: do I really need to run through all pages? Wasting processor
-			$page.each(function() {				
-				var $panelType = $(this).closest('div:jqmData(role="panel")').jqmData('panel');						
-				// override page height on popovers = menu/popovers in popover-mode and popovers only in splitview mode
-				if ( $panelType == 'popover' || ( $panelType == 'menu' && $html.hasClass('ui-popover-mode')  == true ) ) {												
+			if ( $panelType == 'popover' || ( $panelType == 'menu' && $html.hasClass('ui-popover-mode')  == true ) ) {					
 					$(this).css("min-height","inherit !important");  
-					} else {												
-						$(this).css("min-height", $height);
-						}
-				});          
-
-			$.mobile.newResetActivePageHeight = newResetActivePageHeight;								
-			}
-
+					} else {																		
+						$(this).css("min-height", getScreenHeight()-40  );
+						}			
+			});
+		
+	}
+	
 	//shared page enhancements
 	function enhancePage( $page, role ) {
 		// If a role was specified, make sure the data-role attribute
@@ -3429,20 +3427,24 @@ $.widget( "mobile.page", $.mobile.widget, {
 		});
 		
 		$.mobile._handleHashChange = function( hash ) {
-			
+			console.log("handleHash fired");
+			// call panelHash:
+			$(this).multiview('panelHash');
+
+		
 			//find first page via hash					
-			var to = path.stripHash( hash );
+			var to = path.stripHash( hash ),
 				
-			// XXX FREQUENT: panel-transition handler, activate if panels on the page with data-hash="history"
-			// TODO: remove this to multiview.js once working, preventDefault if panel hashChange
+				// XXX FREQUENT: panel-transition routine, activates if panels on the page with data-hash="history"			
 				$panels = $('div:jqmData(hash="history")'),
 				n = $panels.length,
 				
-			//transition is false if it's the first page, undefined otherwise (and may be overridden by default)	
-			transition = ( $.mobile.urlHistory.stack.length === 0 || n == 0 ) ? "none" : undefined,
+				//transition is false if it's the first page, undefined otherwise (and may be overridden by default)	
+				transition = ( $.mobile.urlHistory.stack.length === 0 || n == 0 ) ? "none" : undefined,
 
 				// default options for the changPage calls made after examining the current state
 				// of the page and the hash
+				// XXX FREQUENT: added page container as new option
 				changePageOptions = {
 					transition: transition,
 					changeHash: false,
@@ -3497,9 +3499,18 @@ $.widget( "mobile.page", $.mobile.widget, {
 				}
 			}
 						
-			// create combined array of stacks with highest entry (if 3 stacks with 2 entries each, longest[] will contain 3 arrays [array1, array2, array3]
+			// XXX FREQUENT 
+			// ------------  RELOCATE TO PLUGIN -------------------
+			// create combined array of highest panel-history stacks 
+			// (if 3 stacks with 2 entries each, the combo-array
+			// longest[] will contain 3 arrays [array1, array2, array3]
+			// and each array will contain two entries
+			//
+			// entries are made by stackUp() function in multiview plugin
+			// TODO: recheck
+			
 				var longest = [],
-				longestLen = 0;
+					longestLen = 0;
 		
 				$panels.each(function(){					
 					var data = $(this).data("stack");										
@@ -3512,12 +3523,16 @@ $.widget( "mobile.page", $.mobile.widget, {
 							}
 					});							
 				
-				// prepare cleanup
+				// prepare cleanup, add stackTrigger class
 				$panels.each(function() {
 					if ( $(this).data("stack").length == longestLen ) {
 						$(this).addClass("stackTrigger");
 						}
 					});
+					
+			// ------------  END -------------------
+					
+					
 			//if to is defined, load it
 			if ( to ) {
 				// At this point, 'to' can be one of 3 things, a cached page element from
@@ -3527,12 +3542,15 @@ $.widget( "mobile.page", $.mobile.widget, {
 				// that crosses from an external page/dialog to an internal page/dialog.
 				to = ( typeof to === "string" && !path.isPath( to ) ) ? ( path.makeUrlAbsolute( '#' + to, documentBase ) ) : to;
 				
-				// XXX - FREQUENT - panel history-stack handler
-				// TODO: way to much code... 					
+								// XXX - FREQUENT - panel history-stack routine
+				// ------------  REMOVE INTO PLUGIN -------------------
+				// TODO: check for n>0 here, if yes, preventdefault() and reroute to plugin panelHash
+				// TODO: panelHash last option should be regular hashChange call in case all panels are in basic setup
 
-				// only override JQM-history if panels are used && all panels are not in basic setup (all panels at stack height = 1)																
-				if ( n>0 && longest.length/n != 1 ) {											
-																									
+				// only override JQM-history if panels are used and [removed for now] all panels are not in basic setup (all panels at stack height = 1)
+				if ( n>0 ) {											
+				// if ( n>0 && longest.length/n != 1 ) {
+				
 					// [ok] single highest panel can only be a popover or fullwidth panel, as menu and main increase together
 					if (longest.length == 1 ) {						
 						var gotoPage = longest[0][longestLen-2].toString();																	
@@ -3542,7 +3560,10 @@ $.widget( "mobile.page", $.mobile.widget, {
 						var $last0 = longest[0][longestLen-1].toString(),
 							$last1 = longest[1][longestLen-1].toString();								
 												
-						//[ok] main/menu (increase simultaneously)
+						//[ok] main/menu (increase simultaneously - passive entry = "yield")
+						// backwards transition should be made to last entry not being yield
+						// starting from stackHeight-1 (otherwise result will be currently 
+						// active page
 						if ( $last0 == "yield" )  { 
 							for (i = longestLen-2; i>=0; i--) {				
 								if ( longest[1][i].toString() != "yield") {									
@@ -3565,7 +3586,9 @@ $.widget( "mobile.page", $.mobile.widget, {
 						}
 									
 					if (longest.length >= 3) {	
-						// 3 panels with same stack height, should always be a popover (with main/menu at same stack-height = popover goes first						
+						// 3 panels with same stack height, should always be a popover (with main/menu at same stack-height = popover goes first
+						// TODO: doesn't work if menu/main stack height > popover stack height... 
+						// TODO: change logic so that popover always goes first until it's back to setup-level, then change back on main/menu
 						var $last = [];
 						for ( var i = 0; i < longest.length; i++) {							
 						  $last.push( longest[i][ longest[i].length - 1 ] );						  						  
@@ -3575,21 +3598,23 @@ $.widget( "mobile.page", $.mobile.widget, {
 						}						
 					  }					
 					
-					// need to declare fromPage, because otherwise JQM removes .ui-page-active from the wrong panel (active page in main panel);
+					// declare fromPage, because otherwise JQM removes .ui-page-active from the wrong panel (= active page in main panel);
 					var fromPage = $( gotoPage ).closest(':jqmData(role="panel")').find('.ui-page-active'),
 						changePageOptions = { fromPage: fromPage, pageContainer: $( gotoPage ).closest('div:jqmData(role="panel")'), fromHashChange: true };
 					
 					$.mobile.changePage ( gotoPage, changePageOptions ); 					
 					
 					// cleanUp
-					$('.stackTrigger').each(function() { $(this).data('stack').pop(); });				
+					$('.stackTrigger').each(function() { 
+						$(this).data('stack').pop(); 
+					});				
 					$('.stackTrigger').removeClass('stackTrigger');														
 					
 					} else {
 						// TODO: not working 						
 						$.mobile.changePage( to, changePageOptions );
 						}
-				
+				// ------------  END -------------------
 			}	else {
 				//there's no hash, go to the first page in the dom
 				$.mobile.changePage( $.mobile.firstPage, changePageOptions );
@@ -3601,10 +3626,9 @@ $.widget( "mobile.page", $.mobile.widget, {
           $.mobile._handleHashChange( location.hash );
         });
 
-		// XXX FREQUENT - bind to newResetActivePageHeight
 		//set page min-heights to be device specific
-		$( document ).bind( "pageshow", newResetActivePageHeight );
-		$( window ).bind( "throttledresize", newResetActivePageHeight );
+		$( document ).bind( "pageshow", resetActivePageHeight );
+		$( window ).bind( "throttledresize", resetActivePageHeight );
 
       };//_registerInternalEvents callback
 
@@ -6712,12 +6736,12 @@ $.mobile.fixedToolbars = (function() {
 			$.mobile.fixedToolbars.clearShowTimer();
 
 			currentstate = "overlay";
-
-			var $ap = $('.type-home');
-			
-				//page ? $( page ) :
-					//( $.mobile.activePage ? $.mobile.activePage :
-						//$( ".ui-page-active" ) );
+	
+			// XXX FREQUENT: Tweak selector to grab wrapper page if panels are on the page
+			// else revert to regular JQM
+			var $ap = $('body').find(':jqmData(role="panel")').length ? $('body div:jqmData(role="page"):first-child') : 
+																			 page ? $( page ) : ( $.mobile.activePage ? $.mobile.activePage : 
+																				$( ".ui-page-active" ) );
 
 			return $ap.find( toolbarSelector ).each(function() {				
 				
@@ -6750,8 +6774,10 @@ $.mobile.fixedToolbars = (function() {
 
 			var $ap = $('.type-home');
 			
-			//$.mobile.activePage ? $.mobile.activePage :
-				//					$( ".ui-page-active" );
+			// XXX FREQUENT: same as above
+			var $ap = $('body').find(':jqmData(role="panel")').length ? $('body div:jqmData(role="page"):first-child') : 
+																			$.mobile.activePage ? $.mobile.activePage :
+																				$( ".ui-page-active" );
 
 			return $ap.find( toolbarSelector ).each(function() {
 

@@ -21,11 +21,11 @@
 		<!-- ////////////// embedded menu panel /////////////  -->
 		<div class="content-secondary" data-role="panel" data-id="menu" data-hash="history" data-panel="menu">				  		 	 
 		
-			<div data-role="page" id="menuPage" data-show="first" class="menuPage">
+			<div data-role="page" id="menuPage" data-show="first" class="menuPage" data-theme="a">
 				<div data-role="header" data-position="fixed" data-theme="a">
 					<h1>menu</h1>
 				</div>
-				<div data-role="content" data-theme="a">
+				<div data-role="content">
 					<ul data-role="listview" data-inset="true" data-theme="d" data-divider-theme="a">
 						<li data-role="list-divider">Menu Pages</li>
 						<li data-icon="false"><a href="#menuSub1" data-target="menu" data-context="#mainPage2" data-context-panel="main" >menuSub1-1 +context</a></li>
@@ -39,11 +39,11 @@
 				</div>
 			</div><!-- end page-->
 			
-			<div data-role="page" id="menuSub1" class="subLevel1">
+			<div data-role="page" id="menuSub1" class="subLevel1" data-theme="a">
 					<div data-role="header" data-position="fixed" data-theme="a">			
 						<h1>Sublevel-1 page#1</h1>
 					</div>
-					<div data-role="content" data-theme="a">
+					<div data-role="content">
 						<p>Your on page 1 of subLevel1. You can continue 1 level down</p>
 						
 						<ul data-role="listview" data-inset="true" data-theme="d" data-divider-theme="a">
@@ -56,11 +56,11 @@
 					
 			</div>
 			
-			<div data-role="page" id="menuSub2" class="subLevel1">
-				<div data-role="header" data-position="fixed" data-theme="a">			
+			<div data-role="page" id="menuSub2" class="subLevel1" data-theme="a">
+				<div data-role="header" data-position="fixed"  data-theme="a">			
 						<h1>Sublevel-1 page#2</h1>
 					</div>
-					<div data-role="content" data-theme="a">
+					<div data-role="content">
 						<p>Your on page 2 of subLevel-1. You can continue 1 level down</p>
 						<br>
 						<p>Please go back and click "subLevel1 page1" to go to SubLevel-2</p>						
@@ -68,11 +68,11 @@
 				
 			</div>
 			
-			<div data-role="page" id="menuSubSub1" class="subLevel2">
-				<div data-role="header" data-position="fixed" data-theme="a">			
+			<div data-role="page" id="menuSubSub1" class="subLevel2" data-theme="a">
+				<div data-role="header" data-position="fixed"  data-theme="a">			
 					<h1>SubLevel-2 page#1</h1>
 				</div>
-				<div data-role="content" data-theme="a">
+				<div data-role="content">
 					<p>Your on page 1 of subLevel-2. You can open Main Page 3 and 4 from here</p>
 					<ul data-role="listview" data-inset="true" data-theme="d" data-divider-theme="a">						
 						<li><a href="#mainPage3" data-target="main">Main Page 3</a></li>					
@@ -83,11 +83,11 @@
 				
 			</div>
 			
-			<div data-role="page" id="menuSubSub2" class="subLevel2">
+			<div data-role="page" id="menuSubSub2" class="subLevel2" data-theme="a">
 				<div data-role="header" data-position="fixed" data-theme="a">			
 					<h1>SubLevel-2 page2</h1>
 				</div>
-				<div data-role="content" data-theme="a">
+				<div data-role="content">
 						
 						<ul data-role="listview" data-theme="d">							
 							<li><a href="#">noLink</a></li>					
@@ -120,7 +120,7 @@
 		<!-- ////////////// embedded main panel ///////////////  -->		
 		<div class="content-primary" data-role="panel" data-id="main" data-panel="main" data-hash="history">		
 			
-			<div data-role="page" id="mainPage" data-show="first" class="mainPages">	
+			<div data-role="page" id="mainPage" data-show="first" class="mainPages"  data-theme="a">	
 				<div data-role="header" data-position="fixed" data-theme="a">
 					<h1>main section</h1>
 					<div data-role="controlgroup" data-type="horizontal" class="headLogg headerMenuRight iconposSwitcher-div">
@@ -128,7 +128,7 @@
 						<a href="#" data-transition="pop" data-theme="a" data-role="button" data-panel="popover2" data-icon="exit" data-inline="true" data-iconpos="left" class="toggle_popover">Pop2</a>
 					</div>
 				</div>
-				<div data-role="content" data-theme="a">
+				<div data-role="content">
 				
 						<div data-role="collapsible-set">
 								<div data-role="collapsible" data-collapsed="true">
@@ -222,7 +222,7 @@
 				
 			</div><!-- end page -->
 			
-			<div data-role="page" id="mainPage2" class="mainPages">	
+			<div data-role="page" id="mainPage2" class="mainPages"  data-theme="a">	
 				<div data-role="header" data-position="fixed" data-theme="a">
 					<h1>mainPage2</h1>
 					<div data-role="controlgroup" data-type="horizontal" class="headLogg headerMenuRight iconposSwitcher-div">
@@ -230,7 +230,7 @@
 						<a href="#" data-theme="a" data-role="button" data-panel="popover2" data-icon="exit" data-inline="true" data-iconpos="left" class="toggle_popover">Pop2</a>
 					</div>
 				</div>
-				<div data-role="content" data-theme="a">										
+				<div data-role="content">										
 					<p>this is MainPage2. Continue to the following pages</p>
 					<ul data-role="listview" data-inset="true" data-theme="d" data-divider-theme="a">
 						<li><a href="#mainPage3" data-target="main"><h3>MainPage 3</h3><span>another page inside the multipage</span></a></li>
@@ -241,7 +241,7 @@
 				</div>								
 			</div><!-- end page -->
 			
-			<div data-role="page" id="mainPage3" class="mainPages">	
+			<div data-role="page" id="mainPage3" class="mainPages"  data-theme="a">	
 				<div data-role="header" data-position="fixed" data-theme="a">
 					<h1>mainPage3</h1>
 					<div data-role="controlgroup" data-type="horizontal" class="headLogg headerMenuRight iconposSwitcher-div">
@@ -249,7 +249,7 @@
 						<a href="#" data-theme="a" data-role="button" data-panel="popover2" data-icon="exit" data-inline="true" data-iconpos="left" class="toggle_popover">Pop2</a>
 					</div>
 				</div>
-				<div data-role="content" data-theme="a">
+				<div data-role="content">
 					<p>this is MainPage3. Continue to the following pages</p>
 					<ul data-role="listview" data-inset="true" data-theme="d" data-divider-theme="a">
 						<li><a href="#mainPage" data-target="main"><h3>MainPage 1</h3><span>another page inside the multipage</span></a></li>
@@ -261,7 +261,7 @@
 				</div>								
 			</div><!-- end page -->
 			
-			<div data-role="page" id="mainPage4" class="mainPages">	
+			<div data-role="page" id="mainPage4" class="mainPages"  data-theme="a">	
 				<div data-role="header" data-position="fixed" data-theme="a">
 					<h1>mainPage4</h1>
 					<div data-role="controlgroup" data-type="horizontal" class="headLogg headerMenuRight iconposSwitcher-div">
@@ -269,7 +269,7 @@
 						<a href="#" data-theme="a" data-role="button" data-panel="popover2" data-icon="exit" data-inline="true" data-iconpos="left" class="toggle_popover">Pop2</a>
 					</div>
 				</div>
-				<div data-role="content" data-theme="a">
+				<div data-role="content">
 					<p style="text-align: center;">this is MainPage4. Only some text here to check scrolling</p>
 					<p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.   
 				   Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.   
@@ -287,11 +287,11 @@
 
 		<div data-role="panel" data-id="popover1" data-panel="popover" data-hash="history" class="ui-element-fixed-top pop_height ui-triangle-top popover1">
 			
-			<div data-role="page" data-show="first" id="popover1-1" class="popoverPage">
+			<div data-role="page" data-show="first" id="popover1-1" class="popoverPage"  data-theme="a">
 				<div data-role="header" data-position="fixed" data-theme="a">
 					<h1>Overview</h1>
 				</div>
-				<div data-role="content" data-theme="a">				
+				<div data-role="content">				
 										
 					<p>Popovers can be positioned anywhere on screen, have an optional triangel and own history. Click the links to find out more.</p>
 					
@@ -303,11 +303,11 @@
 				</div>
 			</div><!-- end page-->
 			
-			<div data-role="page" id="popover1-2" class="popoverPage">
+			<div data-role="page" id="popover1-2" class="popoverPage"  data-theme="a">
 				<div data-role="header" data-position="fixed" data-theme="a">
 					<h1>Fullscreen Mode</h1>
 				</div>
-				<div data-role="content" data-theme="a">
+				<div data-role="content">
 					<p>Popover pages change to fullscreen mode if screen size is less than 320px or
 					a popovers' height is larger than the screen height. In fullscreen mode popovers (and menu)
 					sit on top of the main-panel (sort of like a dialog...). 
@@ -320,11 +320,11 @@
 				</div>
 			</div><!-- end page-->
 			
-			<div data-role="page" id="popover1-3" class="popoverPage">
+			<div data-role="page" id="popover1-3" class="popoverPage"  data-theme="a">
 				<div data-role="header" data-position="fixed" data-theme="a">
 					<h1>Scrolling</h1>
 				</div>
-				<div data-role="content" data-theme="a">					
+				<div data-role="content">					
 					<p>On touch devices popovers and menu are scrollable using scrollview. On desktop
 					you get normal scrollbars, in fullscreen mode, scrollview is deactivated. If you open a popover or the menu in fullscreen mode
 					the height of the main-area behind is matched to the popover/menu height, so you think 
@@ -338,11 +338,11 @@
 				</div>
 			</div><!-- end page-->
 			
-			<div data-role="page" id="popover1-4" class="popoverPage">
+			<div data-role="page" id="popover1-4" class="popoverPage"  data-theme="a">
 				<div data-role="header" data-position="fixed" data-theme="a">
 					<h1>External pages</h1>
 				</div>
-				<div data-role="content" data-theme="a">					
+				<div data-role="content">					
 					<p>The following button loads an external page (not part of this multipage) into this popover. Use this technique to remove low-priority pages from your 
 					multipage document and only load them on user demand</p>
 					</p>
@@ -361,7 +361,7 @@
 				<div data-role="header" data-position="fixed" data-theme="a">
 					<h1>Fixed Toolbars</h1>
 				</div>
-				<div data-role="content" data-theme="a">		
+				<div data-role="content">		
 					<p>In fullscreen mode, any header/footer of the underlying main panel are "unfixed" and fixed behavior is attached to the popover/menu
 					header/footer. This way fixed toolbars should look normal in fullscreen mode, too.
 					</p>
@@ -376,7 +376,7 @@
 				<div data-role="header" data-position="fixed" data-theme="a">					
 					<h1>Page loading</h1>
 				</div>
-				<div data-role="content" data-theme="a">
+				<div data-role="content">
 					
 					<p>Besides changing pages is popovers/menu you can also load pages in any other panel. You will need to add a data-target with the
 					ID of the destination panel to ALL links, including changing pages inside this panel.
@@ -392,7 +392,7 @@
 				<div data-role="header" data-position="fixed" data-theme="a">
 					<h1>History</h1>
 				</div>
-				<div data-role="content" data-theme="a">
+				<div data-role="content">
 					<h3></h3>
 					<p>By default, JQM treats all multipages as single history stack entry. You can specify an optional panel-history using <code>data-hash="history"</code> for every panel.</p>
 					<br>

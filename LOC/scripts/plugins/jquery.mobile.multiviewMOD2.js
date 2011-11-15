@@ -40,6 +40,9 @@
 
 // TODOS:		
 		
+		// try to load panelHash from outside, blocking JQM _mobile.hashChange and doing
+		// check if regular footer is assigned global-attribute
+		// remove resetActivePageHeight, work into getscreenHeight, this would also enable to remove expandHeight in multiview
 		// change to flexible trigger class, not use .type-home
 		// silentScroll(top) when opening a popover!	
 		// make all vars global		
@@ -59,10 +62,9 @@
 		// make triangle show up on every page, not only the first time the panel is initiated
 		// find out why transitions are slow
 		// rework page-height setting. Is off by footer-height on regular JQM pages, may also have to do with JQM handling of footers? shouldn't!
-		
-		
 
-(function($,window){
+(function($,window){		
+	
 	$.widget("mobile.multiview",$.mobile.widget, {
 		vars: {
 			$html : $('html'),		
@@ -164,7 +166,7 @@
 			$('.closePanel').live('click', function () {				
 				hideAllPanels();
 				});
-			/*
+		
 			// hide on scrollStart
 			$('div:jqmData(panel="main"), div:jqmData(panel="menu"), div:jqmData(panel="fullwidth")').bind('scrollstart', function() {				
 				hideAllPanels();
@@ -175,7 +177,7 @@
 				hideAllPanels();
 				});
 			
-			 */
+			
 			// hide on click tap on body
 			$('div:jqmData(panel="main"), div:jqmData(panel="fullwidth")').live('click tap', function(event) {
 				if (!$(event.target).closest('.ui-popover').length && !$(event.target).closest('.toggle_popover').length) {					
@@ -763,36 +765,67 @@
 							}																			
 			
 				} // end if framed != small
-											
-				// set content height across all non popover-pages (popovers handled by newResetActivePageHeight)	
-				// TODO: not nice, works by default in JQM. Check how. 
-				var $thisPage=$('div:jqmData(role="page")').not('.type-home, div:jqmData(panel="popover") div:jqmData(role="page"), .ui-popover-mode div:jqmData(panel="menu") div:jqmData(role="page")'),				
-					$exactContentHeight = self.heightened($thisPage);									
-					$thisPage.children(':jqmData(role="content")').css({'min-height': $exactContentHeight});								
-
-					
+			/*								
+				// set height of all active pages, that are not inside a popover or the wrapper page
+				var $thisPage = $('.ui-page-active').not('.type-home, div:jqmData(panel="popover") div:jqmData(role="page"), .ui-popover-mode div:jqmData(panel="menu") div:jqmData(role="page")'),								
+					$scalePage = $thisPage.length ? $thisPage : $('div:jqmData(role="page")').first(),
+					$exactContentHeight = self.heightened($scalePage);									
+					$scalePage.children(':jqmData(role="content")').css({'min-height': $exactContentHeight});								
+			*/	
 			}, 
-		
+		/*
 		heightened: function (page) {
-			
 				
-				// exact content height	
 				// TODO not nice... find solution for menu and main panel, with only main having a "global footer"
 				// check how JQM handles this
-				$header=page.children(':jqmData(role="header")'),
-				$content=page.children(':jqmData(role="content")'),
-				$footer=page.children(':jqmData(role="footer")'),
-				thisHeaderHeight=$header.css('display') == 'none' ? 0 : $header.outerHeight(),
-				thisFooterHeight=$footer.css('display') == 'none' ? 0 : $footer.outerHeight(), //Math.round($footer.innerHeight()/2),    
-				thisWindowHeight=window.innerHeight,
-				thisContentPadding=parseInt($content.css('padding-top'))+parseInt($content.css('padding-bottom')),
-
-				thisHeight = thisWindowHeight-thisHeaderHeight-thisFooterHeight-thisContentPadding;
+				var $this = page,
+					$header = $this.children(':jqmData(role="header")'),
+					$content = $this.children(':jqmData(role="content")'),
+					$footer = $this.children(':jqmData(role="footer")'),
+					thisHeaderHeight = $header.css('display') == 'none' ? 0 : $header.outerHeight(),
+					thisFooterHeight = $footer.css('display') == 'none' ? 0 : $footer.outerHeight(),    
+					thisWindowHeight = window.innerHeight,
+					thisContentPadding = parseInt($content.css('padding-top'))+parseInt($content.css('padding-bottom')),
+					thisHeight = thisWindowHeight-thisHeaderHeight-thisFooterHeight-thisContentPadding;			
+					
 				return thisHeight;
 				
+				// set height of all panels (excluding popovers) to height of largest panel based on its contents
+			
+				// grab all panels except popovers
+				var $thisPage = typeof page == 'undefined' ? ':jqmData(show="first")' : '.ui-page-active',
+					$benchmarkPanels = $(':jqmData(panel="main"), :jqmData(panel="menu"), :jqmData(panel="fullwidth")');
 				
+					var t = 0,
+						pretop = 0,
+						s = 0;
+										
+					// on each	panel
+					$($benchmarkPanels).each(function () {						
+						
+						// run through child-div of relevant page = should be header/content/footer, grab their outerheight and sum up
+						$(this).find($thisPage).children('div').each(function () {							
+							pretop += $(this).outerHeight();
+							});
+												
+						// find largest panel active-page
+						if ( pretop > t ) {
+							t = pretop;
+							}						
+						});
+					
+					// get height of global header (which itself is positioned at top 0, so doesn't need any attention)
+					var s = $('.ui-header-global').outerHeight()+t;
+					
+					// set panel height to t - otherwise panel-height = 0 and fixed footers are stuck at top of the screen
+					$(':jqmData(panel="main"), :jqmData(panel="menu"), :jqmData(panel="fullwidth")').height(s);
+					
+				
+					
+				$(window).trigger('updatelayout');
+								
 			},
-		
+		*/
 		
 		framer: function () {
 			var self = $(this);
@@ -1066,8 +1099,11 @@
 		},
 		
 		panelHash: function( e, triggered, hash ) {
-
+				
+				console.log("panelHash fired");
 		
+			// make function public
+			$.mobile.multiview.panelHash = panelHash; 			
 		},
 		
 		_mainEventBindings: function () {
@@ -1114,14 +1150,13 @@
 					}
 				});
 			
-			// hashChange rountine
-			/* $(window).bind( "hashchange", function( e, triggered ) {				
-				self.panelHash( e, triggered, location.hash );
-				});			
-			*/
 			}	
+			
+			
 	});
 
+
+	
 // initialize
 var trigger = $( 'div:jqmData(role="page"):first' ).one( 'pagecreate',function(event){		
 	if ($('html').data('multi-init', 'Off')) {
