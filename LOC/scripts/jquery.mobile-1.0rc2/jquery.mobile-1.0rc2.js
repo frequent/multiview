@@ -86,26 +86,25 @@ $.widget = function( name, base, prototype ) {
 	$.widget.bridge( name, $[ namespace ][ name ] );
 };
 
-$.widget.bridge = function( name, object ) {	
+$.widget.bridge = function( name, object ) {
 	$.fn[ name ] = function( options ) {
 		var isMethodCall = typeof options === "string",
 			args = Array.prototype.slice.call( arguments, 1 ),
 			returnValue = this;
-			
+
 		// allow multiple hashes to be passed on init
 		options = !isMethodCall && args.length ?
 			$.extend.apply( null, [ true, options ].concat(args) ) :
 			options;
 
 		// prevent calls to internal methods
-		if ( isMethodCall && options.charAt( 0 ) === "_" ) {			
+		if ( isMethodCall && options.charAt( 0 ) === "_" ) {
 			return returnValue;
 		}
 
-		if ( isMethodCall ) {			
+		if ( isMethodCall ) {
 			this.each(function() {
 				var instance = $.data( this, name );
-				
 				if ( !instance ) {
 					throw "cannot call methods on " + name + " prior to initialization; " +
 						"attempted to call method '" + options + "'";
@@ -114,7 +113,7 @@ $.widget.bridge = function( name, object ) {
 					throw "no such method '" + options + "' for " + name + " widget instance";
 				}
 				var methodValue = instance[ options ].apply( instance, args );
-				if ( methodValue !== instance && methodValue !== undefined ) {					
+				if ( methodValue !== instance && methodValue !== undefined ) {
 					returnValue = methodValue;
 					return false;
 				}
@@ -122,7 +121,6 @@ $.widget.bridge = function( name, object ) {
 		} else {
 			this.each(function() {
 				var instance = $.data( this, name );
-				
 				if ( instance ) {
 					instance.option( options || {} )._init();
 				} else {
@@ -130,7 +128,7 @@ $.widget.bridge = function( name, object ) {
 				}
 			});
 		}
-				
+
 		return returnValue;
 	};
 };
@@ -308,7 +306,7 @@ $.widget( "mobile.widget", {
 		});
 
 		return options;
-		},
+	},
 
 	enhanceWithin: function( target ) {
 		// TODO remove dependency on the page widget for the keepNative.
@@ -1105,11 +1103,11 @@ $.event.special.tap = {
 // also handles swipeleft, swiperight
 $.event.special.swipe = {
 	scrollSupressionThreshold: 10, // More than this horizontal displacement, and we will suppress scrolling.
-	
+
 	durationThreshold: 1000, // More time than this, and it isn't a swipe.
-	
+
 	horizontalDistanceThreshold: 30,  // Swipe horizontal displacement must be more than this.
-	
+
 	verticalDistanceThreshold: 75,  // Swipe vertical displacement must be less than this.
 
 	setup: function() {
@@ -1202,6 +1200,7 @@ $.event.special.swipe = {
 		add: function( handleObj ) {
 			// Save a reference to the bound event handler.
 			var old_handler = handleObj.handler;
+
 
 			handleObj.handler = function( event ) {
 				// Modify event object, adding the .orientation property.
@@ -1785,7 +1784,7 @@ $.widget( "mobile.page", $.mobile.widget, {
 		autoInitializePage: true,
 
 		pushStateEnabled: true,
-				
+
 		// turn of binding to the native orientationchange due to android orientation behavior
 		orientationChangeEnabled: true,
 
@@ -2335,10 +2334,10 @@ $.widget( "mobile.page", $.mobile.widget, {
 	}
 
 	//remove active classes after page transition or error
-	function removeActiveLinkClass( forceRemoval ) {		
-		if( !!$activeClickedLink && ( !$activeClickedLink.closest( '.ui-page-active' ).length || forceRemoval ) ) {		
+	function removeActiveLinkClass( forceRemoval ) {
+		if( !!$activeClickedLink && ( !$activeClickedLink.closest( '.ui-page-active' ).length || forceRemoval ) ) {
 			$activeClickedLink.removeClass( $.mobile.activeBtnClass );
-		}		
+		}
 		$activeClickedLink = null;
 	}
 
@@ -2439,33 +2438,28 @@ $.widget( "mobile.page", $.mobile.widget, {
 	*/
 
 	//function for transitioning between two existing pages
-	function transitionPages( toPage, fromPage, transition, reverse ) {							
+	function transitionPages( toPage, fromPage, transition, reverse ) {
+
 		//get current scroll distance
 		var active	= $.mobile.urlHistory.getActive(),
 			touchOverflow = $.support.touchOverflow && $.mobile.touchOverflowEnabled,
-			toScroll = active.lastScroll || ( touchOverflow ? 0 : $.mobile.defaultHomeScroll ),					
-			screenHeight = getScreenHeight(),
-			// XXX FREQUENT: add closest panel
-			$closestPanel = toPage.closest('div:jqmData(role="panel")').jqmData('panel');
+			toScroll = active.lastScroll || ( touchOverflow ? 0 : $.mobile.defaultHomeScroll ),
+			screenHeight = getScreenHeight();
 
-		
-		// XXX - FREQUENT: block scrollTop if not in fullscreen mode and page transition is inside a popover
-		if ( !$('html').hasClass('ui-fullscreen-mode ') && $closestPanel != 'popover' ) {			
-			// Scroll to top, hide addr bar			
-			window.scrollTo( 0, $.mobile.defaultHomeScroll );
-			}
-			
-		if( fromPage ) {		
+		// Scroll to top, hide addr bar
+		window.scrollTo( 0, $.mobile.defaultHomeScroll );
+
+		if( fromPage ) {
 			//trigger before show/hide events
 			fromPage.data( "page" )._trigger( "beforehide", null, { nextPage: toPage } );
 		}
 
 		if( !touchOverflow){
 			toPage.height( screenHeight + toScroll );
-		}		
-		
+		}
+
 		toPage.data( "page" )._trigger( "beforeshow", null, { prevPage: fromPage || $( "" ) } );
-		
+
 		//clear page loader
 		$.mobile.hidePageLoadingMsg();
 
@@ -2477,14 +2471,10 @@ $.widget( "mobile.page", $.mobile.widget, {
 
 			//set page's scrollTop to remembered distance
 			if( toPage.is( ".ui-native-fixed" ) ){
-			
 				toPage.find( ".ui-content" ).scrollTop( toScroll );
-				
 			}
-			else {
-
+			else{
 				toPage.scrollTop( toScroll );
-				
 			}
 		}
 
@@ -2503,50 +2493,38 @@ $.widget( "mobile.page", $.mobile.widget, {
 			}
 
 			// Jump to top or prev scroll, sometimes on iOS the page has not rendered yet.
-			if( !touchOverflow ){	
-				// XXX - FREQUENT: block scrollTop if not in fullscreen mode and page transition is inside a popover to avoid jumping up
-				if ( !$('html').hasClass('ui-fullscreen-mode ') && toPage.closest('div:jqmData(role="panel")').jqmData('panel') != 'popover' ) {					
-					// Scroll to top, hide addr bar
-					$.mobile.silentScroll( toScroll );				
-					}	
-			}		
-			
+			if( !touchOverflow ){
+				$.mobile.silentScroll( toScroll );
+			}
+
 			//trigger show/hide events
 			if( fromPage ) {
 				if( !touchOverflow ){
 					fromPage.height( "" );
-				}											
-				// XXX FREQUENT: if toPage is an internal page (and if multiview-page is loaded as external page?) 
-				// it's a panel transition, so we need to block the pageHide event, because it will
-				// remove the multiview-page from the DOM and whiteout the screen
-				// TODO this only happens when the multiview page data-external-page="true" - check for this?	
-				// TODO allow page removal if external page within panel = panel cache management
-				if ( !$(toPage).jqmData('internal-page') 
-					//&& toPage.parents(":jqmData(role='page')").is(":jqmData(external-page='true')") 
-						) {  
-						
-					fromPage.data( "page" )._trigger( "hide", null, { nextPage: toPage } );
 				}
-			}				
-			
+
+				fromPage.data( "page" )._trigger( "hide", null, { nextPage: toPage } );
+			}
+
 			//trigger pageshow, define prevPage as either fromPage or empty jQuery obj
 			toPage.data( "page" )._trigger( "show", null, { prevPage: fromPage || $( "" ) } );
 		});
 
 		return promise;
-	}	
-		
-	// simply set the active page's minimum height to screen height, depending on orientation
-	function getScreenHeight(){			
-			var orientation = jQuery.event.special.orientationchange.orientation(),
-				port = orientation === "portrait",
-				winMin = port ? 480 : 320,
-				screenHeight = port ? screen.availHeight : screen.availWidth,
-				winHeight = Math.max( winMin, $( window ).height() ),
-				pageMin = Math.min( screenHeight, winHeight );				
-			return pageMin;
-			}	
-	
+	}
+
+	//simply set the active page's minimum height to screen height, depending on orientation
+	function getScreenHeight(){
+		var orientation 	= jQuery.event.special.orientationchange.orientation(),
+			port			= orientation === "portrait",
+			winMin			= port ? 480 : 320,
+			screenHeight	= port ? screen.availHeight : screen.availWidth,
+			winHeight		= Math.max( winMin, $( window ).height() ),
+			pageMin			= Math.min( screenHeight, winHeight );
+
+		return pageMin;
+	}
+
 	$.mobile.getScreenHeight = getScreenHeight;
 
 	//simply set the active page's minimum height to screen height, depending on orientation
@@ -2557,9 +2535,7 @@ $.widget( "mobile.page", $.mobile.widget, {
 		}
 		$( "." + $.mobile.activePageClass ).css( "min-height", getScreenHeight() );
 	}
-	
-	
-	
+
 	//shared page enhancements
 	function enhancePage( $page, role ) {
 		// If a role was specified, make sure the data-role attribute
@@ -2599,7 +2575,7 @@ $.widget( "mobile.page", $.mobile.widget, {
 
 	//default non-animation transition handler
 	$.mobile.noneTransitionHandler = function( name, reverse, $toPage, $fromPage ) {
-		if ( $fromPage ) {								
+		if ( $fromPage ) {
 			$fromPage.removeClass( $.mobile.activePageClass );
 		}
 		$toPage.addClass( $.mobile.activePageClass );
@@ -2629,12 +2605,12 @@ $.widget( "mobile.page", $.mobile.widget, {
 	};
 
 	$.mobile._bindPageRemove = function() {
-		var page = $(this);		
+		var page = $(this);
 
 		// when dom caching is not enabled or the page is embedded bind to remove the page on hide
-		if( !page.data("page").options.domCache			
-					&& page.is(":jqmData(external-page='true')") ) {
-			
+		if( !page.data("page").options.domCache
+				&& page.is(":jqmData(external-page='true')") ) {
+
 			page.bind( 'pagehide.remove', function() {
 				var $this = $( this ),
 					prEvent = new $.Event( "pageremove" );
@@ -2649,7 +2625,7 @@ $.widget( "mobile.page", $.mobile.widget, {
 	};
 
 	// Load a page into the DOM.
-	$.mobile.loadPage = function( url, options ) {		
+	$.mobile.loadPage = function( url, options ) {
 		// This function uses deferred notifications to let callers
 		// know when the page is done loading, or if an error has occurred.
 		var deferred = $.Deferred(),
@@ -2660,7 +2636,7 @@ $.widget( "mobile.page", $.mobile.widget, {
 
 			// The DOM element for the page after it has been loaded.
 			page = null,
-			
+
 			// If the reloadPage option is true, and the page is already
 			// in the DOM, dupCachedPage will be set to the page element
 			// so that it can be removed after the new version of the
@@ -2730,9 +2706,9 @@ $.widget( "mobile.page", $.mobile.widget, {
 		// If the page we are interested in is already in the DOM,
 		// and the caller did not indicate that we should force a
 		// reload of the file, we are done. Otherwise, track the
-		// existing page as a duplicated.		
+		// existing page as a duplicated.
 		if ( page.length ) {
-			if ( !settings.reloadPage ) {				
+			if ( !settings.reloadPage ) {
 				enhancePage( page, settings.role );
 				deferred.resolve( absUrl, options, page );
 				return deferred.promise();
@@ -2769,17 +2745,17 @@ $.widget( "mobile.page", $.mobile.widget, {
 					$.mobile.hidePageLoadingMsg();
 				};
 		}
-		
+
 		if ( !( $.mobile.allowCrossDomainPages || path.isSameDomain( documentUrl, absUrl ) ) ) {
 			deferred.reject( absUrl, options );
-		} else {			
+		} else {
 			// Load the new page.
 			$.ajax({
 				url: fileUrl,
 				type: settings.type,
 				data: settings.data,
 				dataType: "html",
-				success: function( html ) {					
+				success: function( html ) {
 					//pre-parse html to check for a data-url,
 					//use it as the new fileUrl, base path, etc
 					var all = $( "<div></div>" ),
@@ -2800,7 +2776,7 @@ $.widget( "mobile.page", $.mobile.widget, {
 							&& RegExp.$1 ) {
 						url = fileUrl = path.getFilePath( RegExp.$1 );
 					}
-					
+
 					if ( base ) {
 						base.set( fileUrl );
 					}
@@ -2845,7 +2821,7 @@ $.widget( "mobile.page", $.mobile.widget, {
 						.attr( "data-" + $.mobile.ns + "url", path.convertUrlToDataUrl( fileUrl ) )
 						.attr( "data-" + $.mobile.ns + "external-page", true )
 						.appendTo( settings.pageContainer );
-					
+
 					// wait for page creation to leverage options defined on widget
 					page.one( 'pagecreate', $.mobile._bindPageRemove );
 
@@ -2930,19 +2906,20 @@ $.widget( "mobile.page", $.mobile.widget, {
 	$.mobile.changePage = function( toPage, options ) {
 		// If we are in the midst of a transition, queue the current request.
 		// We'll call changePage() once we're done with the current transition to
-		// service the request.		
+		// service the request.
 		if( isPageTransitioning ) {
 			pageTransitionQueue.unshift( arguments );
 			return;
 		}
 
 		var settings = $.extend( {}, $.mobile.changePage.defaults, options );
-		
+
 		// Make sure we have a pageContainer to work with.
-		settings.pageContainer = settings.pageContainer || $.mobile.pageContainer;				
-		// Make sure we have a fromPage.		
+		settings.pageContainer = settings.pageContainer || $.mobile.pageContainer;
+
+		// Make sure we have a fromPage.
 		settings.fromPage = settings.fromPage || $.mobile.activePage;
-		
+
 		var mpc = settings.pageContainer,
 			pbcEvent = new $.Event( "pagebeforechange" ),
 			triggerData = { toPage: toPage, options: settings };
@@ -2970,7 +2947,7 @@ $.widget( "mobile.page", $.mobile.widget, {
 		// to make sure it is loaded into the DOM. We'll listen
 		// to the promise object it returns so we know when
 		// it is done loading or if an error ocurred.
-		if ( typeof toPage == "string" ) {			
+		if ( typeof toPage == "string" ) {
 			$.mobile.loadPage( toPage, settings )
 				.done(function( url, options, newPage, dupCachedPage ) {
 					isPageTransitioning = false;
@@ -2989,7 +2966,7 @@ $.widget( "mobile.page", $.mobile.widget, {
 				});
 			return;
 		}
-		
+
 		// If we are going to the first-page of the application, we need to make
 		// sure settings.dataUrl is set to the application document url. This allows
 		// us to avoid generating a document url with an id hash in the case where the
@@ -2999,7 +2976,7 @@ $.widget( "mobile.page", $.mobile.widget, {
 		}
 
 		// The caller passed us a real page DOM element. Update our
-		// internal state and then trigger a transition to the page.		
+		// internal state and then trigger a transition to the page.
 		var fromPage = settings.fromPage,
 			url = ( settings.dataUrl && path.convertUrlToDataUrl( settings.dataUrl ) ) || toPage.jqmData( "url" ),
 			// The pageUrl var is usually the same as url, except when url is obscured as a dialog url. pageUrl always contains the file path
@@ -3010,7 +2987,7 @@ $.widget( "mobile.page", $.mobile.widget, {
 			historyDir = 0,
 			pageTitle = document.title,
 			isDialog = settings.role === "dialog" || toPage.jqmData( "role" ) === "dialog";
-		
+
 		// By default, we prevent changePage requests when the fromPage and toPage
 		// are the same element, but folks that generate content manually/dynamically
 		// and reuse pages want to be able to transition to the same page. To allow
@@ -3062,20 +3039,20 @@ $.widget( "mobile.page", $.mobile.widget, {
 			url = ( active.url || "" ) + dialogHashKey;
 		}
 
-		// Set the location hash.		
+		// Set the location hash.
 		if( settings.changeHash !== false && url ) {
 			//disable hash listening temporarily
 			urlHistory.ignoreNextHashChange = true;
 			//update hash and history
 			path.set( url );
 		}
-		
+
 		//if title element wasn't found, try the page div data attr too
 		var newPageTitle = toPage.jqmData( "title" ) || toPage.children(":jqmData(role='header')").find(".ui-title" ).getEncodedText();
 		if( !!newPageTitle && pageTitle == document.title ) {
 			pageTitle = newPageTitle;
 		}
-		
+
 		// Make sure we have a transition defined.
 		settings.transition = settings.transition
 			|| ( ( historyDir && !activeIsInitialPage ) ? active.transition : undefined )
@@ -3089,19 +3066,18 @@ $.widget( "mobile.page", $.mobile.widget, {
 		//set page title
 		document.title = urlHistory.getActive().title;
 
-		//set "toPage" as activePage		
+		//set "toPage" as activePage
 		$.mobile.activePage = toPage;
 
 		// If we're navigating back in the URL history, set reverse accordingly.
-		settings.reverse = settings.reverse || historyDir < 0;				
+		settings.reverse = settings.reverse || historyDir < 0;
 
-		
 		transitionPages( toPage, fromPage, settings.transition, settings.reverse )
 			.done(function() {
 				removeActiveLinkClass();
 
 				//if there's a duplicateCachedPage, remove it from the DOM now that it's hidden
-				if ( settings.duplicateCachedPage ) {					
+				if ( settings.duplicateCachedPage ) {
 					settings.duplicateCachedPage.remove();
 				}
 
@@ -3155,244 +3131,212 @@ $.widget( "mobile.page", $.mobile.widget, {
 		return path.makeUrlAbsolute( url, base);
 	}
 
+
 	//The following event bindings should be bound after mobileinit has been triggered
-	$.mobile._registerInternalEvents = function(){ 
-	
+	//the following function is called in the init file
+	$.mobile._registerInternalEvents = function(){
+
 		//bind to form submit events, handle with Ajax
-        $("form").live('submit', function(event){
-          var $this = $( this );
-          if( !$.mobile.ajaxEnabled ||
-              $this.is( ":jqmData(ajax='false')" ) ){ 
-					return; 
+		$( "form" ).live('submit', function( event ) {
+			var $this = $( this );
+			if( !$.mobile.ajaxEnabled ||
+				$this.is( ":jqmData(ajax='false')" ) ) {
+					return;
 				}
 
-          var type = $this.attr("method"),
-              target = $this.attr("target"),
-              url = $this.attr( "action" );
-		  
-		  
-		  // XXX FREQUENT - REMOVE when plugin is ready - define currentPanel and active Page
-          // var   $currPanel=$this.closest('div:jqmData(role="panel")'),
-		  //		$currPanelActivePage=$currPanel.children('div.'+$.mobile.activePageClass);
-		  
-		  
-          // If no action is specified, browsers default to using the
-          // URL of the document containing the form. Since we dynamically
-          // pull in pages from external documents, the form should submit
-          // to the URL for the source document of the page containing
-          // the form.
-          if ( !url ) {
-            // Get the @data-url for the page containing the form.
-            url = getClosestBaseUrl( $this );
-            if ( url === documentBase.hrefNoHash ) {
-              // The url we got back matches the document base,
-              // which means the page must be an internal/embedded page,
-              // so default to using the actual document url as a browser
-              // would.
-              url = documentUrl.hrefNoSearch;
-            }
-          }
+			var type = $this.attr( "method" ),
+				target = $this.attr( "target" ),
+				url = $this.attr( "action" );
 
-          url = path.makeUrlAbsolute( url, getClosestBaseUrl($this) );
+			// If no action is specified, browsers default to using the
+			// URL of the document containing the form. Since we dynamically
+			// pull in pages from external documents, the form should submit
+			// to the URL for the source document of the page containing
+			// the form.
+			if ( !url ) {
+				// Get the @data-url for the page containing the form.
+				url = getClosestBaseUrl( $this );
+				if ( url === documentBase.hrefNoHash ) {
+					// The url we got back matches the document base,
+					// which means the page must be an internal/embedded page,
+					// so default to using the actual document url as a browser
+					// would.
+					url = documentUrl.hrefNoSearch;
+				}
+			}
 
-          //external submits use regular HTTP
-          if( path.isExternal( url ) || target ) {
-            return;
-          }
+			url = path.makeUrlAbsolute(  url, getClosestBaseUrl($this) );
 
-		  /*
-          // XXX FREQUENT - REMOVE when plugin is ready, leftovers
-          $.mobile.activePage=$currPanelActivePage;
-          $.mobile.pageContainer=$currPanel;
-		  */
-		  
-		  // XXX FREQUENT - added option pageContainer, by default (this was initially set 
-		  // to $currPanel, but since this section now only handles JQM regular transitions
-		  // it can be set to $mobile.pageContainer with panel transitions being handled by
-		  // the plugin only
-          $.mobile.changePage(
-              url,
-              {
-                type: type && type.length && type.toLowerCase() || "get",
-                data: $this.serialize(),
-                transition: $this.jqmData("transition"),
-                direction: $this.jqmData("direction"),
-                reloadPage: true,
-                pageContainer:$.mobile.pageContainer
-              }
-          );
-          event.preventDefault();
-        });
+			//external submits use regular HTTP
+			if( path.isExternal( url ) || target ) {
+				return;
+			}
 
-        //add active state on vclick
-        $( document ).bind( "vclick", function( event ) {
+			$.mobile.changePage(
+				url,
+				{
+					type:		type && type.length && type.toLowerCase() || "get",
+					data:		$this.serialize(),
+					transition:	$this.jqmData( "transition" ),
+					direction:	$this.jqmData( "direction" ),
+					reloadPage:	true
+				}
+			);
+			event.preventDefault();
+		});
+
+		//add active state on vclick
+		$( document ).bind( "vclick", function( event ) {
 			// if this isn't a left click we don't care. Its important to note
 			// that when the virtual event is generated it will create
 			if ( event.which > 1 ){
 				return;
 			}
-          var link = findClosestLink( event.target );
-          if ( link ) {
-            if ( path.parseUrl( link.getAttribute( "href" ) || "#" ).hash !== "#" ) {
-			  // TODO: leaving this on, does not remove active class from panel pages slides out
-			  // but also leaves on buttons. Turn off elsewhere!
-			  //removeActiveLinkClass( true );
-              $activeClickedLink = $( link ).closest( ".ui-btn" ).not( ".ui-disabled" );
-			  $activeClickedLink.addClass( $.mobile.activeBtnClass );
-              $( "." + $.mobile.activePageClass + " .ui-btn" ).not( link ).blur();
-            }
-          }
-        });
 
-        // click routing - direct to HTTP or Ajax, accordingly
-        $(document).bind( "click", function(event) {
-          var link = findClosestLink(event.target);         
-		  
-		  // If there is no link associated with the click or its not a left
+			var link = findClosestLink( event.target );
+			if ( link ) {
+				if ( path.parseUrl( link.getAttribute( "href" ) || "#" ).hash !== "#" ) {
+					removeActiveLinkClass( true );
+					$activeClickedLink = $( link ).closest( ".ui-btn" ).not( ".ui-disabled" );
+					$activeClickedLink.addClass( $.mobile.activeBtnClass );
+					$( "." + $.mobile.activePageClass + " .ui-btn" ).not( link ).blur();
+				}
+			}
+		});
+
+		// click routing - direct to HTTP or Ajax, accordingly
+		$( document ).bind( "click", function( event ) {
+			var link = findClosestLink( event.target );
+
+			// If there is no link associated with the click or its not a left
 			// click we want to ignore the click
-		  if ( !link || event.which > 1) {
+			if ( !link || event.which > 1) {
 				return;
 			}
 
-          var $link = $(link),
-              //remove active link class if external (then it won't be there if you come back)
-              httpCleanup = function(){
-                window.setTimeout( function() { removeActiveLinkClass( true ); }, 200 );
-              };		  
-			  			  
-          //if there's a data-rel=back attr, go back in history
-          if( $link.is( ":jqmData(rel='back')" ) ) {
-            window.history.back();
-            return false;
-          }
+			var $link = $( link ),
+				//remove active link class if external (then it won't be there if you come back)
+				httpCleanup = function(){
+					window.setTimeout( function() { removeActiveLinkClass( true ); }, 200 );
+				};
 
-		 var baseUrl = getClosestBaseUrl( $link ),
+			//if there's a data-rel=back attr, go back in history
+			if( $link.is( ":jqmData(rel='back')" ) ) {
+				window.history.back();
+				return false;
+			}
 
-              //get href, if defined, otherwise default to empty hash
-              href = path.makeUrlAbsolute( $link.attr( "href" ) || "#", baseUrl );
-  
-          //if ajax is disabled, exit early
-          if( !$.mobile.ajaxEnabled && !path.isEmbeddedPage( href ) ){
-            httpCleanup();
-            //use default click handling
-            return;
-          }
-          // XXX_jblas: Ideally links to application pages should be specified as
-          // an url to the application document with a hash that is either
-          // the site relative path or id to the page. But some of the
-          // internal code that dynamically generates sub-pages for nested
-          // lists and select dialogs, just write a hash in the link they
-          // create. This means the actual URL path is based on whatever
-          // the current value of the base tag is at the time this code
-          // is called. For now we are just assuming that any url with a
-          // hash in it is an application page reference.
-          if ( href.search( "#" ) != -1 ) {
-            href = href.replace( /[^#]*#/, "" );
-            if ( !href ) {
-              //link was an empty hash meant purely
-              //for interaction, so we ignore it.
-              event.preventDefault();
-              return;
-            } else if ( path.isPath( href ) ) {
-              //we have apath so make it the href we want to load.
-              href = path.makeUrlAbsolute( href, baseUrl );
-            } else {
-              //we have a simple id so use the documentUrl as its base.
-              href = path.makeUrlAbsolute( "#" + href, documentUrl.hrefNoHash );
-            }
-          }
-          
-          // Should we handle this link, or let the browser deal with it?
-          var useDefaultUrlHandling = $link.is( "[rel='external']" ) || $link.is( ":jqmData(ajax='false')" ) || $link.is( "[target]" ),
-		      // Some embedded browsers, like the web view in Phone Gap, allow cross-domain XHR
-              // requests if the document doing the request was loaded via the file:// protocol.
-              // This is usually to allow the application to "phone home" and fetch app specific
-              // data. We normally let the browser handle external/cross-domain urls, but if the
-              // allowCrossDomainPages option is true, we will allow cross-domain http/https
-              // requests to go through our page loading logic.
-              isCrossDomainPageLoad = ( $.mobile.allowCrossDomainPages && documentUrl.protocol === "file:" && href.search( /^https?:/ ) != -1 ),
+			var baseUrl = getClosestBaseUrl( $link ),
 
-              //check for protocol or rel and its not an embedded page
-              //TODO overlap in logic from isExternal, rel=external check should be
-              // moved into more comprehensive isExternalLink
-              isExternal = useDefaultUrlHandling || ( path.isExternal( href ) && !isCrossDomainPageLoad );		
-														
-          if( isExternal ) {
-            httpCleanup();
-            //use default click handling
-            return;
-          }
+				//get href, if defined, otherwise default to empty hash
+				href = path.makeUrlAbsolute( $link.attr( "href" ) || "#", baseUrl );
 
-          //use ajax		 
-          var transition = $link.jqmData( "transition" ),
-              direction = $link.jqmData("direction"),
-              reverse = (direction && direction === "reverse") ||
-                        // deprecated - remove by 1.0
-                        $link.jqmData( "back" ),
-						
-			//this may need to be more specific as we use data-rel more
-			role = $link.attr( "data-" + $.mobile.ns + "rel" ) || undefined;
-			
-			// XXX FREQUENT - check for panel-transitions and changePage only if no data-target is specified
-			var $targetPanel=$link.jqmData('target');			
-			if (!$targetPanel) {				
-				console.log("in here?");
-				$.mobile.changePage( href, { transition: transition, reverse: reverse, role: role, pageContainer:$.mobile.pageContainer } );
-				event.preventDefault();
-			}						
-        });
+			//if ajax is disabled, exit early
+			if( !$.mobile.ajaxEnabled && !path.isEmbeddedPage( href ) ){
+				httpCleanup();
+				//use default click handling
+				return;
+			}
 
-		// prefetch pages when anchors with data-prefetch are encountered
-		// XXX FREQUENT - TODO: by Asyraf, check if working like this
+			// XXX_jblas: Ideally links to application pages should be specified as
+			//            an url to the application document with a hash that is either
+			//            the site relative path or id to the page. But some of the
+			//            internal code that dynamically generates sub-pages for nested
+			//            lists and select dialogs, just write a hash in the link they
+			//            create. This means the actual URL path is based on whatever
+			//            the current value of the base tag is at the time this code
+			//            is called. For now we are just assuming that any url with a
+			//            hash in it is an application page reference.
+			if ( href.search( "#" ) != -1 ) {
+				href = href.replace( /[^#]*#/, "" );
+				if ( !href ) {
+					//link was an empty hash meant purely
+					//for interaction, so we ignore it.
+					event.preventDefault();
+					return;
+				} else if ( path.isPath( href ) ) {
+					//we have apath so make it the href we want to load.
+					href = path.makeUrlAbsolute( href, baseUrl );
+				} else {
+					//we have a simple id so use the documentUrl as its base.
+					href = path.makeUrlAbsolute( "#" + href, documentUrl.hrefNoHash );
+				}
+			}
+
+				// Should we handle this link, or let the browser deal with it?
+			var useDefaultUrlHandling = $link.is( "[rel='external']" ) || $link.is( ":jqmData(ajax='false')" ) || $link.is( "[target]" ),
+
+				// Some embedded browsers, like the web view in Phone Gap, allow cross-domain XHR
+				// requests if the document doing the request was loaded via the file:// protocol.
+				// This is usually to allow the application to "phone home" and fetch app specific
+				// data. We normally let the browser handle external/cross-domain urls, but if the
+				// allowCrossDomainPages option is true, we will allow cross-domain http/https
+				// requests to go through our page loading logic.
+				isCrossDomainPageLoad = ( $.mobile.allowCrossDomainPages && documentUrl.protocol === "file:" && href.search( /^https?:/ ) != -1 ),
+
+				//check for protocol or rel and its not an embedded page
+				//TODO overlap in logic from isExternal, rel=external check should be
+				//     moved into more comprehensive isExternalLink
+				isExternal = useDefaultUrlHandling || ( path.isExternal( href ) && !isCrossDomainPageLoad );
+
+			if( isExternal ) {
+				httpCleanup();
+				//use default click handling
+				return;
+			}
+
+			//use ajax
+			var transition = $link.jqmData( "transition" ),
+				direction = $link.jqmData( "direction" ),
+				reverse = ( direction && direction === "reverse" ) ||
+							// deprecated - remove by 1.0
+							$link.jqmData( "back" ),
+
+				//this may need to be more specific as we use data-rel more
+				role = $link.attr( "data-" + $.mobile.ns + "rel" ) || undefined;
+
+			$.mobile.changePage( href, { transition: transition, reverse: reverse, role: role } );
+			event.preventDefault();
+		});
+
+		//prefetch pages when anchors with data-prefetch are encountered
 		$( ".ui-page" ).live( "pageshow.prefetch", function() {
 			var urls = [];
-			var $thisPageContainer = $(this).closest('div:jqmData(role="panel")');
 			$( this ).find( "a:jqmData(prefetch)" ).each(function(){
-
 				var $link = $(this),
 					url = $link.attr( "href" );
 
 				if ( url && $.inArray( url, urls ) === -1 ) {
 					urls.push( url );
 
-				var panel = $(this).jqmData('panel'),
-				container = panel.length? $('div:jqmData(id="'+panel+'")') : $thisPageContainer;
-				$.mobile.loadPage( url, {pageContainer: container, role: $link.attr("data-" + $.mobile.ns + "rel")} );
+					$.mobile.loadPage( url, {role: $link.attr("data-" + $.mobile.ns + "rel")} );
 				}
 			});
 		});
-		
-		$.mobile._handleHashChange = function( hash ) {			
-			
-			//find first page via hash					
+
+		$.mobile._handleHashChange = function( hash ) {
+			//find first page via hash
 			var to = path.stripHash( hash ),
-				
-				// XXX FREQUENT: panel-transition routine, activates if panels on the page with data-hash="history"			
-				$panels = $('div:jqmData(hash="history")'),
-				n = $panels.length,						
-				
-				//transition is false if it's the first page, undefined otherwise (and may be overridden by default)	
-				transition = ( $.mobile.urlHistory.stack.length === 0 || n == 0 ) ? "none" : undefined,
+				//transition is false if it's the first page, undefined otherwise (and may be overridden by default)
+				transition = $.mobile.urlHistory.stack.length === 0 ? "none" : undefined,
 
 				// default options for the changPage calls made after examining the current state
 				// of the page and the hash
-				// XXX FREQUENT: added page container as new option
 				changePageOptions = {
 					transition: transition,
 					changeHash: false,
-					fromHashChange: true,
-					pageContainer: null,
-					};
-		
+					fromHashChange: true
+				};
+
 			//if listening is disabled (either globally or temporarily), or it's a dialog hash
 			if( !$.mobile.hashListeningEnabled || urlHistory.ignoreNextHashChange ) {
 				urlHistory.ignoreNextHashChange = false;
 				return;
 			}
-			
+
 			// special case for dialogs
 			if( urlHistory.stack.length > 1 && to.indexOf( dialogHashKey ) > -1 ) {
-				
+
 				// If current active page is not a dialog skip the dialog and continue
 				// in the same direction
 				if(!$.mobile.activePage.is( ".ui-dialog" )) {
@@ -3430,7 +3374,7 @@ $.widget( "mobile.page", $.mobile.widget, {
 					});
 				}
 			}
-					
+
 			//if to is defined, load it
 			if ( to ) {
 				// At this point, 'to' can be one of 3 things, a cached page element from
@@ -3439,31 +3383,23 @@ $.widget( "mobile.page", $.mobile.widget, {
 				// since the hashchange could've been the result of a forward/backward navigation
 				// that crosses from an external page/dialog to an internal page/dialog.
 				to = ( typeof to === "string" && !path.isPath( to ) ) ? ( path.makeUrlAbsolute( '#' + to, documentBase ) ) : to;
-				
-				// XXX FREQUENT - only continue if no panels-history or it's a dialog
-				if(!n || n>0 && ( urlHistory.stack.length > 1 && to.indexOf( dialogHashKey ) > -1) ){
-					$.mobile.changePage( to, changePageOptions );
-					}
-				} else {
-					//there's no hash, go to the first page in the dom				
-					// XXX FREQUENT - only continue if no panels-history or it's a dialog
-					if(!n || n>0 && ( urlHistory.stack.length > 1 && to.indexOf( dialogHashKey ) > -1) ){						
-						$.mobile.changePage( $.mobile.firstPage, changePageOptions );
-						}
-				}
+				$.mobile.changePage( to, changePageOptions );
+			}	else {
+				//there's no hash, go to the first page in the dom
+				$.mobile.changePage( $.mobile.firstPage, changePageOptions );
+			}
 		};
 
-        //hashchange event handler
-        $window.bind( "hashchange", function( e, triggered ) {
-          $.mobile._handleHashChange( location.hash );
-        });
+		//hashchange event handler
+		$window.bind( "hashchange", function( e, triggered ) {
+			$.mobile._handleHashChange( location.hash );
+		});
 
 		//set page min-heights to be device specific
 		$( document ).bind( "pageshow", resetActivePageHeight );
 		$( window ).bind( "throttledresize", resetActivePageHeight );
 
-      };//_registerInternalEvents callback
-
+	};//_registerInternalEvents callback
 
 })( jQuery );
 /*
@@ -3535,6 +3471,7 @@ $.widget( "mobile.page", $.mobile.widget, {
 				hash = location.hash,
 				isPath = $.mobile.path.isPath( hash ),
 				resolutionUrl = isPath ? location.href : $.mobile.getDocumentUrl();
+			hash = isPath ? hash.replace( "#", "" ) : hash;
 
 			// propulate the hash when its not available
 			state = self.state();
@@ -3620,7 +3557,7 @@ function css3TransitionHandler( name, reverse, $to, $from ) {
 
 			$to.add( $from ).removeClass( "out in reverse " + name );
 
-			if ( $from && $from[ 0 ] !== $to[ 0 ] ) {				
+			if ( $from && $from[ 0 ] !== $to[ 0 ] ) {
 				$from.removeClass( $.mobile.activePageClass );
 			}
 
@@ -3674,7 +3611,6 @@ $.mobile.page.prototype.options.degradeInputs = {
 	url: false,
 	week: false
 };
-
 
 
 //auto self-init widgets
@@ -3795,23 +3731,23 @@ $( $.mobile.dialog.prototype.options.initSelector ).live( "pagecreate", function
 
 (function( $, undefined ) {
 
-$.mobile.page.prototype.options.backBtnText		= "Back";
-$.mobile.page.prototype.options.addBackBtn		= false;
-$.mobile.page.prototype.options.backBtnTheme	= null;
-$.mobile.page.prototype.options.headerTheme		= "a";
-$.mobile.page.prototype.options.footerTheme		= "a";
-$.mobile.page.prototype.options.contentTheme	= null;
+$.mobile.page.prototype.options.backBtnText  = "Back";
+$.mobile.page.prototype.options.addBackBtn   = false;
+$.mobile.page.prototype.options.backBtnTheme = null;
+$.mobile.page.prototype.options.headerTheme  = "a";
+$.mobile.page.prototype.options.footerTheme  = "a";
+$.mobile.page.prototype.options.contentTheme = null;
 
 $( ":jqmData(role='page'), :jqmData(role='dialog')" ).live( "pagecreate", function( e ) {
 	
-	var $page		= $( this ),
-		o			= $page.data( "page" ).options,
-		pageTheme	= o.theme;
+	var $page = $( this ),
+		o = $page.data( "page" ).options,
+		pageTheme = o.theme;
 	
 	$( ":jqmData(role='header'), :jqmData(role='footer'), :jqmData(role='content')", this ).each(function() {
-		var $this	= $( this ),
-			role	= $this.jqmData( "role" ),
-			theme	= $this.jqmData( "theme" ),
+		var $this = $( this ),
+			role = $this.jqmData( "role" ),
+			theme = $this.jqmData( "theme" ),
 			$headeranchors,
 			leftbtn,
 			rightbtn,
@@ -3827,7 +3763,6 @@ $( ":jqmData(role='page'), :jqmData(role='dialog')" ).live( "pagecreate", functi
 			$this
 				//add theme class
 				.addClass( "ui-bar-" + thisTheme )
-
 				// Add ARIA role
 				.attr( "role", role === "header" ? "banner" : "contentinfo" );
 
@@ -3837,22 +3772,15 @@ $( ":jqmData(role='page'), :jqmData(role='dialog')" ).live( "pagecreate", functi
 			rightbtn = $headeranchors.hasClass( "ui-btn-right" );
 
 			leftbtn = leftbtn || $headeranchors.eq( 0 ).not( ".ui-btn-right" ).addClass( "ui-btn-left" ).length;
-
-
 			
 			rightbtn = rightbtn || $headeranchors.eq( 1 ).addClass( "ui-btn-right" ).length;
-
-
 			
 			// Auto-add back btn on pages beyond first view
-
 			if ( o.addBackBtn && 
 				role === "header" &&
 				$( ".ui-page" ).length > 1 &&
 				$this.jqmData( "url" ) !== $.mobile.path.stripHash( location.hash ) &&
 				!leftbtn ) {
-
-
 
 				backBtn = $( "<a href='#' class='ui-btn-left' data-"+ $.mobile.ns +"rel='back' data-"+ $.mobile.ns +"icon='arrow-l'>"+ o.backBtnText +"</a>" )
 					// If theme is provided, override default inheritance
@@ -3871,14 +3799,12 @@ $( ":jqmData(role='page'), :jqmData(role='dialog')" ).live( "pagecreate", functi
 				});
 
 		} else if ( role === "content" ) {
-
 			if (theme || o.contentTheme) {
 			    $this.addClass( "ui-body-" + ( theme || o.contentTheme ) );
 			}
 
 			// Add ARIA role
 			$this.attr( "role", "main" );
-
 		}
 	});
 });
@@ -4442,7 +4368,7 @@ $.widget( "mobile.listview", $.mobile.widget, {
 		}).listview();
 
 		// on pagehide, remove any nested pages along with the parent page, as long as they aren't active
-		// and aren't embedded		
+		// and aren't embedded
 		if( hasSubPages &&
 			parentPage.is( ":jqmData(external-page='true')" ) &&
 			parentPage.data("page").options.domCache === false ) {
@@ -4454,7 +4380,7 @@ $.widget( "mobile.listview", $.mobile.widget, {
 					npURL = nextPage.jqmData( "url" );
 					if( npURL.indexOf( parentUrl + "&" + $.mobile.subPageUrlKey ) !== 0 ){
 						self.childPages().remove();
-						parentPage.remove();						
+						parentPage.remove();
 					}
 				}
 			};
@@ -4594,7 +4520,7 @@ $( ":jqmData(role='listview')" ).live( "listviewcreate", function() {
 	wrapper.bind( "submit", function() {
 		return false;
 	})
-	.insertBefore(list);
+	.insertBefore( list );
 });
 
 })( jQuery );/*
@@ -4673,7 +4599,6 @@ $.widget( "mobile.checkboxradio", $.mobile.widget, {
 		label.bind({
 			vmouseover: function( event ) {
 				if ( $( this ).parent().is( ".ui-disabled" ) ) {
-
 					event.stopPropagation();
 				}
 			},
@@ -4744,11 +4669,12 @@ $.widget( "mobile.checkboxradio", $.mobile.widget, {
 
 	//returns either a set of radios with the same name attribute, or a single checkbox
 	_getInputSet: function(){
-        if(this.inputtype == "checkbox") {
-            return this.element;
-        }
-        return this.element.closest( "form,fieldset,:jqmData(role='page')" )
-				.find( "input[name='"+ this.element.attr( "name" ) +"'][type='"+ this.inputtype +"']" );
+		if(this.inputtype == "checkbox") {
+			return this.element;
+		}
+
+		return this.element.closest( "form,fieldset,:jqmData(role='page')" )
+			.find( "input[name='"+ this.element.attr( "name" ) +"'][type='"+ this.inputtype +"']" );
 	},
 
 	_updateAll: function() {
@@ -4801,8 +4727,6 @@ $.widget( "mobile.checkboxradio", $.mobile.widget, {
 //auto self-init widgets
 $( document ).bind( "pagecreate create", function( e ){
 	$.mobile.checkboxradio.prototype.enhanceWithin( e.target );
-
-
 });
 
 })( jQuery );
@@ -4846,7 +4770,6 @@ $.widget( "mobile.button", $.mobile.widget, {
 				shadow: o.shadow,
 				iconshadow: o.iconshadow
 			})
-			.insertBefore( $el )
 			.append( $el.addClass( "ui-btn-hidden" ) );
 
 		type = $el.attr( "type" );
@@ -4855,7 +4778,7 @@ $.widget( "mobile.button", $.mobile.widget, {
 		// Add hidden input during submit if input type="submit" has a name.
 		if ( type !== "button" && type !== "reset" && name ) {
 				$el.bind( "vclick", function() {
-					// Add hidden input if it doesnâ€™t already exist.
+					// Add hidden input if it doesn’t already exist.
 					if( $buttonPlaceholder === undefined ) {
 						$buttonPlaceholder = $( "<input>", {
 									type: "hidden",
@@ -4899,8 +4822,6 @@ $.widget( "mobile.button", $.mobile.widget, {
 //auto self-init widgets
 $( document ).bind( "pagecreate create", function( e ){
 	$.mobile.button.prototype.enhanceWithin( e.target );
-
-
 });
 
 })( jQuery );/*
@@ -5118,7 +5039,7 @@ $.widget( "mobile.slider", $.mobile.widget, {
 	},
 
 	refresh: function( val, isfromControl, preventInputUpdate ) {
-		
+
 		if ( this.options.disabled || this.element.attr('disabled')) { 
 			this.slider.addClass('ui-disabled');
 			return;
@@ -5347,7 +5268,7 @@ $.widget( "mobile.textinput", $.mobile.widget, {
 			}
 		}
 	},
-	
+
 	disable: function(){
 		( this.element.attr( "disabled", true ).is( "[type='search'],:jqmData(type='search')" ) ?
 			this.element.parent() : this.element ).addClass( "ui-disabled" );
@@ -5361,11 +5282,7 @@ $.widget( "mobile.textinput", $.mobile.widget, {
 
 //auto self-init widgets
 $( document ).bind( "pagecreate create", function( e ){
-
 	$.mobile.textinput.prototype.enhanceWithin( e.target );
-
-
-
 });
 
 })( jQuery );
@@ -5569,7 +5486,7 @@ $( document ).bind( "pagecreate create", function( e ){
 					// to allow for the parent page removal from actions other than the use
 					// of a dialog sized custom select
 					//
-					// doing this here provides for the back button on the custom select dialog			
+					// doing this here provides for the back button on the custom select dialog
 					$.mobile._bindPageRemove.call( self.thisPage );
 				});
 
@@ -6350,8 +6267,7 @@ $.mobile.fixedToolbars = (function() {
 		autoHideMode = false,
 		showDelay = 100,
 		ignoreTargets = "a,input,textarea,select,button,label,.ui-header-fixed,.ui-footer-fixed",
-		/* XXX FREQUENT - add fixed-element top and bottom mimicing fixed header and footer  */						
-		toolbarSelector = ".ui-header-fixed, .ui-element-fixed-top, .ui-element-fixed-bottom, .ui-footer-fixed:not(.ui-footer-duplicate):last",
+		toolbarSelector = ".ui-header-fixed:first, .ui-footer-fixed:not(.ui-footer-duplicate):last",
 		// for storing quick references to duplicate footers
 		supportTouch = $.support.touch,
 		touchStartEvent = supportTouch ? "touchstart" : "mousedown",
@@ -6499,41 +6415,39 @@ $.mobile.fixedToolbars = (function() {
 	//
 	// TODO: We'll need to get rid of getOffsetTop() once a fix gets folded into core.
 
-	function getOffsetTop( ele ) {		
+	function getOffsetTop( ele ) {
 		var top = 0,
 			op, body;
-		
+
 		if ( ele ) {
 			body = document.body;
 			op = ele.offsetParent;
 			top = ele.offsetTop;
-			
+
 			while ( ele && ele != body ) {
 				top += ele.scrollTop || 0;
+
 				if ( ele == op ) {
 					top += op.offsetTop;
 					op = ele.offsetParent;
 				}
+
 				ele = ele.parentNode;
 			}
-		}			
+		}
 		return top;
 	}
 
-	function setTop( el ) {		
-		var fromTop = $(window).scrollTop(),			
-			// XXX FREQUENT: need to add this check to keep thisTop at 0 after changePage			
-			thisTop = el.jqmData("panel") == "popover" ? 0 : getOffsetTop( el[ 0 ] ), 
-			// el.offset().top returns the wrong value on iPad iOS 3.2.1, call our workaround instead.			
-			// XXX FREQUENT: need to add this check for popovers to avoid thisCSStop stacking up, when function is bubbling			
-			thisCSStop =  (el.css( "top" ) == "auto" || el.jqmData("panel") == "popover") ? 0 : parseFloat(el.css( "top" )),						
+	function setTop( el ) {
+		var fromTop = $(window).scrollTop(),
+			thisTop = getOffsetTop( el[ 0 ] ), // el.offset().top returns the wrong value on iPad iOS 3.2.1, call our workaround instead.
+			thisCSStop = el.css( "top" ) == "auto" ? 0 : parseFloat(el.css( "top" )),
 			screenHeight = window.innerHeight,
 			thisHeight = el.outerHeight(),
 			useRelative = el.parents( ".ui-page:not(.ui-page-fullscreen)" ).length,
-			relval;		
-			
-		/* XXX FREQUENT - add fixed-top to check */
-		if ( el.is( ".ui-header-fixed" ) || el.is ( ".ui-element-fixed-top" ) ) {	
+			relval;
+
+		if ( el.is( ".ui-header-fixed" ) ) {
 
 			relval = fromTop - thisTop + thisCSStop;
 
@@ -6542,51 +6456,38 @@ $.mobile.fixedToolbars = (function() {
 			}
 
 			return el.css( "top", useRelative ? relval : fromTop );
-		
-		// XXX FREQUENT - need to separate fixed footer (bottom:0) and fixed-element-bottom to add spacing from bottom
-		// TODO: not nice, try to combine the next two
-		} else if ( el.is( ".ui-footer-fixed" ) ) {
-				
-			relval = fromTop + screenHeight - thisHeight - (thisTop - thisCSStop );						
-				
-			} else {						
-				
-				$spacer = el.siblings('.ui-footer').outerHeight()+15;
-				relval = fromTop + screenHeight - thisHeight - (thisTop - thisCSStop )-$spacer;
+		} else {
+			// relval = -1 * (thisTop - (fromTop + screenHeight) + thisCSStop + thisHeight);
+			// if ( relval > thisTop ) { relval = 0; }
+			relval = fromTop + screenHeight - thisHeight - (thisTop - thisCSStop );
 
-				}			
-				
-				return el.css( "top", useRelative ? relval : fromTop + screenHeight - thisHeight );
-		
+			return el.css( "top", useRelative ? relval : fromTop + screenHeight - thisHeight );
+		}
 	}
 
 	// Exposed methods
 	return {
 
 		show: function( immediately, page ) {
-			
+
 			$.mobile.fixedToolbars.clearShowTimer();
 
 			currentstate = "overlay";
-	
-			// XXX FREQUENT: Tweak selector to grab wrapper page if panels are on the page
-			// else revert to regular JQM
-			var $ap = $('body').find(':jqmData(role="panel")').length ? $('body div:jqmData(role="page"):first-child') : 
-																			 page ? $( page ) : ( $.mobile.activePage ? $.mobile.activePage : 
-																				$( ".ui-page-active" ) );
 
-			return $ap.find( toolbarSelector ).each(function() {				
-				
+			var $ap = page ? $( page ) :
+					( $.mobile.activePage ? $.mobile.activePage :
+						$( ".ui-page-active" ) );
+
+			return $ap.children( toolbarSelector ).each(function() {
+
 				var el = $( this ),
-					fromTop = $( window ).scrollTop(),				
-					// XXX FREQUENT: need to add this check to keep thisTop at 0 after changePage			
-					thisTop = el.jqmData("panel") == "popover" ? 0 : getOffsetTop( el[ 0 ] ), 
+					fromTop = $( window ).scrollTop(),
+					// el.offset().top returns the wrong value on iPad iOS 3.2.1, call our workaround instead.
+					thisTop = getOffsetTop( el[ 0 ] ),
 					screenHeight = window.innerHeight,
 					thisHeight = el.outerHeight(),
-					
-					/* XXX FREQUENT include new classes */
-					alreadyVisible = (( el.is( ".ui-header-fixed" ) || el.is( ".ui-element-fixed-top" ) ) && fromTop <= thisTop + thisHeight ) ||
-														( ( el.is( ".ui-footer-fixed") || el.is( ".ui-element-fixed-bottom" ) ) && thisTop <= fromTop + screenHeight );																					
+					alreadyVisible = ( el.is( ".ui-header-fixed" ) && fromTop <= thisTop + thisHeight ) ||
+														( el.is( ".ui-footer-fixed" ) && thisTop <= fromTop + screenHeight );
 
 				// Add state class
 				el.addClass( "ui-fixed-overlay" ).removeClass( "ui-fixed-inline" );
@@ -6596,78 +6497,45 @@ $.mobile.fixedToolbars = (function() {
 						el.removeClass( "in" );
 					}).addClass( "in" );
 				}
-				setTop(el);				
+				setTop(el);
 			});
 		},
 
 		hide: function( immediately ) {
-			
+
 			currentstate = "inline";
 
-			var $ap = $('.type-home');
-			
-			// XXX FREQUENT: same as above
-			var $ap = $('body').find(':jqmData(role="panel")').length ? $('body div:jqmData(role="page"):first-child') : 
-																			$.mobile.activePage ? $.mobile.activePage :
-																				$( ".ui-page-active" );
+			var $ap = $.mobile.activePage ? $.mobile.activePage :
+									$( ".ui-page-active" );
 
-			return $ap.find( toolbarSelector ).each(function() {
+			return $ap.children( toolbarSelector ).each(function() {
 
 				var el = $(this),
 					thisCSStop = el.css( "top" ),
-					classes;					
-				
+					classes;
+
 				thisCSStop = thisCSStop == "auto" ? 0 :
-											parseFloat(thisCSStop);								
-				
+											parseFloat(thisCSStop);
+
 				// Add state class
 				el.addClass( "ui-fixed-inline" ).removeClass( "ui-fixed-overlay" );
-					
-				// XXX FREQUENT - this is now a lot more complicated... and took time to get to work
-				// this is what happens: 
-				// 1. also block global-footer and fixed-element-bottom with negative position = already 
-				//    positioned correctly (I think...)
-				// 2. also add ui-element-fixed-top to second check - behaves the same as fixed-header 
-				// 3. also add global-footer and element-fixed-bottom to second check, because their 
-				//    position is >0, when outside of a panel or on pages with content<page.height,
-				//    causing their thisCSStop to stack up with every event (250px>500px>1000px)
-				//    (not sure here anymore)
-				// 4. but only include them if immediately is not true, otherwise footer 
-				//    and fix-element-bottom jump up during transitions, because they pass the 
-				//    if-statement and since immediately is true, el.top("top") will be set to 0 
-				//    before being re-set to their correct position
-				// 5. it also works with regular JQM... 
-				if ( thisCSStop < 0 && ( el.not( ".ui-footer-global" ) || el.not( ".ui-element-fixed-bottom" ) ) 
-					 ||  ( el.is( ".ui-header-fixed" ) || el.is( ".ui-element-fixed-top" ) 
-							|| ( el.is( ".ui-footer-global" ) || ( el.is( ".ui-element-fixed-bottom" ) || el.is( ".ui-footer-fixed" )) && immediately != true )  ) && thisCSStop !== 0 ) {
-					
-					if ( immediately ) {							
-						el.css( "top", 0);						
+
+				if ( thisCSStop < 0 || ( el.is( ".ui-header-fixed" ) && thisCSStop !== 0 ) ) {
+
+					if ( immediately ) {
+						el.css( "top", 0);
 					} else {
-	
+
 						if ( el.css( "top" ) !== "auto" && parseFloat( el.css( "top" ) ) !== 0 ) {
-							
+
 							classes = "out reverse";
 
 							el.animationComplete(function() {
-																		
-								// XXX FREQUENT 
-								// this additional check is needed, because if thisCSStop is positive, 
-								// on pages with content being smaller than page height, setting css.top=0 to hide 
-								// the footer/fixed-element-bottom will attach them to the end of the page (on-screen) 
-								// For example: page height 120px, screen height 600px, footer will be 
-								// positioned at top=+480px, which is the bottom of screen initially, but on 
-								// tap/click the footer will be hidden by setting top=0px, which now is right 
-								// where the 120px page ends = middle of screen. So hiding a footer with positive 
-								// thisCSStop has to be done another way. Since overriding 0 with a positive value
-								// increases the page-height, the only other way is to make thisCSStop negative
-								// thereby pushing it out of view on top. (I like this... :-)								
-								el.removeClass( classes ).css( "top", ( ( el.is(".ui-footer-fixed") || el.is( ".ui-footer-global" ) || el.is( ".ui-element-fixed-bottom" ) ) && thisCSStop > 0 ) ? -thisCSStop : 0 );
-								
+								el.removeClass( classes ).css( "top", 0 );
 							}).addClass( classes );
 						}
 					}
-				} 
+				}
 			});
 		},
 
@@ -6837,13 +6705,13 @@ $( document ).bind( "pagecreate", function( event ) {
 		// turn on/off page loading message.
 		showPageLoadingMsg: function() {
 			if ( $.mobile.loadingMessage ) {
-				var activeBtn = $( "." + $.mobile.activeBtnClass ).first();				
+				var activeBtn = $( "." + $.mobile.activeBtnClass ).first();
+
 				$loader
 					.find( "h1" )
 						.text( $.mobile.loadingMessage )
 						.end()
-					// XXX FREQUENT - make sure the loader is always appended to the body, not a page appended to a panel
-					.appendTo( $.mobile.pageContainer == $('body') ? $.mobile.pageContainer : $('body')  )
+					.appendTo( $.mobile.pageContainer )
 					// position at y center (if scrollTop supported), above the activeBtn (if defined), or just 100px from top
 					.css({
 						top: $.support.scrollTop && $window.scrollTop() + $window.height() / 2 ||
@@ -6932,7 +6800,8 @@ $( document ).bind( "pagecreate", function( event ) {
 		// if defaultHomeScroll hasn't been set yet, see if scrollTop is 1
 		// it should be 1 in most browsers, but android treats 1 as 0 (for hiding addr bar)
 		// so if it's 1, use 0 from now on
-		$.mobile.defaultHomeScroll = ( !$.support.scrollTop || $(window).scrollTop() === 1 ) ? 0 : 1;		
+		$.mobile.defaultHomeScroll = ( !$.support.scrollTop || $(window).scrollTop() === 1 ) ? 0 : 1;
+
 		//dom-ready inits
 		if( $.mobile.autoInitializePage ){
 			$.mobile.initializePage();

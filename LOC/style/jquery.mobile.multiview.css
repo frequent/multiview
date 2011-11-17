@@ -26,6 +26,7 @@ div[data-role="header"] .ui-btn-text, div[data-role="footer"] .ui-btn-text
 .headBasket									{ position: static !important; vertical-align: middle;}
 .headLogg									{ text-align: right; margin: 0; position: absolute; top: 3px;}
 .ui-li-heading								{ font-weight: normal;}
+.ui-collapsible-heading						{ padding: 0 8px; /* doesnt't seem to work in JQM */ }
 
 /* header controlgroups */
 .headerMenu                              				{display: inline;}
@@ -46,7 +47,7 @@ div[data-role="header"] .ui-btn-text, div[data-role="footer"] .ui-btn-text
  * http://www.cagintranet.com/archive/create-an-ipad-like-dropdown-popover/
  *
 /* popover formatting, doesn't apply in fullscreen mode */
-.ui-popover                              				{ z-index:1005; color: black; font-weight: normal; line-height: 1;cursor: auto;background-color: black; border: 3px solid black; border-radius: 4px;-webkit-border-radius: 4px;-moz-border-radius: 4px;border-radius: 4px;-webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);-webkit-transition: opacity 0.25s linear;-moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);-moz-transition: opacity 0.25s linear;box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);transition: opacity 0.25s linear;position:  absolute; left: auto;}
+.ui-popover                              				{ z-index:1005; color: black; font-weight: normal; line-height: 1;cursor: auto;background-color: black; border: 3px solid black; border-radius: 4px;-webkit-border-radius: 4px;-moz-border-radius: 4px;border-radius: 4px;-webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);-webkit-transition: opacity 0.25s linear;-moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);-moz-transition: opacity 0.25s linear;box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);transition: opacity 0.25s linear;position:  absolute; left: auto;}											
 .ui-popover .ui-header						{ bottom: auto; left: 0; position: absolute !important; right: 0; top: 0 !important; }
 .ui-popover .ui-content        					{ z-index: 999; bottom: 0; left: 0; overflow-x: hidden !important; overflow-y: visible;  position: absolute !important;right: 0; top: 43px;}
 
@@ -58,14 +59,14 @@ div[data-role="header"] .ui-btn-text, div[data-role="footer"] .ui-btn-text
 											{left: 3.5px; position: relative; top: -1px;}
 .ui-controlgroup-btn-left        				{vertical-align: middle;}
 
-/* popover1
+/* popover1 = topleft
 -----------------------------------------------------------------------------------------------------------*/
 .popover1                             					{display: none; /* why? */ overflow-x:visible; /* override on small screens */ height:25em; width: 15em; top: 0em; margin-top: 3.25em; right: 5em;}
 .popover1 .popover_triangle  				{right: 0.25em;}
 .popover1 .ui-btn-text .ui-link-inherit  		{font-size: 90%; padding-top: 12px !important; padding-bottom: 8px !important;}
 .popover1 .ui-li-icon    						{top: 0.75em;}
 
-/* popover2
+/* popover2 = topright
 -----------------------------------------------------------------------------------------------------------*/
 .popover2                             					{display: none; /* why? */ overflow-x:visible; /* override on small screens */ height:25em; width: 15em; top: 0em; margin-top: 3.25em; right: 0.5em;}
 .popover2 .popover_triangle 					{right: 0.25em;}
@@ -73,10 +74,17 @@ div[data-role="header"] .ui-btn-text, div[data-role="footer"] .ui-btn-text
 .popover2 .ui-btn-text .ui-link-inherit		{font-size: 90%; padding-top: 12px !important; padding-bottom: 8px !important;}
 .popover2 .ui-li-icon    						{top: 0.75em;}
 
+/* popoverAnywhere
+-----------------------------------------------------------------------------------------------------------*/
+.popoverAnywhere                            			{display: none; /* why? */ overflow-x:visible; height:25em; width: 15em; top: 1px; margin-top: 15%; right: 40%;}
+.popoverAnywhere .popover_triangle 			{right: 0.25em;}
+
+.popoverAnywhere .ui-btn-text .ui-link-inherit	{font-size: 90%; padding-top: 12px !important; padding-bottom: 8px !important;}
+.popoverAnywhere .ui-li-icon    				{top: 0.75em;}
+
 /* menu
 -----------------------------------------------------------------------------------------------------------*/
-.menuHide                                					{display: none;}
-.pop_menuBox                             				{height:25em; width: 15em; top: 0em; margin-top: 3.25em; left: 1em; overflow-x: visible;}
+.pop_menuBox  								{display: none; height:25em; width: 15em; top: 0em; margin-top: 3.25em; left: 1em; overflow-x: visible;}
 .pop_menuBox .popover_triangle				{top: -32px; z-index: 1051; /* why */}
 .pop_menuBox .ui-btn-text .ui-link-inherit
 											{ padding-top: 12px !important; padding-bottom: 8px !important; }
@@ -99,21 +107,21 @@ div[data-role="header"] .ui-btn-text, div[data-role="footer"] .ui-btn-text
 /* multiview CSS
 -----------------------------------------------------------------------------------------------------------*/
 .type-home 									{ margin: 0px; padding: 0px; height: inherit; width: inherit;}
-.content-primary 							{ /* 2x page height, cause secondary is below primary(menu), set this to display: inline or display: inline-block to fix, but messes up clean positioning...*/ }
-.content-secondary 							{ /* same here, display: inline-block positions correct, but empty px borders result and this look really uneven...*/ }
-.content-primary  .ui-page					{}
-.content-secondary  .ui-page					{ /* width: inherit; fixes width at 250...? */ min-width: inherit; z-index:1050; }
 
+.coverUp									{ display: none !important; }
 .ui-mobile body                  					{ visibility: visible; }
-.ui-page                         						{ bottom: 0 /* makes popover pages content expand to the full available width on iPad...*/; }
+.ui-popover .ui-page                         			{ bottom: 0 /* makes popover pages content expand to the full available width on iPad...*/; }
+.ui-popover .ui-page-active					{ min-height: inherit !important;}
 .ui-content                      						{ /* overflow: visible; overflow-x: hidden !important;  background-color: #fff;*/}
 
 .ui-panel-left                   					{ width: 25%; min-width: 250px; z-index: 55; /* hides transitions: */ position: relative; float: left; /* position:absolute; left:0; top:0; bottom:0; */}
-.ui-panel-right                  					{ z-index: 45; /* position:absolute; top:0; bottom:0;  width: 100%; */ }
+.ui-panel-left .ui-page						{ /* width: inherit; fixes width at 250...? */ min-width: inherit; z-index:1050; }
+.ui-panel-right                  					{ z-index: 45; margin-left: 25%; width: 75%; right: 0; /* position:absolute; top:0; bottom:0;  width: 100%; */ }
+.ui-panel-right .ui-page						{ margin-left: 25%; width: 75%; right: 0; }
 .ui-panel-fullwidth							{  /* height: 100%; needed for positioning toolbars */} 
 
 .ui-panel-right .ui-page .ui-header, .ui-panel-right .ui-page .ui-content
-											{/* margin-left: 25%; width: 75%; right: 0; */}
+											{ /* margin-left: 25%; width: 75%; right: 0;  */ }
 .ui-splitview-hidden 						{ display:none; }
 
 .menuToggle									{ position: static !important;}
