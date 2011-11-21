@@ -115,6 +115,6 @@ Specifying **data-context="page_name"** and **data-context-panel="panel_name"** 
 * 2011-11-08: tested loading external pages into containers, updated page2.html to include example - popover1, page1-4 
 * 2011-11-12: reworked toolbars, added support global/local header/footer and ui-element-fixed-top/bottom 
 * 2011-11-17: added orientationchange support, removed panel-nav and hashChange from plugin, reworked panel CSS, bug fixes
-* 2011-11-17: updated to JQM 1.0
+* 2011-11-17: updated to JQM 1.0  
 * 2011-11-21: fixes to history, integrated context and crumbs into panel-history routine, started integrating data-multiview="true" as trigger
 *****
