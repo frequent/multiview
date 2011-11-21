@@ -29,10 +29,10 @@ The following pages are in the Demo:
 As of now the multiview pages only work if loaded directly. They can be loaded in via Ajax, but the panel navigation still needs some tweaking (see Todo below)
 
 
-D. Concept Notes
+D. Getting started
 ----------------
 #### 1. Integration
-A multiview page is a regular JQM page having some class triggering the plugin (demo uses **.type-home**). Any header or footer added to this page will act as a global header/footer for all nested pages, while header/footer on the nested-page level are local.
+A multiview page is a regular JQM page. To make it a multiview page, just add the data-multiview="true" attribute to this "wrapper-page". Any header or footer added to this page will act as a global header/footer for all nested pages, while header/footer on the nested-page level are local.
 
 The big difference is the content section. Multiview-pages use panel(s) instead of content. 
 

@@ -106,7 +106,8 @@ div[data-role="header"] .ui-btn-text, div[data-role="footer"] .ui-btn-text
 
 /* multiview CSS
 -----------------------------------------------------------------------------------------------------------*/
-.type-home 									{ margin: 0px; padding: 0px; height: inherit; width: inherit;}
+div[data-role="multiview"] 					{ margin: 0px; padding: 0px; height: inherit; width: inherit;}
+.type-home									{ margin: 0px; padding: 0px; height: inherit; width: inherit;}
 
 .coverUp									{ display: none !important; }
 .ui-mobile body                  					{ visibility: visible; }
@@ -125,5 +126,9 @@ div[data-role="header"] .ui-btn-text, div[data-role="footer"] .ui-btn-text
 .ui-splitview-hidden 						{ display:none; }
 
 .menuToggle									{ position: static !important;}
+.ui-panel-border-right .ui-page				{ margin-left: -1px; border-right: 1px solid #000000;}
+.ui-panel-border-left .ui-page				{ margin-right: -1px; border-left: 1px solid #000000;}
+
+
 
 								

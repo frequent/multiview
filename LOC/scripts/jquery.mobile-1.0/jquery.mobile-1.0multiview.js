@@ -2344,7 +2344,7 @@ $.widget( "mobile.page", $.mobile.widget, {
 	}
 
 	//remove active classes after page transition or error
-	function removeActiveLinkClass( forceRemoval ) {		
+	function removeActiveLinkClass( forceRemoval ) {			
 		if( !!$activeClickedLink && ( !$activeClickedLink.closest( '.ui-page-active' ).length || forceRemoval ) ) {		
 			$activeClickedLink.removeClass( $.mobile.activeBtnClass );
 		}		
@@ -3265,12 +3265,8 @@ $.widget( "mobile.page", $.mobile.widget, {
 			}
           var link = findClosestLink( event.target );
           if ( link ) {
-            if ( path.parseUrl( link.getAttribute( "href" ) || "#" ).hash !== "#" ) {
-			  // XXX FREQUENT - leaving this on, does not remove 
-			  // active class from panel pages slides out but also 
-			  // leaves buttons active, 
-			  // TODO: Turn off elsewhere!
-			  //removeActiveLinkClass( true );
+            if ( path.parseUrl( link.getAttribute( "href" ) || "#" ).hash !== "#" ) {				
+			  removeActiveLinkClass( true );
               $activeClickedLink = $( link ).closest( ".ui-btn" ).not( ".ui-disabled" );
 			  $activeClickedLink.addClass( $.mobile.activeBtnClass );
               $( "." + $.mobile.activePageClass + " .ui-btn" ).not( link ).blur();
@@ -3375,8 +3371,10 @@ $.widget( "mobile.page", $.mobile.widget, {
 			
 			// XXX FREQUENT - check for panel-transitions and changePage only if no data-target is specified
 			var $targetPanel=$link.jqmData('target');			
-			if (!$targetPanel) {								
-				$.mobile.changePage( href, { transition: transition, reverse: reverse, role: role, pageContainer:$.mobile.pageContainer } );
+			if (!$targetPanel) {						
+				// make sure the page loaded is appended to the body and not some panel		
+				$.mobile.pageContainer == $('body') ? $.mobile.pageContainer : $('body')				
+				$.mobile.changePage( href, { transition: transition, reverse: reverse, role: role , pageContainer: $.mobile.pageContainer } );
 				event.preventDefault();
 			}						
         });
@@ -3643,9 +3641,26 @@ function css3TransitionHandler( name, reverse, $to, $from ) {
 		doneFunc = function() {
 
 			$to.add( $from ).removeClass( "out in reverse " + name );
-
-			if ( $from && $from[ 0 ] !== $to[ 0 ] ) {				
-				$from.removeClass( $.mobile.activePageClass );
+			
+			if ( $from && $from[ 0 ] !== $to[ 0 ] ) {								
+				//XXX FREQUENT - this should cover all possible sceanrios			
+				// (a) inside-panel transition = clear active-page (on panel)
+				// (b) panel-page > panel-page = clear active-page on panel and wrapper-page
+				// (c) panel-page > JQM-page   = clear active-page on panel and wrapper-page
+				// (d) JQM-page   > panel-page = clear active-page
+				// (e) JQM-page   > JQM-page   = clear active-page
+				
+				// console.log( $to.parents('.ui-page-active').length+"  und  "+$from.parents('.ui-page-active').length );
+				
+				if ( $to.parents('.ui-page-active').length > 0  &&  $from.parents('.ui-page-active').length > 0 ) {  					
+					//console.log("clear active page");
+					$from.removeClass( $.mobile.activePageClass );
+					} else { 	
+						console.log("clear active page and wrapper page");
+						console.log("how many to clear ="+$from.closest('body').find(':jqmData(role="page"):first').length );
+						console.log("who is being cleared="+$from.closest('body').find(':jqmData(role="page"):first').attr('id') );
+						$from.closest('body').find(':jqmData(role="page"):first').andSelf().removeClass('ui-page-active');
+						}
 			}
 
 			$to.parent().removeClass( viewportClass );
@@ -6987,10 +7002,10 @@ $( document ).bind( "pagecreate", function( event ) {
 		},
 
 		// find and enhance the pages in the dom and transition to the first page.
-		initializePage: function() {
+		initializePage: function() {			
 			// find present pages
 			var $pages = $( ":jqmData(role='page')" );
-
+			
 			// if no pages are found, create one with body's inner html
 			if ( !$pages.length ) {
 				$pages = $( "body" ).wrapInner( "<div data-" + $.mobile.ns + "role='page'></div>" ).children( 0 );
@@ -7008,10 +7023,11 @@ $( document ).bind( "pagecreate", function( event ) {
 
 			// define first page in dom case one backs out to the directory root (not always the first page visited, but defined as fallback)
 			$.mobile.firstPage = $pages.first();
-
-			// define page container
-			$.mobile.pageContainer = $pages.first().parent().addClass( "ui-mobile-viewport" );
-
+			
+			// define page container	
+			// XXX FREQUENT: need to add pageContainer as option in changePage here
+			// to make deeplinks work.
+			$.mobile.pageContainer = $.mobile.firstPage.find(':jqmData(role="panel")').length ?  $pages.first().parent().addClass( "ui-mobile-viewport" ) : $('body').addClass( "ui-mobile-viewport" );
 			// alert listeners that the pagecontainer has been determined for binding
 			// to events triggered on it
 			$window.trigger( "pagecontainercreate" );
@@ -7021,7 +7037,7 @@ $( document ).bind( "pagecreate", function( event ) {
 
 			// if hashchange listening is disabled or there's no hash deeplink, change to the first page in the DOM
 			if ( !$.mobile.hashListeningEnabled || !$.mobile.path.stripHash( location.hash ) ) {
-				$.mobile.changePage( $.mobile.firstPage, { transition: "none", reverse: true, changeHash: false, fromHashChange: true } );
+				$.mobile.changePage( $.mobile.firstPage, { transition: "none", reverse: true, changeHash: false, pageContainer:$.mobile.pageContainer, fromHashChange: true } );
 			}
 			// otherwise, trigger a hashchange to load a deeplink
 			else {
