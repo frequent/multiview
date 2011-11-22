@@ -97,8 +97,9 @@ div[data-role="header"] .ui-btn-text, div[data-role="footer"] .ui-btn-text
 											{ height: inherit; overflow-y: auto; min-height: inherit !important;}
 /* fullscreen mode
 -----------------------------------------------------------------------------------------------------------*/											
+.ui-fullscreen-mode div.ui-mobile-viewport	{ overflow-y: hidden /* hides panel toolbar, question is on mobile devices, how scroll will work*/ }
 .pop_fullscreen .ui-page-active				{ z-index: 1; /* background-color: #ffffff; necessary to expand page down to bottom on smartphones */}
-.pop_fullscreen 								{ font-style:italic !important; height: 100% !important; width: 100% !important; top: 0px !important; left: 0px !important; z-index:1005; }
+.pop_fullscreen 								{ margin-top: 0px !important; height: 100% !important; width: 100% !important; top: 0px !important; left: 0px !important; right: 0px! important; z-index:1005 !important; }
 .pop_fullscreen div[data-role="content"] 		{ z-index: 999 !important;}
 .ui-triangle-top  .popover_triangle             	{ position: absolute; top: -32px; font-size: 0px; line-height: 0%; width: 0px; border-top: 16px solid rgba(0,0,0,0); border-left: 16px solid rgba(0,0,0,0); border-right: 16px solid rgba(0,0,0,0);border-bottom: 16px solid black;}
 .ui-triangle-bottom  .popover_triangle         	{ position: absolute; bottom: -34px; font-size: 0px; line-height: 0%; width: 0px; border-bottom: 16px solid rgba(0,0,0,0); border-left: 16px solid rgba(0,0,0,0); border-right: 16px solid rgba(0,0,0,0);border-top: 16px solid black;}

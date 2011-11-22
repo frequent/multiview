@@ -117,4 +117,5 @@ Specifying **data-context="page_name"** and **data-context-panel="panel_name"** 
 * 2011-11-17: added orientationchange support, removed panel-nav and hashChange from plugin, reworked panel CSS, bug fixes
 * 2011-11-17: updated to JQM 1.0  
 * 2011-11-21: fixes to history, integrated context and crumbs into panel-history routine, started integrating data-multiview="true" as trigger
+* 2011-11-22: fixed popover toggle buttons, hiding panels when scrollview fires, removing active page classes from wrapper page and actual page
 *****
