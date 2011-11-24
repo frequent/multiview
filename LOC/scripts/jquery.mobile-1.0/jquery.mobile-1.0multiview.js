@@ -1688,7 +1688,7 @@ $.widget( "mobile.page", $.mobile.widget, {
 	},
 
 	_create: function() {
-
+		
 		this._trigger( "beforecreate" );
 
 		this.element
@@ -2347,7 +2347,7 @@ $.widget( "mobile.page", $.mobile.widget, {
 	function removeActiveLinkClass( forceRemoval ) {			
 		if( !!$activeClickedLink && ( !$activeClickedLink.closest( '.ui-page-active' ).length || forceRemoval ) ) {		
 			$activeClickedLink.removeClass( $.mobile.activeBtnClass );
-		}		
+		}						
 		$activeClickedLink = null;
 	}
 
@@ -2520,10 +2520,10 @@ $.widget( "mobile.page", $.mobile.widget, {
 				if( !touchOverflow ){
 					fromPage.height( "" );
 				}											
-				// XXX FREQUENT: if toPage is an internal page (and if multiview-page is loaded as external page?) 
+				// XXX FREQUENT: if toPage is an internal page (and if wrapper-page is loaded as external page?) 
 				// it's a panel transition, so we need to block the pageHide event, because it will
-				// remove the multiview-page from the DOM and whiteout the screen
-				// TODO this only happens when the multiview page data-external-page="true" - check for this?	
+				// remove the wrapper-page from the DOM and whiteout the screen
+				// TODO this only happens when the wrapper page data-external-page="true" - check for this?	
 				// TODO allow panel cache management and removal of external pages here
 				if ( !$(toPage).jqmData('internal-page') 
 					//&& toPage.parents(":jqmData(role='page')").is(":jqmData(external-page='true')") 
@@ -2563,8 +2563,9 @@ $.widget( "mobile.page", $.mobile.widget, {
 		$( "." + $.mobile.activePageClass ).css( "min-height", getScreenHeight() );
 	}	
 	
-	//shared page enhancements
+	//shared page enhancements	
 	function enhancePage( $page, role ) {
+
 		// If a role was specified, make sure the data-role attribute
 		// on the page element is in sync.
 		if( role ) {
@@ -2604,17 +2605,15 @@ $.widget( "mobile.page", $.mobile.widget, {
 	$.mobile.noneTransitionHandler = function( name, reverse, $toPage, $fromPage ) {
 		if ( $fromPage ) {
 			// XXX Frequent, same as CSS3 transition handler
-			if ( $toPage.parents('.ui-page-active').length >= 0  && $fromPage.parents('.ui-page-active').length >= 0 ) {
-					console.log("clear active");
-					$fromPage.removeClass( $.mobile.activePageClass );
+			if ( $toPage.parents('.ui-page-active').length == 1  && $fromPage.parents('.ui-page-active').length == 1 ) {
+					// console.log("remove page, to="+$toPage.attr('id')+" length="+$toPage.parents('.ui-page-active').length+" fromPage="+$from.attr('id')+" length="+$fromPage.parents('.ui-page-active').length);
+					$fromPage.removeClass( $.mobile.activePageClass );					
 					} else { 	
-						console.log("clear active and wrapper");
-						$fromPage.closest('body').find(':jqmData(role="page"):first').andSelf().removeClass('ui-page-active');
-						}		
-		}
-		// XXX Frequent, same as CSS3 transition handler, also activate firsties on panels
-		$toPage.addClass( $.mobile.activePageClass );
-			//.find(':jqmData(role="panel") :jqmData(show="first")').addClass( $.mobile.activePageClass );
+					//console.log("remove wrapper and page, to="+$toPage.attr('id')+" length="+$toPage.parents('.ui-page-active').length+" from="+$fromPage.attr('id')+" length="+$fromPage.parents('.ui-page-active').length);										
+					$fromPage.closest(':jqmData(wrapper="true")').andSelf().removeClass('ui-page-active');
+					}					
+		}		
+		$toPage.addClass( $.mobile.activePageClass );		
 
 		return $.Deferred().resolve( name, reverse, $toPage, $fromPage ).promise();
 	};
@@ -2758,9 +2757,9 @@ $.widget( "mobile.page", $.mobile.widget, {
 		// If the page we are interested in is already in the DOM,
 		// and the caller did not indicate that we should force a
 		// reload of the file, we are done. Otherwise, track the
-		// existing page as a duplicated.		
-		if ( page.length ) {
-			if ( !settings.reloadPage ) {				
+		// existing page as a duplicated.				
+		if ( page.length ) {			
+			if ( !settings.reloadPage ) {								
 				enhancePage( page, settings.role );
 				deferred.resolve( absUrl, options, page );
 				return deferred.promise();
@@ -2878,8 +2877,7 @@ $.widget( "mobile.page", $.mobile.widget, {
 						.appendTo( settings.pageContainer );
 					
 					// wait for page creation to leverage options defined on widget
-					page.one( 'pagecreate', $.mobile._bindPageRemove );
-
+					page.one( 'pagecreate', $.mobile._bindPageRemove );					
 					enhancePage( page, settings.role );
 
 					// Enhancing the page may result in new dialogs/sub pages being inserted
@@ -2973,7 +2971,7 @@ $.widget( "mobile.page", $.mobile.widget, {
 			pageTransitionQueue.unshift( arguments );
 			return;
 		}
-
+		
 		var settings = $.extend( {}, $.mobile.changePage.defaults, options );
 		
 		// Make sure we have a pageContainer to work with.
@@ -3068,7 +3066,7 @@ $.widget( "mobile.page", $.mobile.widget, {
 
 		// We need to make sure the page we are given has already been enhanced.
 		enhancePage( toPage, settings.role );
-
+		
 		// If the changePage request was sent from a hashChange event, check to see if the
 		// page is already within the urlHistory stack. If so, we'll assume the user hit
 		// the forward/back button and will try to match the transition accordingly.
@@ -3382,8 +3380,7 @@ $.widget( "mobile.page", $.mobile.widget, {
 			var $targetPanel=$link.jqmData('target');			
 			if (!$targetPanel) {						
 				// make sure the page loaded is appended to the body and not some panel						
-				$.mobile.pageContainer = $('body');
-				console.log("JQM fired, container="+$.mobile.pageContainer.attr('class') );
+				$.mobile.pageContainer = $('body');				
 				$.mobile.changePage( href, { transition: transition, reverse: reverse, role: role , pageContainer: $.mobile.pageContainer } );
 				event.preventDefault();
 			}						
@@ -3652,15 +3649,17 @@ function css3TransitionHandler( name, reverse, $to, $from ) {
 
 			$to.add( $from ).removeClass( "out in reverse " + name );
 			
-			if ( $from && $from[ 0 ] !== $to[ 0 ] ) {								
-				//XXX FREQUENT - this should cover all possible sceanrios				
-				if ( $to.parents('.ui-page-active').length >= 0  && $from.parents('.ui-page-active').length >= 0 ) {
-					console.log("clear active");
-					$from.removeClass( $.mobile.activePageClass );
+			if ( $from && $from[ 0 ] !== $to[ 0 ] ) {
+				
+				//XXX FREQUENT - this should cover all possible sceanrios								
+				// checking for active parent (an active page inside a panel has an active-page parent = wrapper page				
+				if ( $to.parents('.ui-page-active').length == 1  && $from.parents('.ui-page-active').length == 1 ) {
+					// console.log("remove page, to="+$to.attr('id')+" length="+$to.parents('.ui-page-active').length+" from="+$from.attr('id')+" length="+$from.parents('.ui-page-active').length);
+					$from.removeClass( $.mobile.activePageClass );					
 					} else { 	
-						console.log("clear active and wrapper");
-						$from.closest('body').find(':jqmData(role="page"):first').andSelf().removeClass('ui-page-active');
-						}
+					// console.log("remove wrapper, page, to="+$to.attr('id')+" length="+$to.parents('.ui-page-active').length+" from="+$from.attr('id')+" length="+$from.parents('.ui-page-active').length+" wrapper="+$from.closest(':jqmData(wrapper="true")').attr('id') );										
+					$from.closest(':jqmData(wrapper="true")').andSelf().removeClass('ui-page-active');
+					}
 			}
 
 			$to.parent().removeClass( viewportClass );
@@ -3674,11 +3673,8 @@ function css3TransitionHandler( name, reverse, $to, $from ) {
 
 	if ( $from ) {
 		$from.addClass( name + " out" + reverseClass );
-	}
-	// XXX FREQUENT - added first pages on panels
+	}	
 	$to.addClass( $.mobile.activePageClass + " " + name + " in" + reverseClass );
-		//.find(':jqmData(role="panel") :jqmData(show="first")')
-			//.addClass( $.mobile.activePageClass );
 
 	return deferred.promise();
 }
@@ -7007,7 +7003,7 @@ $( document ).bind( "pagecreate", function( event ) {
 		// find and enhance the pages in the dom and transition to the first page.
 		initializePage: function() {			
 			// find present pages
-			var $pages = $( ":jqmData(role='page')" );
+			var $pages = $( ":jqmData(role='page')" );			
 			
 			// if no pages are found, create one with body's inner html
 			if ( !$pages.length ) {
@@ -7028,8 +7024,7 @@ $( document ).bind( "pagecreate", function( event ) {
 			$.mobile.firstPage = $pages.first();
 			
 			// define page container	
-			// XXX FREQUENT: need to add pageContainer as option in changePage here
-			// deeplinks
+			// XXX FREQUENT: need to add pageContainer as option in changePage here deeplinks
 			$.mobile.pageContainer = $.mobile.firstPage.find(':jqmData(role="panel")').length ?  $pages.first().parent().addClass( "ui-mobile-viewport" ) : $('body').addClass( "ui-mobile-viewport" );
 			// alert listeners that the pagecontainer has been determined for binding
 			// to events triggered on it
