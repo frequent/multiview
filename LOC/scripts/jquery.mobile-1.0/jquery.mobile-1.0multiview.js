@@ -2520,14 +2520,12 @@ $.widget( "mobile.page", $.mobile.widget, {
 				if( !touchOverflow ){
 					fromPage.height( "" );
 				}											
-				// XXX FREQUENT: if toPage is an internal page (and if wrapper-page is loaded as external page?) 
-				// it's a panel transition, so we need to block the pageHide event, because it will
-				// remove the wrapper-page from the DOM and whiteout the screen
-				// TODO this only happens when the wrapper page data-external-page="true" - check for this?	
-				// TODO allow panel cache management and removal of external pages here
-				if ( !$(toPage).jqmData('internal-page') 
-					//&& toPage.parents(":jqmData(role='page')").is(":jqmData(external-page='true')") 
-						) {  
+				// XXX FREQUENT: if toPage is an internal page it's a panel transition, so we 
+				// need to block the pageHide event, because it will remove the wrapper-page
+				// from the DOM and if fromPage is an external-page, this should also include
+				// external pages added to a panel, which should be dropped as well				
+				// TODO: have not figured out how to add external panel pages to existing DOM in URL
+				if ( !$(toPage).jqmData('internal-page') || $(fromPage).jqmData('external-page') ) {  
 						
 					fromPage.data( "page" )._trigger( "hide", null, { nextPage: toPage } );
 				}
@@ -2541,7 +2539,8 @@ $.widget( "mobile.page", $.mobile.widget, {
 	}	
 		
 	// simply set the active page's minimum height to screen height, depending on orientation
-	function getScreenHeight(){			
+	function getScreenHeight(){		
+
 			var orientation = jQuery.event.special.orientationchange.orientation(),
 				port = orientation === "portrait",
 				winMin = port ? 480 : 320,
@@ -2560,6 +2559,7 @@ $.widget( "mobile.page", $.mobile.widget, {
 		if( $.support.touchOverflow && $.mobile.touchOverflowEnabled ){
 			return;
 		}
+		// XXX FREQUENT $( "." + $.mobile.activePageClass ).not('div:jqmData(wrapper="true")').css( "min-height", getScreenHeight() );
 		$( "." + $.mobile.activePageClass ).css( "min-height", getScreenHeight() );
 	}	
 	
@@ -2605,13 +2605,9 @@ $.widget( "mobile.page", $.mobile.widget, {
 	$.mobile.noneTransitionHandler = function( name, reverse, $toPage, $fromPage ) {
 		if ( $fromPage ) {
 			// XXX Frequent, same as CSS3 transition handler
-			if ( $toPage.parents('.ui-page-active').length == 1  && $fromPage.parents('.ui-page-active').length == 1 ) {
-					// console.log("remove page, to="+$toPage.attr('id')+" length="+$toPage.parents('.ui-page-active').length+" fromPage="+$from.attr('id')+" length="+$fromPage.parents('.ui-page-active').length);
-					$fromPage.removeClass( $.mobile.activePageClass );					
-					} else { 	
-					//console.log("remove wrapper and page, to="+$toPage.attr('id')+" length="+$toPage.parents('.ui-page-active').length+" from="+$fromPage.attr('id')+" length="+$fromPage.parents('.ui-page-active').length);										
-					$fromPage.closest(':jqmData(wrapper="true")').andSelf().removeClass('ui-page-active');
-					}					
+			($toPage.parents('.ui-page-active').length == 1  && $fromPage.parents('.ui-page-active').length == 1 ) ?
+					$fromPage.removeClass( $.mobile.activePageClass ) : $fromPage.closest(':jqmData(wrapper="true")').andSelf().removeClass('ui-page-active');
+										
 		}		
 		$toPage.addClass( $.mobile.activePageClass );		
 
@@ -3512,7 +3508,7 @@ $.widget( "mobile.page", $.mobile.widget, {
 		self = pushStateHandler,
 		$win = $( window ),
 		url = $.mobile.path.parseUrl( location.href );
-
+	
 	$.extend( pushStateHandler, {
 		// TODO move to a path helper, this is rather common functionality
 		initialFilePath: (function() {
@@ -3523,7 +3519,7 @@ $.widget( "mobile.page", $.mobile.widget, {
 
 		// Flag for tracking if a Hashchange naturally occurs after each popstate + replace
 		hashchangeFired: false,
-
+		
 		state: function() {
 			return {
 				hash: location.hash || "#" + self.initialFilePath,
@@ -3558,6 +3554,7 @@ $.widget( "mobile.page", $.mobile.widget, {
 		// NOTE this takes place *after* the vanilla navigation hash change
 		// handling has taken place and set the state of the DOM
 		onHashChange: function( e ) {
+			
 			// disable this hash change
 			if( self.onHashChangeDisabled ){
 				return;
@@ -3568,17 +3565,17 @@ $.widget( "mobile.page", $.mobile.widget, {
 				isPath = $.mobile.path.isPath( hash ),
 				resolutionUrl = isPath ? location.href : $.mobile.getDocumentUrl();
 			hash = isPath ? hash.replace( "#", "" ) : hash;
-
+			console.log("hash="+hash);
 			// propulate the hash when its not available
 			state = self.state();
 
 			// make the hash abolute with the current href
 			href = $.mobile.path.makeUrlAbsolute( hash, resolutionUrl );
 
-			if ( isPath ) {
+			if ( isPath ) {				
 				href = self.resetUIKeys( href );
 			}
-
+			console.log("calls replacestate with state="+state+" document.title= "+document.title+" and href="+href);
 			// replace the current url with the new href and store the state
 			// Note that in some cases we might be replacing an url with the
 			// same url. We do this anyways because we need to make sure that
@@ -3651,15 +3648,9 @@ function css3TransitionHandler( name, reverse, $to, $from ) {
 			
 			if ( $from && $from[ 0 ] !== $to[ 0 ] ) {
 				
-				//XXX FREQUENT - this should cover all possible sceanrios								
-				// checking for active parent (an active page inside a panel has an active-page parent = wrapper page				
-				if ( $to.parents('.ui-page-active').length == 1  && $from.parents('.ui-page-active').length == 1 ) {
-					// console.log("remove page, to="+$to.attr('id')+" length="+$to.parents('.ui-page-active').length+" from="+$from.attr('id')+" length="+$from.parents('.ui-page-active').length);
-					$from.removeClass( $.mobile.activePageClass );					
-					} else { 	
-					// console.log("remove wrapper, page, to="+$to.attr('id')+" length="+$to.parents('.ui-page-active').length+" from="+$from.attr('id')+" length="+$from.parents('.ui-page-active').length+" wrapper="+$from.closest(':jqmData(wrapper="true")').attr('id') );										
-					$from.closest(':jqmData(wrapper="true")').andSelf().removeClass('ui-page-active');
-					}
+				//XXX FREQUENT - checking for active parent (an active page inside a panel has an active-page parent = wrapper page												
+				( $to.parents('.ui-page-active').length == 1  && $from.parents('.ui-page-active').length == 1 ) ?
+							$from.removeClass( $.mobile.activePageClass ) : $from.closest(':jqmData(wrapper="true")').andSelf().removeClass('ui-page-active');					
 			}
 
 			$to.parent().removeClass( viewportClass );
@@ -7033,14 +7024,23 @@ $( document ).bind( "pagecreate", function( event ) {
 			// cue page loading message
 			$.mobile.showPageLoadingMsg();
 
-			// if hashchange listening is disabled or there's no hash deeplink, change to the first page in the DOM
-			if ( !$.mobile.hashListeningEnabled || !$.mobile.path.stripHash( location.hash ) ) {
+			// if hashchange listening is disabled or there's no hash deeplink, change to the first page in the DOM			
+			if ( !$.mobile.hashListeningEnabled || !$.mobile.path.stripHash( location.hash ) ) {				
 				$.mobile.changePage( $.mobile.firstPage, { transition: "none", reverse: true, changeHash: false, pageContainer:$.mobile.pageContainer, fromHashChange: true } );
 			}
 			// otherwise, trigger a hashchange to load a deeplink
-			else {
-				$window.trigger( "hashchange", [ true ] );
-			}
+			else {	
+				// XXX FREQUENT - if it's a panel deeplink
+				var $nestedPage = $('#'+$.mobile.path.stripHash( location.hash ) );
+				if ( $nestedPage.closest('div:jqmData(role="panel")') ) {						
+					// remember deeplink
+					$('html').data("multiviewDeeplink", '#'+$.mobile.path.stripHash( location.hash ) );	
+					// load the wrapper
+					$.mobile.changePage( $nestedPage.closest('div:jqmData(wrapper="true")'), { transition: "none", reverse: true, changeHash: false, pageContainer:$.mobile.pageContainer, fromHashChange: true } );					
+					} else {			
+						$window.trigger( "hashchange", [ true ] );
+						}
+					}
 		}
 	});
 	

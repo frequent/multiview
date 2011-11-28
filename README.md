@@ -1,12 +1,25 @@
 Jquery Mobile Multiview Plugin
 ==============================
 
+#### Log. Updates  
+* 2011-11-08: reworked data-context, included in panel-history, updated page2.html to show example - first link in menu
+* 2011-11-08: tested loading external pages into containers, updated page2.html to include example - popover1, page1-4 
+* 2011-11-12: reworked toolbars, added support global/local header/footer and ui-element-fixed-top/bottom 
+* 2011-11-17: added orientationchange support, removed panel-nav and hashChange from plugin, reworked panel CSS, bug fixes
+* 2011-11-17: updated to JQM 1.0  
+* 2011-11-21: fixes to history, integrated context and crumbs into panel-history routine, started integrating data-multiview="true" as trigger
+* 2011-11-22: fixed popover toggles, added pop() transitions, keep panels alive with scrollview and loading pages into DOM, fixed active class removal
+* 2011-11-23: fixed activeclass removal (again), fixed event bubbling, fixed plugin setup running for +1 wrapper pages in DOM, removed stuff not necessary anymore 
+* 2011-11-28: enabled deep-linking, started panel-cache-management, partially fixed flickering footer, broke vertical scrolling (for now... )
+*****
+
+
 A. What does Multiview do?
 --------------------------
-1.multipage navigation (loading full multipages)  
-2.multipanel view (splitscreen)  
-3.popover-panels with nested pages inside  
-
+1. uses a wrapper page with any number of nested pages
+2. enable global/local header/footer across all nested pages
+3. enable panel-led layouts = fullwidth or splitview background
+4. enable popover panels with nested pages 
 
 B. Concept
 ----------
