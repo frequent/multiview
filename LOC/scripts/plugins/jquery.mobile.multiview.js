@@ -51,9 +51,8 @@
 		
 		// ==== MISC ==== 				
 		// make sure prefetching, form submit, dialogs work 											
-		// make options		
-		// make menu & main into data-sticky-panel="true", instead of referencing them by name all the time												
-
+		// make options					
+		
 		// ==== HISTORY PRIO ====
 		// sync crumbs button and back button if both active at the same time
 		// rerun hash transitions to make sure JQM takes over at correct time
@@ -68,13 +67,14 @@
 		// footer page4, if externally loaded, sometimes ends up on top, I think because it's not inside toolbar-selector, check why					
 		// ui-element-fixed-bottom/top should not SHOW! automatically! HIDE effect is also... re-positioning not toggling, re-do		
 		// fixed footer on page5 is not fixed... although it should be...
+		// footer positioning does not update when opening a collapsible
 		// find out why footer blinks = repositions on changePage and overwrite if its a panel transition, this event also stalls scrollview
+		// in IE fullscreen footer is stuck at panel-bottom (initial correct), position does not update with scrolling though (no fallback? or no update), happens because footer position is based on wrapper page rather than content?	
 						
 		// ==== FOUND ERRORS ====
 		// history.replaceState is not a function on iPad if loading a new page into a panel 
 		// line 2476 from.data("page" undefined, if page2 (crisscross)>page1>page3
-		// scrollview stalls sometimes, too many events firing?
-		// panels flickering sometimes
+		// scrollview stalls sometimes, not because of footer repositioning, but event that also repositions footer		
 		// is there a transition queue to block new transitions firing before current transition is done, causes Jquery timeout error
 		// deeplink panel does not show sometimes, if hideAllPanels on orientationchange, it show-hides (currently commented out)
 		
@@ -112,7 +112,10 @@
 			$hashJoker:0,	
 
 			// block 2nd hashchange on context transitions
-			$contextBlockNextHashChange:''
+			$contextBlockNextHashChange:'',
+			
+			// block popover panel closing on a context transition
+			$blockContextScrollTop:''
 
 		},
 
@@ -212,7 +215,7 @@
 				
 			// close popovers - when the following happens:
 			// (1) click on close button
-			$('.closePanel').live('click', function () {				
+			$('.closePanel').live('click', function () {
 				hideAllPanels();				
 				});			
 			
@@ -223,20 +226,21 @@
 			
 			// (3) scrollStart on document
 			$(document).scroll(function(){
-				// only hide if not in fullscreen mode and no blocker set
-				// the blocker is necessary if new pages are loaded into DOM, because
-				// I cannot find the scrollTop in JQM which fires when new pages are
-				// appended to the DOM				     
-				if ( !$('html').hasClass('ui-fullscreen-mode') && self.vars.$panelTransBlockScrollTop == false ) {										
+				// only hide if not in fullscreen mode, no blocker has been set (necessary 
+				// if new pages are loaded into DOM, appended to DOM - can't find scrollTop 
+				// to block) or if this is a "scrollTop" initiated from a context transition 
+				// (need to keep the initiating popover active)			
+				if ( !$('html').hasClass('ui-fullscreen-mode') && self.vars.$panelTransBlockScrollTop == false && !self.vars.$blockContextScrollTop == true) {															
 					hideAllPanels();
 					// reset for next;
 					self.vars.$panelTransBlockScrollTop == true; 
-					}					
+					}	
+				self.vars.$blockContextScrollTop = '';
 				});
 			
 			
 			// (4) click or tap on main or fullwidth panel
-			$('div:jqmData(panel="main"), div:jqmData(panel="fullwidth")').live('click tap', function(event) {
+			$('div:jqmData(panel="main"), div:jqmData(panel="fullwidth")').live('click tap', function(event) {				
 				if (!$(event.target).closest('.ui-popover').length && !$(event.target).closest('.toggle_popover').length) {															
 					hideAllPanels();
 				};
@@ -244,13 +248,16 @@
 
 			// (5) changePage on main or fullwidth panel
 			$('div:jqmData(panel="main"), div:jqmData(panel="fullwidth")').live('pagebeforehide', function(event) {
-				hideAllPanels();
+				// not if this is because of a context transition							
+				if ( self.vars.$contextBlockNextHashChange == false) {
+					hideAllPanels();
+					}
 				});
 
 			// (6) click of a link on a panel, which loads a page on another panel
 			$('a').live('click', function () {								
 				if ( $('html').hasClass('ui-fullscreen-mode') && $(this).jqmData('target') 
-						&& $(this).jqmData('target') != $(this).closest('div:jqmData(role="panel")').jqmData('id') ){														
+						&& $(this).jqmData('target') != $(this).closest('div:jqmData(role="panel")').jqmData('id') ){																		
 					hideAllPanels();
 					}
 				});
@@ -335,12 +342,10 @@
 					$(this).hasClass('ui-btn-active') ? $tweak.css({'margin-left':'25%','width':'75%'}) : $tweak.css({'margin-left':'0px','width':'auto'});											
 					}
 					
-				if ( $popPanel.attr('status') == 'visible' ) {
-					
+				if ( $popPanel.attr('status') == 'visible' ) {					
 					// (8) clicking on active popover button closes this popover agin
 					hideAllPanels();
 					} else {
-						
 						// (9) clicking on a not-active trigger button closes all other popovers first
 						hideAllPanels();																											
 							
@@ -810,19 +815,27 @@
 			// will overlap if 25% < 250px until popover mode is fired. Corrected by this
 			// TODO: now bound to or-change, also bind to resize?			
 			if (self.framer() != 'small' && $('html').hasClass('ui-splitview-mode') ) {
+			
+				// need this timeout for Firefox, because need to make sure panel-height is done
+				// before this fires. PanelHeight takes makes sure global-header/footer + active 
+				// panels > screenHeight, thereby also hiding scrollbars. In Firefox, checkwidth
+				// calculates element width before panelHeight is set, so without the timeout a
+				// 17px blank space will result in FF. 
+				window.setTimeout( function() {
+					var $detour = $('div:jqmData(panel="menu")').offsetParent(),
+						$width = $detour.innerWidth(),					
+						$menuWidth = $('div:jqmData(panel="menu")').outerWidth();	
+					
+					// save this for later... gets width minus scrollbars across all browsers
+					// if setting main panel with does not work, use $('body').innerWidth() - $menuWidth!
+					
+					// should always be like this, either menu width = 250, then its overall -250
+					// or it's >250, then it also is width-menuWidth
+					$('div:jqmData(panel="main")').css({'width':$width-$menuWidth});
+					$('div:jqmData(panel="main") div:jqmData(role="page")').css({'margin-left':$menuWidth, 'width':$width-$menuWidth});
+					$('div:jqmData(panel="menu") div:jqmData(role="page")').css({'width':$menuWidth});
 				
-				var $detour = $('div:jqmData(panel="menu")').offsetParent(),
-					$width = $detour.innerWidth(),					
-					$menuWidth = $('div:jqmData(panel="menu")').outerWidth();	
-				
-				// save this for later... gets width minus scrollbars across all browsers
-				// if setting main panel with does not work, use $('body').innerWidth() - $menuWidth!
-				
-				// should always be like this, either menu width = 250, then its overall -250
-				// or it's >250, then it also is width-menuWidth
-				$('div:jqmData(panel="main")').css({'width':$width-$menuWidth});
-				$('div:jqmData(panel="main") div:jqmData(role="page")').css({'margin-left':$menuWidth, 'width':$width-$menuWidth});
-				$('div:jqmData(panel="menu") div:jqmData(role="page")').css({'width':$menuWidth});
+					},10);
 				}
 	
 			}, 
@@ -842,7 +855,7 @@
 				// set panel height to getScreenHeight less global header/footer
 				// this will only set panel-height! both wrapper and nested page
 				// height is still set by  JQM getScreenHeight()
-				$('div:jqmData(role="panel")').not('.ui-popover').css({'height': $.mobile.getScreenHeight()-$globalHeader-$globalFooter})							
+				$('div:jqmData(role="panel")').not('.ui-popover').css({'height': $.mobile.getScreenHeight()-$globalHeader-$globalFooter}).addClass("FUCKFACE");						
 				
 			},
 		
@@ -985,7 +998,7 @@
 				// clear active links if to and from page are on the same panel
 				if (toPage.closest('div:jqmData(role="panel")').jqmData("id") == fromPage.closest('div:jqmData(role="panel")').jqmData("id")  ) {																		
 						// show active color for at least 1sec
-						window.setTimeout( function() {							
+						window.setTimeout( function() {
 							fromPage.find('.ui-btn').removeClass( $.mobile.activeBtnClass );
 						},1000 );
 					} 
@@ -1282,7 +1295,8 @@
 				// first context hashChange is correctly blocked before, 
 				// 2nd one passes and is stopped here
 				if ( self.vars.$contextBlockNextHashChange == true ) {					
-					self.vars.$contextBlockNextHashChange = false;					
+					self.vars.$contextBlockNextHashChange = false;
+					self.vars.$blockContextScrollTop = true;
 					return;
 					}
 				
