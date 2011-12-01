@@ -11,6 +11,7 @@ Jquery Mobile Multiview Plugin
 * 2011-11-22: fixed popover toggles, added pop() transitions, keep panels alive with scrollview and loading pages into DOM, fixed active class removal
 * 2011-11-23: fixed activeclass removal (again), fixed event bubbling, fixed plugin setup running for +1 wrapper pages in DOM, removed stuff not necessary anymore 
 * 2011-11-28: enabled deep-linking, started panel-cache-management, partially fixed flickering footer, broke vertical scrolling (for now... )
+* 2011-12-01: fixed deep-linking, done panel-cache-management, reworked CSS to fix scrolling, scrollbars showing, panel positioning, fixed jquery panel width and height
 *****
 
 

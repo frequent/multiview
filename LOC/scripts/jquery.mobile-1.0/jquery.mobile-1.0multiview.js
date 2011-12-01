@@ -2114,13 +2114,19 @@ $.widget( "mobile.page", $.mobile.widget, {
 
 			convertUrlToDataUrl: function( absUrl ) {
 				var u = path.parseUrl( absUrl );
-				if ( path.isEmbeddedPage( u ) ) {
+				// XXX FREQUENT - need to add a check for wrapper or panels, 
+				// otherwise it's not possible to load nested pages in 
+				// externally loaded wrapper pages. this makes the navigation
+				// work
+				if ( path.isEmbeddedPage( u ) || $( u.hash ).closest('div:jqmData(role="panel")').length == 1 ) {						
+				// if ( path.isEmbeddedPage( u ) ) {
 				    // For embedded pages, remove the dialog hash key as in getFilePath(),
 				    // otherwise the Data Url won't match the id of the embedded Page.
 					return u.hash.split( dialogHashKey )[0].replace( /^#/, "" );
-				} else if ( path.isSameDomain( u, documentBase ) ) {
+				} else if ( path.isSameDomain( u, documentBase ) ) {					
 					return u.hrefNoHash.replace( documentBase.domain, "" );
-				}
+				} 
+				
 				return absUrl;
 			},
 
@@ -2196,16 +2202,17 @@ $.widget( "mobile.page", $.mobile.widget, {
 			},
 
 			isEmbeddedPage: function( url ) {
+			
 				var u = path.parseUrl( url );
-
+				
 				//if the path is absolute, then we need to compare the url against
 				//both the documentUrl and the documentBase. The main reason for this
 				//is that links embedded within external documents will refer to the
 				//application document, whereas links embedded within the application
 				//document will be resolved against the document base.
-				if ( u.protocol !== "" ) {
+				if ( u.protocol !== "" ) {					
 					return ( u.hash && ( u.hrefNoHash === documentUrl.hrefNoHash || ( documentBaseDiffers && u.hrefNoHash === documentBase.hrefNoHash ) ) );
-				}
+				}				
 				return (/^#/).test( u.href );
 			}
 		},
@@ -2448,7 +2455,8 @@ $.widget( "mobile.page", $.mobile.widget, {
 	*/
 
 	//function for transitioning between two existing pages
-	function transitionPages( toPage, fromPage, transition, reverse ) {							
+	function transitionPages( toPage, fromPage, transition, reverse ) {									
+	
 		//get current scroll distance
 		var active	= $.mobile.urlHistory.getActive(),
 			touchOverflow = $.support.touchOverflow && $.mobile.touchOverflowEnabled,
@@ -2459,7 +2467,7 @@ $.widget( "mobile.page", $.mobile.widget, {
 
 		// XXX FREQUENT: block scrollTop if not in fullscreen mode and page transition is inside a popover
 		if ( !$('html').is('.ui-fullscreen-mode ') && $closestPanel != 'popover' ) {			
-			// Scroll to top, hide addr bar						
+			// Scroll to top, hide addr bar					
 			window.scrollTo( 0, $.mobile.defaultHomeScroll );
 			}
 			
@@ -2484,10 +2492,10 @@ $.widget( "mobile.page", $.mobile.widget, {
 			reFocus( toPage );
 
 			//set page's scrollTop to remembered distance
-			if( toPage.is( ".ui-native-fixed" ) ){					
+			if( toPage.is( ".ui-native-fixed" ) ){									
 				toPage.find( ".ui-content" ).scrollTop( toScroll );				
 			}
-			else {				
+			else {							
 				toPage.scrollTop( toScroll );				
 			}
 		}
@@ -2509,8 +2517,8 @@ $.widget( "mobile.page", $.mobile.widget, {
 			// Jump to top or prev scroll, sometimes on iOS the page has not rendered yet.
 			if( !touchOverflow ){	
 				// XXX - FREQUENT: block scrollTop if not in fullscreen mode and page transition is inside a popover to avoid jumping up
-				if ( !$('html').is('.ui-fullscreen-mode ') && toPage.closest(':jqmData(role="panel")').jqmData('panel') != 'popover' ) {					
-					// Scroll to top, hide addr bar						
+				if ( !$('html').is('.ui-fullscreen-mode ') && toPage.closest(':jqmData(role="panel")').jqmData('panel') != 'popover' ) {
+					// Scroll to top, hide addr bar		
 					$.mobile.silentScroll( toScroll );				
 					}	
 			}		
@@ -2519,15 +2527,14 @@ $.widget( "mobile.page", $.mobile.widget, {
 			if( fromPage ) {
 				if( !touchOverflow ){
 					fromPage.height( "" );
-				}											
-				// XXX FREQUENT: if toPage is an internal page it's a panel transition, so we 
-				// need to block the pageHide event, because it will remove the wrapper-page
-				// from the DOM and if fromPage is an external-page, this should also include
-				// external pages added to a panel, which should be dropped as well				
-				// TODO: have not figured out how to add external panel pages to existing DOM in URL
-				if ( !$(toPage).jqmData('internal-page') || $(fromPage).jqmData('external-page') ) {  
-						
-					fromPage.data( "page" )._trigger( "hide", null, { nextPage: toPage } );
+				}															
+				// XXX FREQUENT: if fromPage is an internal page it's a panel transition, so the
+				// pagehide event has to be blocked to avoid dropping the wrapper page. This 
+				// also catches external panel pages, which have been loaded into the DOM and
+				// should be removed when navigation away from them unless data-dom-cache is set. 
+				// if ( !toPage.jqmData('internal-page') ) {
+				if ( !$(fromPage).jqmData('internal-page') && !(fromPage).jqmData('data-dom-cache') == true ) {					
+					fromPage.data( "page" )._trigger( "hide", null, { nextPage: toPage } );					
 				}
 			}				
 			
@@ -2657,6 +2664,8 @@ $.widget( "mobile.page", $.mobile.widget, {
 
 	// Load a page into the DOM.
 	$.mobile.loadPage = function( url, options ) {		
+	
+		
 		// This function uses deferred notifications to let callers
 		// know when the page is done loading, or if an error has occurred.
 		var deferred = $.Deferred(),
@@ -2683,11 +2692,12 @@ $.widget( "mobile.page", $.mobile.widget, {
 			// The absolute version of the URL passed into the function. This
 			// version of the URL may contain dialog/subpage params in it.
 			absUrl = path.makeUrlAbsolute( url, findBaseWithDefault() );
+			
 
-
+		
 		// If the caller provided data, and we're using "get" request,
 		// append the data to the URL.
-		if ( settings.data && settings.type === "get" ) {
+		if ( settings.data && settings.type === "get" ) {	
 			absUrl = path.addSearchParams( absUrl, settings.data );
 			settings.data = undefined;
 		}
@@ -2706,27 +2716,27 @@ $.widget( "mobile.page", $.mobile.widget, {
 			// within the same domain as the document base, it is the site relative
 			// path. For cross-domain pages (Phone Gap only) the entire absolute Url
 			// used to load the page.
-			dataUrl = path.convertUrlToDataUrl( absUrl );
-
+			dataUrl = path.convertUrlToDataUrl( absUrl );			
+						
 		// Make sure we have a pageContainer to work with.
 		settings.pageContainer = settings.pageContainer || $.mobile.pageContainer;
-
+		
 		// Check to see if the page already exists in the DOM.
-		page = settings.pageContainer.children( ":jqmData(url='" + dataUrl + "')" );
-
+		page = settings.pageContainer.children( ":jqmData(url='" + dataUrl + "')" );		
+		
 		// If we failed to find the page, check to see if the url is a
 		// reference to an embedded page. If so, it may have been dynamically
 		// injected by a developer, in which case it would be lacking a data-url
-		// attribute and in need of enhancement.
-		if ( page.length === 0 && dataUrl && !path.isPath( dataUrl ) ) {
+		// attribute and in need of enhancement.		
+		if ( page.length === 0 && dataUrl && !path.isPath( dataUrl ) ) {			
 			page = settings.pageContainer.children( "#" + dataUrl )
-				.attr( "data-" + $.mobile.ns + "url", dataUrl );
+				.attr( "data-" + $.mobile.ns + "url", dataUrl );				
 		}
 
 		// If we failed to find a page in the DOM, check the URL to see if it
 		// refers to the first page in the application. If it isn't a reference
-		// to the first page and refers to non-existent embedded page, error out.
-		if ( page.length === 0 ) {
+		// to the first page and refers to non-existent embedded page, error out.		
+		if ( page.length === 0 ) {			
 			if ( $.mobile.firstPage && path.isFirstPageUrl( fileUrl ) ) {
 				// Check to make sure our cached-first-page is actually
 				// in the DOM. Some user deployed apps are pruning the first
@@ -2739,7 +2749,7 @@ $.widget( "mobile.page", $.mobile.widget, {
 				if ( $.mobile.firstPage.parent().length ) {
 					page = $( $.mobile.firstPage );
 				}
-			} else if ( path.isEmbeddedPage( fileUrl )  ) {
+			} else if ( path.isEmbeddedPage( fileUrl )  ) {				
 				deferred.reject( absUrl, options );
 				return deferred.promise();
 			}
@@ -2753,16 +2763,15 @@ $.widget( "mobile.page", $.mobile.widget, {
 		// If the page we are interested in is already in the DOM,
 		// and the caller did not indicate that we should force a
 		// reload of the file, we are done. Otherwise, track the
-		// existing page as a duplicated.				
-		if ( page.length ) {			
-			if ( !settings.reloadPage ) {								
+		// existing page as a duplicated.		
+		if ( page.length ) {						
+			if ( !settings.reloadPage ) {				
 				enhancePage( page, settings.role );
 				deferred.resolve( absUrl, options, page );
 				return deferred.promise();
 			}
 			dupCachedPage = page;
-		}
-
+		}		
 		var mpc = settings.pageContainer,
 			pblEvent = new $.Event( "pagebeforeload" ),
 			triggerData = { url: url, absUrl: absUrl, dataUrl: dataUrl, deferred: deferred, options: settings };
@@ -2771,7 +2780,7 @@ $.widget( "mobile.page", $.mobile.widget, {
 		mpc.trigger( pblEvent, triggerData );
 
 		// If the default behavior is prevented, stop here!
-		if( pblEvent.isDefaultPrevented() ){
+		if( pblEvent.isDefaultPrevented() ){			
 			return deferred.promise();
 		}
 
@@ -3374,7 +3383,7 @@ $.widget( "mobile.page", $.mobile.widget, {
 			
 			// XXX FREQUENT - check for panel-transitions and changePage only if no data-target is specified
 			var $targetPanel=$link.jqmData('target');			
-			if (!$targetPanel) {						
+			if (!$targetPanel) {									
 				// make sure the page loaded is appended to the body and not some panel						
 				$.mobile.pageContainer = $('body');				
 				$.mobile.changePage( href, { transition: transition, reverse: reverse, role: role , pageContainer: $.mobile.pageContainer } );
@@ -3472,11 +3481,11 @@ $.widget( "mobile.page", $.mobile.widget, {
 				// that crosses from an external page/dialog to an internal page/dialog.
 				to = ( typeof to === "string" && !path.isPath( to ) ) ? ( path.makeUrlAbsolute( '#' + to, documentBase ) ) : to;				
 				// XXX FREQUENT - only continue if no panels-history or it's a dialog
-				if(!n || n>0 && ( urlHistory.stack.length > 1 && to.indexOf( dialogHashKey ) > -1) ){
+				if(!n || n>0 && ( urlHistory.stack.length > 1 && to.indexOf( dialogHashKey ) > -1) ){					
 					$.mobile.changePage( to, changePageOptions );
 					}
 				} else {
-					//there's no hash, go to the first page in the dom				
+					//there's no hash, go to the first page in the dom									
 					// XXX FREQUENT - only continue if no panels-history or it's a dialog
 					if(!n || n>0 && ( urlHistory.stack.length > 1 && to.indexOf( dialogHashKey ) > -1) ){						
 						$.mobile.changePage( $.mobile.firstPage, changePageOptions );
@@ -3530,17 +3539,17 @@ $.widget( "mobile.page", $.mobile.widget, {
 			};
 		},
 
-		resetUIKeys: function( url ) {
+		resetUIKeys: function( url ) {			
+	
 			var dialog = $.mobile.dialogHashKey,
 				subkey = "&" + $.mobile.subPageUrlKey,
-				dialogIndex = url.indexOf( dialog );
-
-			if( dialogIndex > -1 ) {
+				dialogIndex = url.indexOf( dialog );						
+			
+			if( dialogIndex > -1 ) {				
 				url = url.slice( 0, dialogIndex ) + "#" + url.slice( dialogIndex );
-			} else if( url.indexOf( subkey ) > -1 ) {
+			} else if( url.indexOf( subkey ) > -1 ) {				
 				url = url.split( subkey ).join( "#" + subkey );
-			}
-
+			}			
 			return url;
 		},
 
@@ -3554,7 +3563,7 @@ $.widget( "mobile.page", $.mobile.widget, {
 		// NOTE this takes place *after* the vanilla navigation hash change
 		// handling has taken place and set the state of the DOM
 		onHashChange: function( e ) {
-			
+
 			// disable this hash change
 			if( self.onHashChangeDisabled ){
 				return;
@@ -3565,17 +3574,28 @@ $.widget( "mobile.page", $.mobile.widget, {
 				isPath = $.mobile.path.isPath( hash ),
 				resolutionUrl = isPath ? location.href : $.mobile.getDocumentUrl();
 			hash = isPath ? hash.replace( "#", "" ) : hash;
-			console.log("hash="+hash);
+			
 			// propulate the hash when its not available
 			state = self.state();
-
+			
 			// make the hash abolute with the current href
-			href = $.mobile.path.makeUrlAbsolute( hash, resolutionUrl );
-
-			if ( isPath ) {				
+			
+			// XXX FREQUENT - (a) if the wrapper is first in the DOM, 
+			// need to add #id to exisiting URL, (b) if wrapper is 
+			// loaded as external page, need to overwrite initial 
+			// URL with new page URL
+			
+			// check for flag set in multiview
+			var flag = $('html').data('pushStateFlag'),
+				// check if #hash belongs to an external wrapper page
+				ext = $('#'+$('html').data('pushStateFlag') ).closest('div:jqmData(wrapper="true"):jqmData(external-page="true")').length;
+			href = ( isPath && flag ) ? $.mobile.path.makeUrlAbsolute( '#'+flag, resolutionUrl ) : ( ext ? location.href : $.mobile.path.makeUrlAbsolute( hash, resolutionUrl ) );
+			// href = $.mobile.path.makeUrlAbsolute( hash, resolutionUrl );
+				
+			if ( isPath ) {		
 				href = self.resetUIKeys( href );
 			}
-			console.log("calls replacestate with state="+state+" document.title= "+document.title+" and href="+href);
+			
 			// replace the current url with the new href and store the state
 			// Note that in some cases we might be replacing an url with the
 			// same url. We do this anyways because we need to make sure that
@@ -3587,6 +3607,13 @@ $.widget( "mobile.page", $.mobile.widget, {
 			// will always trigger our hashchange callback even when a hashchange event
 			// is not fired.
 			history.replaceState( state, document.title, href );
+			
+			// XXX FREQUENT - remove pushStateFlag, which is only set on
+			// panel transitions, this ensures pushStateFlag is emptied 
+			// every time a new page is added to the DOM, so on the 
+			// next panel transition, it can be reset (or overwritten)			
+			$('html').removeData("pushStateFlag");
+			
 		},
 
 		// on popstate (ie back or forward) we need to replace the hash that was there previously
@@ -7030,12 +7057,12 @@ $( document ).bind( "pagecreate", function( event ) {
 			}
 			// otherwise, trigger a hashchange to load a deeplink
 			else {	
-				// XXX FREQUENT - if it's a panel deeplink
+				// XXX FREQUENT - enable deeplinking on panels
 				var $nestedPage = $('#'+$.mobile.path.stripHash( location.hash ) );
 				if ( $nestedPage.closest('div:jqmData(role="panel")') ) {						
 					// remember deeplink
 					$('html').data("multiviewDeeplink", '#'+$.mobile.path.stripHash( location.hash ) );	
-					// load the wrapper
+					// load the wrapper					
 					$.mobile.changePage( $nestedPage.closest('div:jqmData(wrapper="true")'), { transition: "none", reverse: true, changeHash: false, pageContainer:$.mobile.pageContainer, fromHashChange: true } );					
 					} else {			
 						$window.trigger( "hashchange", [ true ] );

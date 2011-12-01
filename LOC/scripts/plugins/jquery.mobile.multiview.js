@@ -15,7 +15,7 @@
 /* functions */
 /*
  * _create            setup and run basic functions on init
- * _setupSplitview    enhance first pages, fire splitview functions
+ * setupSplitview     enhance first pages, fire splitview functions
  * _setupPopovers     setup/hide/show popovers (including menu in popover-mode)
  * crumble            fake back-button on all panels	
  * replaceBackBtn	  replaces back buttons inserted in popover mode
@@ -33,7 +33,6 @@
  * panelHeight        set height of panels
  * framer             [helper] determine screen mode
  * clearActiveClasses [helper] mimics JQM removeActiveClassLink(), which can't be called from here and doesn't handle panels
- * expandHeight       [helper] set page height in fullscreen mode
  * stackUp			  add entries into panel-history-stacks
  * stackDown		  reduce entries from panel-history-stacks
  * panelTrans  	   	  handles transition with specified targetContainer
@@ -46,47 +45,41 @@
 
 // TODOS:		
 		// ==== OUT OF REACH ====	
-		// search for whiteout workaround = promise() scrollto blocked, scroll down page, open openover, changePage in popover							
-		// change the plugin into a light version = no elements added/removed from DOM = work with what JQM does or user inputs
-		// make a non JS-version?
-		// speed up
-		// find a way to update URL if page is loaded into panel
+		// find a whiteout workaround = promise() scrollto blocked, scroll down page, open openover, changePage in popover, whiteout screen							
+		// non JS-version and or light version?
+		// speed up, cut file size
 		
 		// ==== MISC ==== 				
-		// make bottom-spacing on fixed-element-bottom a settable option, make options altogether 
-		// add 2 more popovers to page5 one fixed-bottom and one midscreen. 		
-		// Find another solution to position triangles - triangel is gone in FF...
-		// make triangle show up on every page vs. first page only
-		// make menu & main into data-sticky-panel="true", instead of referencing them by name all the time				
-		// increase menu content min-height to page-height-toolbars, so scrollview runs full page height. Now only content height
-		
-		// ==== GEN PRIO ====
-		// activeClass on buttons after backward transition 
-		// prefetching and form submit need to be checked		
-		// dialogs not working, need pageContainer set correctly like loader!
-		// if two multiview pages are in the DOM, need to make sure all routines are only counting the page currently in focus = check for active wrapper		
-		// set height of elements in fullscreen mode. Background panels should get height of active popup panel active page on every hide/show/changepage		
-		// >find out why fixed footer is badly mispositioned on new JQM pages added to DOM (because now 2 pages go into height equation...)
-		// >footer not hiding on scrollstart
-		// >footer page4, if externally loaded, sometimes ends up on top, I think because it's not inside toolbar-selector, check why					
-		// >ui-element-fixed-bottom/top should not SHOW! automatically! HIDE effect is also... re-positioning not toggling, re-do		
-		// >fixed footer on page5 is not fixed... although it should be...
-		// reset URL path to main/fullwidth data-show="first" on hideAllPanels(), changePage to data-show="first"!	 window.location.hash = 'hash-value' to update URL
-		// rework panel min-height menu/main/fullw to exclude global header/footer height, beware of additional elements inside body with height (pages-only get ui-page-active, dialogs?, loader?)		
-		// Panel height is not adapted to background= longest active page on a panel				
-		
-		// ==== NAV PRIO ====
-		// redo back button index to align window.history, $.mobile.history and panel.history... 
-		// back button on external pages added to DOM does not work, only if push-state supported!
-		// panel-cache = loose added pages when traverising away from them...		
-		// check what do to with window.historyCounter when panel closes
-		// align $.mobile.url.history-activeIndex with windowCounter and panelHistory...
-		
-		
-		
-		
-		
+		// make sure prefetching, form submit, dialogs work 											
+		// make options		
+		// make menu & main into data-sticky-panel="true", instead of referencing them by name all the time												
 
+		// ==== HISTORY PRIO ====
+		// sync crumbs button and back button if both active at the same time
+		// rerun hash transitions to make sure JQM takes over at correct time
+		// back button on external pages added to DOM does not work, only if push-state supported!		
+		// check what do to with window.historyCounter when panel closes
+		
+		// ==== FOOTER PRIO ====
+		// footer is jumping up on non-multiview pages, if they are starting pages. If starting on multiview, they are sitting tight.		
+		// redo demo to include page with fixed-top and fixed-bottom element
+		// find out why fixed footer is badly mispositioned on new JQM pages added to DOM (because now 2 pages go into height equation...)		
+		// footer not hiding on scrollstart
+		// footer page4, if externally loaded, sometimes ends up on top, I think because it's not inside toolbar-selector, check why					
+		// ui-element-fixed-bottom/top should not SHOW! automatically! HIDE effect is also... re-positioning not toggling, re-do		
+		// fixed footer on page5 is not fixed... although it should be...
+		// find out why footer blinks = repositions on changePage and overwrite if its a panel transition, this event also stalls scrollview
+						
+		// ==== FOUND ERRORS ====
+		// history.replaceState is not a function on iPad if loading a new page into a panel 
+		// line 2476 from.data("page" undefined, if page2 (crisscross)>page1>page3
+		// scrollview stalls sometimes, too many events firing?
+		// panels flickering sometimes
+		// is there a transition queue to block new transitions firing before current transition is done, causes Jquery timeout error
+		// deeplink panel does not show sometimes, if hideAllPanels on orientationchange, it show-hides (currently commented out)
+		
+		
+		
 (function( $, window) {	
 	
 	$.widget("mobile.multiview",$.mobile.widget, {
@@ -166,7 +159,7 @@
 										
 			// setup			
 			self.panelDeepLink();
-			// commented out because it also fires from _mainEvents pageshow binding (avoid calling twice)			
+			// commented out because it also fires from _mainEvents pageshow binding (so avoid calling twice)			
 			// self.setupSplitview("from init");
 			self._setupPopovers();
 			self._mainEventBindings();						
@@ -182,24 +175,27 @@
 			// add internal page status on all panel pages to enable panel-cache
 			$('div:jqmData(wrapper="true") div:jqmData(role="page")').attr('data-internal-page', 'true');
 			  
+			// if a wrapper page is pulled into the DOM, it doesn't get data-urls, need to assign by hand
+			$('div:jqmData(wrapper="true"):jqmData(external-page="true") div:jqmData(role="page")').each(function(index) {				
+				$(this).attr('data-url', $(this).attr('id') );
+				});
 			
 			
 			// if panels, fire splitscreen
-			if ( $("div:jqmData(panel='main')").length ||  $("div:jqmData(panel='menu')").length || $("div:jqmData(panel='fullwidth')").$full.length ) {
+			if ( $("div:jqmData(panel='main')").length ||  $("div:jqmData(panel='menu')").length || $("div:jqmData(panel='fullwidth')") ) {
 				self.splitScreen("init");
 				} 
 				
 			// fire display mode set and page "make-up"
 			self.gulliver();
 			self.checkWidth();						
-			self.panelHeight();
-						
+			self.panelHeight();						
 			},
 
 		// setup, toggling popovers
 		_setupPopovers: function() {
 			
-			var self = this;
+			var self = this;				
 			
 			// setup
 			// TODO: check historyCounter when popovers close! 
@@ -258,17 +254,23 @@
 					hideAllPanels();
 					}
 				});
+				
+			// (7) on orientationchange
+			// works but breaks deeplink
+			// $(window).bind('orientationchange', function(event){ 
+				// hideAllPanels();
+				// });			 
 
 
 			// hidePanels
 			function hideAllPanels () {
-				$('.toggle_popover').removeClass('ui-btn-active');
-				// remove all expandHeight() formatting
-				$('.ui-expand').css({'height':'','overflow-y':'auto'});
-																							   
+				
+				$('.toggle_popover').removeClass('ui-btn-active');				
+				
 				// run through all panels
 				// TOOD: This works, but if I use self.vars.$popoverss it doesn't... always missing 1 element... 
-				$("div:jqmData(panel='popover'), .ui-popover-mode div:jqmData(panel='menu'), .ui-fullscreen-mode div:jqmData(panel='menu')").each(function(index) {
+				$("div:jqmData(panel='popover'), .ui-popover-mode div:jqmData(panel='menu'), .ui-fullscreen-mode div:jqmData(panel='menu')").each(function(index) {				
+				
 					if( $(this).attr('status') == 'visible' ) {
 						$(this).attr('status', 'hidden')			
 								// pop transition
@@ -279,14 +281,17 @@
 									.not("div:jqmData(show='first')")
 									.removeClass('ui-page-active')
 								.find(".ui-btn-active")
-									.removeClass('ui-btn-active');												
-						
+									.removeClass('ui-btn-active');																								
+				
 						// fullscreen handler
 						if ( $('html').hasClass('ui-fullscreen-mode') ) {
+							//reactivate background panels
+							$('.ui-panel-hidden').removeClass('ui-panel-hidden');
+				
 							//reactivate background pages							
 							$('.reActivate').addClass('ui-page-active').removeClass('reActivate');
 							}
-						
+				
 						// clear history of active (= visible) popovers. Menu only included in popover-mode!
 						// TOOD: check if the windowHistoryCounter needs to be reset here, too												
 						if ( typeof $(this).data("stack") != 'undefined') {
@@ -296,18 +301,25 @@
 								 $(this).data("stack").pop();
 								}
 							}
-							
+				
 						// make sure all externally loaded pages inside this panel are dropped again
 						// TODO: questions is if a panel-page like this is also cached by the browser
 						$(this).find('div:jqmData(external-page="true")').remove();
-
+				
 						}
 					});
-					// clean up pop() transition
+					// clean up pop() transition 
 					window.setTimeout( function() {						
-						$('div:jqmData(role="panel")').removeClass('reverse out pop');
+						$('div:jqmData(role="panel")').removeClass('reverse out pop');										
 						}, 350);
-					
+						
+					// clean up url and remove last visited page on panel from URL
+					/* 
+					var rem = $('html').data("rememberState");
+					if (rem) {
+						history.replaceState('null',rem.title,rem.url  );																
+						}					
+					*/
 				}
 			
 			// show panel routine
@@ -315,7 +327,7 @@
 			
 				// show/hide toggle
 				var $correspond = $(this).jqmData("panel"),
-					$popPanel = $('div:jqmData(id="'+$correspond+'")');	
+					$popPanel = $('div:jqmData(id="'+$correspond+'")');					
 				
 				// NOT ACTIVE switchable option = allow to hide/show menu in splitview mode, too
 				if ( $(this).jqmData('panel') == "menu" && $('html').hasClass('switchable') ) {														
@@ -325,17 +337,18 @@
 					
 				if ( $popPanel.attr('status') == 'visible' ) {
 					
-					// (7) clicking on active popover button closes this popover agin
+					// (8) clicking on active popover button closes this popover agin
 					hideAllPanels();
 					} else {
-						// (8) clicking on a not-active trigger button closes all other popovers first
-						hideAllPanels();
-												
+						
+						// (9) clicking on a not-active trigger button closes all other popovers first
+						hideAllPanels();																											
+							
 						// calculate center position if trigger-class is provided
 						if ( $popPanel.hasClass('ui-popover-center') ){							
 							$popPanel.css("left", (($(window).width() - $popPanel.outerWidth()) / 2) + $(window).scrollLeft() + "px");
 							}
-
+						
 						// opens popover
 					    $popPanel.attr('status', 'visible')									 
 								 // pop() transition
@@ -346,11 +359,21 @@
 						
 						// clean up pop transition
 						window.setTimeout( function() {							
-							$popPanel.removeClass('in');
+							$popPanel.removeClass('in');							
 							}, 350);
+						
+						// remembers url for history.replaceState() once panel closes again
+						/*
+						var $myState = {};					
+							$myState.title = document.title;
+							$myState.url = location.href;														
+						$('html').data("rememberState", $myState);						
+						*/
 							
 						// fullscreen handler	
 						if ( $('html').hasClass('ui-fullscreen-mode') ) {							
+							// hide background panel, so popover does not drop below it							
+							$('div:jqmData(panel="main").ui-panel-active, div:jqmData(panel="fullwidth").ui-panel-active').addClass('ui-panel-hidden');
 							
 							//remove all other active pages to make sure popover is visible $popPanel.find('.ui-page-active')	
 							//assign a reActivate flag to activate pages again once this panel hides
@@ -359,14 +382,12 @@
 								.addClass("reActivate")
 								.removeClass('ui-page-active');							
 							}
-												
+
 						$(this).addClass('ui-btn-active');				
 						}				
-					
-				// tweak content height in fullscreen mode
-				self.expandHeight($popPanel.find('.ui-page-active'), "toggle");
+									
+				});	
 				
-				});				
 			},			
 			
 		// back button handling on panel pages
@@ -446,18 +467,19 @@
 				// run through all links in menu with data-panel specified and replace the menu button with the previous button
 				$('div:jqmData(panel="main") div:jqmData(role="page")').each(function(index) {
 
-						var $header = $(this).find("div:jqmData(role='header')"),
-							$button = $header.children('a.ui-btn-left:first-child'),
-							$oldButton = '<a data-iconpos="notext" data-theme="b" class="ui-home ui-btn-left ui-btn ui-btn-up-b ui-btn-icon-notext ui-btn-corner-all ui-shadow" data-direction="reverse" data-transition="slide" data-icon="home" data-role="button" href="#" title="home"><span class="ui-btn-inner ui-btn-corner-all"><span class="ui-btn-text">Home</span><span class="ui-icon ui-icon-home ui-icon-shadow"></span></span></a>';					
+						var $header = $(this).find("div:jqmData(role='header')"), $btn, $oldButton;
 						
-						// if it's a controlgroup
-						if ( $header.find('div:first-child').hasClass('ui-controlgroup') ) {	
-							// make it a single button again
-							$header.children('.menuToggle').replaceWith( $oldButton );						
-							} else {					
-								// if there is only a menu toggle button, this should be removed
+						// check if a button was stored on this page = this will now be a controlgroup
+						if ( $(this).jqmData('storeBtn') ) {
+							// button stored, replace with button
+							$btn = $(this).data("storeBtn");
+							$oldButton = '<a class="ui-crumbs ui-btn-left ui-btn ui-btn-icon-left ui-btn-corner-all ui-shadow ui-btn-up-a" data-icon="'+$btn.buttonIcon+'" data-role="button" href="'+$btn.buttonTarget+'" data-target="'+$btn.buttonTarget+'" data-theme="a"><span class="ui-btn-inner ui-btn-corner-all" aria-hidden="true"><span class="ui-btn-text">'+$btn.buttonText+'</span><span class="ui-icon ui-icon-arrow-l ui-icon-shadow"></span></span></a>'																																																																																																														
+							$header.children('.mergedButtons').replaceWith( $oldButton );	
+								} else {
+								// no button, just remove menu toggle button
 								$header.children('.menuToggle').remove();
 								}
+												
 						});			
 				},
 					
@@ -499,7 +521,7 @@
 			},
 				
 		splitView: function () {
-		
+			
 			if ( $('html').hasClass('ui-splitview-mode') || $('html').is('ui-fullscreen-mode') ) {														
 					return;
 					}
@@ -534,19 +556,24 @@
 					$button = $header.children('a.ui-btn-left:first-child');
 					
 				if ( $button.length && $header.children('.menuToggle').length == 0 ) {
-				// merge existing left button into controlgroup
-					var $buttonTarget = $button.attr('href'),
-						$buttonIcon = $button.jqmData('icon'),
-						$buttonTitle = $button.attr('title'),
-						$buttonText = $button.text(),
-						$buttonRel = $button.attr('rel');
-																										
-					$button.replaceWith('<div class="ui-home popover-btn iconposSwitcher-a toggle_popover menuToggle ui-btn ui-btn-inline ui-btn-icon-left ui-btn-corner-all ui-shadow ui-btn-up-b" data-type="horizontal" data-role="controlgroup"><a class="ui-controlgroup-btn-notext ui-btn ui-btn-up-a ui-btn-inline ui-btn-icon-notext ui-corner-left" data-iconpos="notext" data-inline="true" data-icon="'+$buttonIcon+'" data-role="button" href="'+$buttonTarget+'" rel="'+$buttonRel+'" title="'+$buttonTitle+'" data-theme="b"><span class="ui-btn-inner ui-corner-left"><span class="ui-btn-text">'+$buttonText+'</span><span class="ui-icon ui-icon-arrow-l ui-icon-shadow"></span></span></a><a class="popover-btn toggle_popover ui-controlgroup-btn-left ui-btn ui-btn-up-b ui-btn-inline ui-btn-icon-left ui-corner-right ui-controlgroup-last" data-iconpos="left" data-inline="true" data-panel="menu" data-icon="menu" data-role="button" href="#" data-theme="b"><span class="ui-btn-inner ui-corner-right ui-controlgroup-last"><span class="ui-btn-text">Menu</span><span class="ui-icon ui-icon-menu ui-icon-shadow"></span></span></a></div>');	
-						
-					// or insert plain menu button if no button exists
-					} else {													
+										
+				// store old button and merge into controlgroup
+					var $btn = {};												
+						$btn.buttonTarget = $button.attr('href');
+						$btn.buttonIcon = $button.jqmData('icon');						
+						$btn.buttonText = $button.text();						
+						$btn.buttonTarget = $button.jqmData('target');
+					
+					$(this).jqmData('storeBtn',$btn);
+																									
+					$button.replaceWith('<div class="mergedButtons ui-corner-all ui-controlgroup ui-controlgroup-horizontal" data-type="horizontal" data-role="controlgroup"><a class="ui-controlgroup-btn-notext ui-btn ui-btn-up-a ui-btn-inline ui-btn-icon-notext ui-corner-left" data-iconpos="notext" data-inline="true" data-target="'+$btn.buttonTarget+'" data-icon="'+$btn.buttonIcon+'" data-role="button" href="'+$btn.buttonTarget+'" rel="'+$btn.buttonRel+'" title="'+$btn.buttonTitle+'" data-theme="b"><span class="ui-btn-inner ui-corner-left"><span class="ui-btn-text">'+$btn.buttonText+'</span><span class="ui-icon ui-icon-arrow-l ui-icon-shadow"></span></span></a><a class="popover-btn toggle_popover ui-controlgroup-btn-left ui-btn ui-btn-up-b ui-btn-inline ui-btn-icon-left ui-corner-right ui-controlgroup-last" data-iconpos="left" data-inline="true" data-panel="menu" data-icon="menu" data-role="button" href="#" data-theme="b"><span class="ui-btn-inner ui-corner-right ui-controlgroup-last"><span class="ui-btn-text">Menu</span><span class="ui-icon ui-icon-menu ui-icon-shadow"></span></span></a></div>');	
+											
+					} else {
+						// otherwise insert plain menu button if no button exists
 						$header.prepend('<a data-iconpos="left" data-inline="true" data-icon="menu" data-role="button" href="#" data-theme="a" class="ui-btn-up-a ui-btn ui-btn-icon-left ui-btn-corner-all ui-shadow ui-home popover-btn iconposSwitcher-a toggle_popover menuToggle" data-panel="menu"><span class="ui-btn-inner ui-btn-corner-all"><span class="ui-btn-corner-all"><span class="ui-btn-text">Menu</span><span class="ui-icon ui-icon-menu ui-icon-shadow"></span></span></span></a>');																	
-						}						
+						
+						}
+						
 				});
 						
 				// switchable option, this also allows to hide the menu in splitscreen mode					
@@ -625,8 +652,7 @@
 		 				
 		
 		// scrollview handler
-		scrollMe: function ( panel ) {	
-				
+		scrollMe: function ( panel ) {					
 					// page selector
 					var $page = panel.find('div:jqmData(role="page")');
 												
@@ -666,7 +692,7 @@
 			
 		// helper
 		// TODO: would be nice to reference from inside JQM
-		findClosestLink: function (ele) {
+		findClosestLink: function (ele) {			
 			var self = this;
 			while (ele){
 				if (ele.nodeName.toLowerCase() == "a"){
@@ -679,8 +705,7 @@
 			
 		// helper
 		// TODO: would be nice to reference from inside JQM
-		getClosestBaseUrl: function ( ele, documentBase ) {	
-
+		getClosestBaseUrl: function ( ele, documentBase ) {				
 			var self = this;
 						
 			// Find the closest page and extract out its url.			
@@ -773,50 +798,37 @@
 					$firstPage.find('.back_popover').buttonMarkup();											
 					}
 				});		
-				
+			
 			}, 
+							
+		checkWidth: function( fromWhere ) {					
+					
+			var self = this, 
+				$width, $menuWidth;
 			
+			// if menu panel width is set e.g. to width: 25%, min-width: 250px, the panels
+			// will overlap if 25% < 250px until popover mode is fired. Corrected by this
+			// TODO: now bound to or-change, also bind to resize?			
+			if (self.framer() != 'small' && $('html').hasClass('ui-splitview-mode') ) {
 				
-		checkWidth: function( fromWhere ) {
-			var self = this;		
-			// adjusts width of ui-content, because 15px padding somehow always messes things up
-			// TODO: I don't like this anymore. Live without?
-			
-			if (self.framer() != 'small') {
-												
-				var $tweakContent = $('div:jqmData(panel="main") div:jqmData(role="page") div:jqmData(role="content")'),
-					$tweakHeader =  $('div:jqmData(panel="main") div:jqmData(role="page") div:jqmData(role="header")');																								
-					
-				if ( $('div:jqmData(panel="menu")').width() == '250' ) {
-					
-					// IMPROVE - override content 15px JQM-CSS
-					var $delta =  $('div:jqmData(panel="menu")').outerWidth()-Math.round(parseFloat($('div:jqmData(panel="main")').css('margin-left'))),
-						$newWidth = $(window).width()-250,
-						$oldWidth = $(window).width(),
-						$oddPaddingWidth = 30;
-						
-					
-					// if splitview is active
-					if ( $('html').hasClass('ui-multiview-active') ) {
-						
-						// and SPLITVIEW MODE, tweak content, make scrollbars visible
-						if ( $('html').hasClass('ui-splitview-mode') ) {								
-						
-							$tweakContent.css({'margin-left':$delta}).width( $newWidth-$oddPaddingWidth );
-							$tweakHeader.css({'margin-left':$delta}).width( $newWidth );;
-							} else {
-								// in POPOVER, undo, make scrollbars visible
-								$tweakContent.css({'margin-left':''}).width( $oldWidth-$oddPaddingWidth );
-								$tweakHeader.css({ 'margin-left':''}).width( $oldWidth );
-								}
-							} 																					
-						} 																		
-			
-				} // end if framed != small
+				var $detour = $('div:jqmData(panel="menu")').offsetParent(),
+					$width = $detour.innerWidth(),					
+					$menuWidth = $('div:jqmData(panel="menu")').outerWidth();	
+				
+				// save this for later... gets width minus scrollbars across all browsers
+				// if setting main panel with does not work, use $('body').innerWidth() - $menuWidth!
+				
+				// should always be like this, either menu width = 250, then its overall -250
+				// or it's >250, then it also is width-menuWidth
+				$('div:jqmData(panel="main")').css({'width':$width-$menuWidth});
+				$('div:jqmData(panel="main") div:jqmData(role="page")').css({'margin-left':$menuWidth, 'width':$width-$menuWidth});
+				$('div:jqmData(panel="menu") div:jqmData(role="page")').css({'width':$menuWidth});
+				}
+	
 			}, 
 		
 		panelHeight: function (page) {
-		
+				
 				// sets height of background panels (should be getscreenHeight() less any 
 				// global header/footer) the calculated height is inherited to panel-pages, 
 				// this way getscreenheight effectivelyonly managed the wrapper page, with 
@@ -829,13 +841,14 @@
 				
 				// set panel height to getScreenHeight less global header/footer
 				// this will only set panel-height! both wrapper and nested page
-				// -height is still set by  JQM getScreenHeight()
+				// height is still set by  JQM getScreenHeight()
 				$('div:jqmData(role="panel")').not('.ui-popover').css({'height': $.mobile.getScreenHeight()-$globalHeader-$globalFooter})							
 				
 			},
 		
 		
 		framer: function () {
+		
 			var self = $(this);
 				// layout mode - need to use $(window), because $this fails in IE7+8...
 				// TODO: add supersize (TV)?
@@ -847,36 +860,6 @@
 							var framed = "medium";
 							}	
 			return framed;			
-			},
-		
-		
-		expandHeight: function (masterPage, action) {
-			
-			var self = this;			
-					
-			if ( $('html').hasClass('ui-fullscreen-mode') ) {				
-				
-				if (action == "toggle") {
-				
-						// popover will be shown = make MAIN page height equal POPOVER page height to enable device scrolling
-						var $popHeight = masterPage.find('div:jqmData(role="content")').outerHeight(),
-
-							// make popover height at least window.innerHeight
-							$benchMarkHeight = ($popHeight < window.innerHeight) ? window.innerHeight : $popHeight,
-							$targetPanels = $('div:jqmData(panel="main"), div:jqmData(panel="fullwidth")');		
-						
-						// set popover to be at least window.innerheight, adjust for padding
-						masterPage.find('div:jqmData(role="content")').css({'height': $benchMarkHeight-30});
-						
-						// set background page to enable scrolling, adjust for padding
-						$targetPanels.find('.ui-page-active div:jqmData(role="content")').addClass('ui-expand').css({'height': $benchMarkHeight-30, 'min-height':'50%','overflow-y':'hidden'});									
-
-					} else {
-					// pageChange on panel - adjust
-					
-					}
-				
-				}				
 			},			
 			
 		// panel navigation and panel hash routines
@@ -930,6 +913,8 @@
 
 					// keep count
 					++self.vars.$windowHistoryCounter;
+					
+					}
 					/*	
 					console.log("===============  panel up  ================");
 					console.log("length="+$.mobile.urlHistory.stack.length);	
@@ -941,8 +926,6 @@
 					console.log("stackUp menu "+$('div:jqmData(panel="menu")').data('stack') );
 					console.log("stackUp main "+$('div:jqmData(panel="main")').data('stack') );					
 					*/
-					}
-					
 			}, 
 			
 		// reduce panel history stacks
@@ -988,7 +971,7 @@
 		},
 			
 		// clear active button classes	
-		clearActiveClasses: function ( trigger, useBruteForce, toPage, fromPage, link ) {						
+		clearActiveClasses: function ( trigger, useBruteForce, toPage, fromPage, link ) {										
 				
 				var self = this;
 				
@@ -1000,18 +983,27 @@
 					}
 
 				// clear active links if to and from page are on the same panel
-				if (toPage.closest('div:jqmData(role="panel")').jqmData("id") == fromPage.closest('div:jqmData(role="panel")').jqmData("id")  ) {												
-						// show some color
+				if (toPage.closest('div:jqmData(role="panel")').jqmData("id") == fromPage.closest('div:jqmData(role="panel")').jqmData("id")  ) {																		
+						// show active color for at least 1sec
 						window.setTimeout( function() {							
 							fromPage.find('.ui-btn').removeClass( $.mobile.activeBtnClass );
 						},1000 );
 					} 
+				
+				
+				// also clear active links if reverse transition on menu/main				
+				if (trigger == "panelHash" && ( toPage.closest('div:jqmData(panel="main")') || toPage.closest('div:jqmData(panel="menu")') ) ) {
+						window.setTimeout(function() {						
+						$('div:jqmData(panel="main"), div:jqmData(panel="menu")').find(".ui-page-active .ui-btn").removeClass( $.mobile.activeBtnClass );
+						},500 );
+					}
+				
 														
 			},
 			
 		// panel transition handler
 		panelTrans: function (event) {
-			
+		
 			var self = this,
 			
 			/* --------------------------- start JQM copy ------------------------ */
@@ -1064,11 +1056,10 @@
 			// check for target-panel specified in the link
 			var $targetPanel=$link.jqmData('target');		
 			
-			if ($targetPanel) {
-				
-				// stop JQM
+			if ($targetPanel) {				
+				// stop JQM - 
 				event.preventDefault();
-						
+										
 				/* --------------------------- start JQM copy ------------------------ */
 				// TODO: try referencing directly into JQM, this is duplicate code
 			
@@ -1162,11 +1153,12 @@
 					$currPanelActivePage = $currPanel.children('div.'+$.mobile.activePageClass),
 					url = $.mobile.path.stripHash($link.attr("href")),
 					from = undefined,
-					hash = $currPanel.jqmData('hash');										
-
+					hash = $currPanel.jqmData('hash');														
+					
 				//if link refers to an already active panel, stop default action and return
 				if ($targetPanelActivePage.attr('data-url') == url || $currPanelActivePage.attr('data-url') == url) {				
 					if (isRefresh) { //then changePage below because it's a pageRefresh request								
+						//console.log("panelTrans refresh, goto="+href);
 						$.mobile.changePage(href, {fromPage:from, transition:'fade', reverse:reverse, changeHash:false, pageContainer:$targetContainer, reloadPage:isRefresh});
 						} else { //else preventDefault and return																
 								event.preventDefault();
@@ -1177,6 +1169,7 @@
 					else if ($targetPanel != $currPanelID) {					
 						var from=$targetPanelActivePage,
 							hashChange = $targetContainer.jqmData('hash') == 'history' ? true : false;														
+							//console.log("panelTrans crosspanel, goto="+href);
 						$.mobile.changePage(href, {fromPage:from, transition:transition, changeHash:hashChange, reverse:reverse, pageContainer:$targetContainer});
 						}
 						//if link refers to a page inside the same panel, changePage on that panel
@@ -1186,7 +1179,7 @@
 									// set scrollTop blocker									
 									self.vars.$panelTransBlockScrollTop = true;
 									}
-							
+								//console.log("panelTrans insidePanel, goto="+href);
 								var from=$currPanelActivePage,
 									hashChange = $targetContainer.jqmData('hash') == 'history' ? true : false;
 								$.mobile.pageContainer=$currPanel;														
@@ -1195,6 +1188,15 @@
 								$.mobile.activePage=$('div:jqmData(id="main") > div.'+$.mobile.activePageClass+', div:jqmData(id="fullwidth") > div.'+$.mobile.activePageClass);
 								}																														
 								
+				// set a flag for pushState passing along the url to load. 
+				// if pushState is supported and a new page is loaded (isPath),
+				// JQM will grab the URL (which should be xyz.html and append
+				// it to the wrapper page vs. replacing the wrapper page and 
+				// breaking back button/history along the way. This flag will
+				// be reset with every panelTransition and reset inside the
+				// pushStateHandler
+				$('html').data('pushStateFlag', url);
+							
 				// TODO: same as context, handler, create fakeEvent and fakeData
 				var fakeEvent = {},
 					fakeData = {};
@@ -1241,6 +1243,7 @@
 		
 		// panel hashchange handler
 		panelHash: function( e, hash, fullHash ) {
+						
 				// remove panelHash again
 				var self = this;						
 				
@@ -1272,14 +1275,14 @@
 				// joker enables more than one subsequent backward transitions				
 				if ( self.vars.$ignoreMyOwnNextHashChange == false  && self.vars.$hashJoker == 0 ) {	
 					self.vars.$ignoreMyOwnNextHashChange = true;					
-					self.vars.$hashJoker = 1;				
+					self.vars.$hashJoker = 1;					
 					return;
 					}					
 
 				// first context hashChange is correctly blocked before, 
 				// 2nd one passes and is stopped here
 				if ( self.vars.$contextBlockNextHashChange == true ) {					
-					self.vars.$contextBlockNextHashChange = false
+					self.vars.$contextBlockNextHashChange = false;					
 					return;
 					}
 				
@@ -1342,11 +1345,11 @@
 						if ( activePop.length>0 && activePop.data("stack").length > 1 ) {	
 							var pickFromStack = activePop.data("stack"),
 								gotoPage = pickFromStack[pickFromStack.length-2];							
-								console.log("to-defined popover I-1-a gotoPage="+gotoPage);
+								//console.log("to-defined popover I-1-a gotoPage="+gotoPage);
 							} else {								
 								// (b) if all popovers are reset, check for highest fullwidth or main/menu panel
 								var gotoPage = self._mmHandler ( longest.length, longest, longestLen);																																
-								console.log("to defined highest I-1-a gotoPage="+gotoPage);
+								//console.log("to defined highest I-1-a gotoPage="+gotoPage);
 								} 
 						
 							// need to declare fromPage here, because otherwise JQM removes .ui-page-active from the wrong panel (= active page in main panel);
@@ -1359,7 +1362,7 @@
 							// (2) basic setup of all panels, n=1, base setup, JQM should do this
 							var gotoPage = to;							
 							//$.mobile.changePage( to, changePageOptions );
-							console.log("here? I-2, history counter="+self.vars.$windowHistoryCounter+" to="+to )
+							// console.log("here? I-2, history counter="+self.vars.$windowHistoryCounter+" to="+to )
 							// window.history.go(-self.vars.$windowHistoryCounter);
 							self.vars.$windowHistoryCounter = 1;
 							}	
@@ -1378,11 +1381,11 @@
 							if ( activePop.length>0 && activePop.data("stack").length > 1 ) {									
 								var pickFromStack = activePop.data("stack"),
 									gotoPage = pickFromStack[pickFromStack.length-2];
-									console.log("no to, popovers II-1-a gotoPage="+gotoPage);
+									//console.log("no to, popovers II-1-a gotoPage="+gotoPage);
 								} else {
 									// (b)											
 									var gotoPage = self._mmHandler(longest.length, longest, longestLen);															
-									console.log("no to, highest, II-1-b gotoPage="+gotoPage);
+									//console.log("no to, highest, II-1-b gotoPage="+gotoPage);
 									}
 									
 									var fromPage = $( gotoPage ).closest(':jqmData(role="panel")').find('.ui-page-active'),
@@ -1394,14 +1397,14 @@
 									// (2)										
 									// need to make a backward/forward transition here... first page of the app. 
 									if( longest.length/n == 1 ) {
-											console.log("no to II-2-x gotoPage="+gotoPage);
+											// console.log("no to II-2-x gotoPage="+gotoPage);
 											// window.history.back();	
 											var gotoPage = "none";
 											//console.log("longest.length="+longest.length+" n="+n+" longest.length/n="+longest.length/n)
 											
 										} else {																
 											var gotoPage = $.mobile.firstPage;
-											console.log("no to II-2 gotoPage="+gotoPage);
+											// console.log("no to II-2 gotoPage="+gotoPage);
 											// $.mobile.changePage( $.mobile.firstPage, changePageOptions );									
 											}
 										
@@ -1418,8 +1421,8 @@
 				self.stackDown( "panelHash", gotoPage.replace(/[#]/, "") );
 						
 				// call active class clearing
-				// maybe not... because also fires with regular JQM transitions.
-				// TODO: how to set active class on back-btn?
+				// maybe not... because also fires with regular JQM transitions
+				// TODO: COMMENT OUT
 				// self.clearActiveClasses( "panelHash", true, $(gotoPage), fromPage );
 				
 				// not sure I need to set this.
@@ -1460,7 +1463,7 @@
 					}
 				// load deeplink page
 				$.mobile.changePage($deepPage, {fromPage:$deepFrom, transition:"slide", reverse:true, changeHash:false, pageContainer:$deepPanel});
-				},200);
+				},500);
 			
 			// tidy up HTML deeplink
 			$('html').removeData("multiviewDeeplink");
@@ -1510,8 +1513,9 @@
 				// $popLast1.data("stack").pop();								
 				return gotoPage;			
 			}
-			/*
-			/* // (b-3)[may want to keep] working selector for more than 3 panels with highest stack
+			
+			/* 
+			// (b-3)[may want to keep] working selector for more than 3 panels with highest stack
 			if (howMany == 3) {
 				var $last = [];
 				for ( var i = 0; i < longest.length; i++) {							
@@ -1604,20 +1608,21 @@
 
 						
 			// fire splitviewCheck on orientationchange (and resize)
-			$(window).bind('orientationchange', function(event){						
+			$(window).bind('orientationchange', function(event){					
 				self.splitScreen(event);
 				self.panelHeight();
+				self.checkWidth();
 				});
 						
 			
 			// panel history handler
-			$(window).bind('hashchange', function( e ) {				
+			$(window).bind('hashchange', function( e ) {					
 				self.panelHash( e, location.hash, "#"+location.pathname )													
 				});						
 			
 			
 			// history stack management with crumbs buttons active
-			$('.ui-crumbs').live('click', function() {
+			$('.ui-crumbs').live('click', function() {				
 				var $this = $(this);				
 				self.vars.$ignoreMyOwnNextHashChange = false;				
 				self.vars.$crumbsBlockStackUp = true;
