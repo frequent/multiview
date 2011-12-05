@@ -12,6 +12,8 @@ Jquery Mobile Multiview Plugin
 * 2011-11-23: fixed activeclass removal (again), fixed event bubbling, fixed plugin setup running for +1 wrapper pages in DOM, removed stuff not necessary anymore 
 * 2011-11-28: enabled deep-linking, started panel-cache-management, partially fixed flickering footer, broke vertical scrolling (for now... )
 * 2011-12-01: fixed deep-linking, done panel-cache-management, reworked CSS to fix scrolling, scrollbars showing, panel positioning, fixed jquery panel width and height
+* 2011-12-05: added new options: _ui-menu-button-flex_ to place menu button anywhere on page, _data-autoshow="once"_ to open a popover once on load
+* 2011-12-06: added switchable option to hide/show menu in splitview mode, bug fixed panel height and width, reworked history (still not good, but improving)
 *****
 
 

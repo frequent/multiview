@@ -5,11 +5,10 @@
 		<title>multiview plugin - page 2</title>
 		
 		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-		<!-- <link rel="stylesheet" href="http://code.jquery.com/mobile/1.0rc2/jquery.mobile-1.0rc2.min.css" /> -->
-		 <link rel="stylesheet" href="http://code.jquery.com/mobile/1.0/jquery.mobile-1.0.min.css" />	
-         <link rel="stylesheet" type="text/css" href="LOC/style/jquery.mobile.scrollview.css" />
-         <link rel="stylesheet" type="text/css" href="LOC/style/jquery.mobile.multiview.css" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />		
+		<link rel="stylesheet" href="http://code.jquery.com/mobile/1.0/jquery.mobile-1.0.min.css" />	
+        <link rel="stylesheet" type="text/css" href="LOC/style/jquery.mobile.scrollview.css" />
+		<link rel="stylesheet" type="text/css" href="LOC/style/jquery.mobile.multiview.css" />
 
 </head>
 <body>
@@ -21,7 +20,7 @@
 		<!-- ////////////// embedded menu panel /////////////  -->
 		<div data-role="panel" data-id="menu" data-hash="history" data-panel="menu">				  		 	 
 		
-			<div data-role="page" id="menuPage" data-show="first" class="menuPage" data-theme="a">
+			<div data-role="page" id="menuPage" data-show="first" data-theme="a">
 				<div data-role="header" data-position="fixed" data-theme="a">
 					<h1>menu</h1>
 				</div>
@@ -128,8 +127,7 @@
 						<a href="#" data-transition="pop" data-theme="a" data-role="button" data-panel="popover2" data-icon="exit" data-inline="true" data-iconpos="left" class="toggle_popover">Pop2</a>
 					</div>
 				</div>
-				<div data-role="content">
-				
+				<div data-role="content">						
 						<div data-role="collapsible-set">
 								<div data-role="collapsible" data-collapsed="true">
 										<h3 class="col_Head blockHeading">Setup</h3>
@@ -212,11 +210,7 @@
 								</div>
 								
 						</div>
-				
-				
-					
-					
-					
+						<div class="ui-menu-button-flex"></div>
 										
 				</div>
 				
@@ -284,7 +278,7 @@
 		</div><!-- end panel -->
 		
 		<!-- ///////////////// popover panel 1 ////////////  -->
-
+		
 		<div data-role="panel" data-id="popover1" data-panel="popover" data-hash="history" class="ui-element-fixed-top  ui-triangle-top popover1">
 			
 			<div data-role="page" data-show="first" id="popover1-1" class="popoverPage" data-theme="a">
@@ -449,7 +443,6 @@
 		<script type="text/javascript" src="LOC/scripts/plugins/jquery.easing.1.3.js"></script>
         <script type="text/javascript" src="LOC/scripts/plugins/jquery.mobile.scrollview.js"></script>
 		<script type="text/javascript" src="LOC/scripts/plugins/jquery.mobile.multiview.js"></script>
-		
 			
 </html>
 

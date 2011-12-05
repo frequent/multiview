@@ -2663,9 +2663,7 @@ $.widget( "mobile.page", $.mobile.widget, {
 	};
 
 	// Load a page into the DOM.
-	$.mobile.loadPage = function( url, options ) {		
-	
-		
+	$.mobile.loadPage = function( url, options ) {					
 		// This function uses deferred notifications to let callers
 		// know when the page is done loading, or if an error has occurred.
 		var deferred = $.Deferred(),
@@ -2804,7 +2802,7 @@ $.widget( "mobile.page", $.mobile.widget, {
 		
 		if ( !( $.mobile.allowCrossDomainPages || path.isSameDomain( documentUrl, absUrl ) ) ) {
 			deferred.reject( absUrl, options );
-		} else {			
+		} else {				
 			// Load the new page.
 			$.ajax({
 				url: fileUrl,
@@ -2907,7 +2905,7 @@ $.widget( "mobile.page", $.mobile.widget, {
 					// Let listeners know the page loaded successfully.
 					settings.pageContainer.trigger( "pageload", triggerData );
 
-					deferred.resolve( absUrl, options, page, dupCachedPage );
+					deferred.resolve( absUrl, options, page, dupCachedPage );					
 				},
 				error: function( xhr, textStatus, errorThrown ) {
 					//set base back to current path
@@ -3383,7 +3381,7 @@ $.widget( "mobile.page", $.mobile.widget, {
 			
 			// XXX FREQUENT - check for panel-transitions and changePage only if no data-target is specified
 			var $targetPanel=$link.jqmData('target');			
-			if (!$targetPanel) {									
+			if (!$targetPanel) {					
 				// make sure the page loaded is appended to the body and not some panel						
 				$.mobile.pageContainer = $('body');				
 				$.mobile.changePage( href, { transition: transition, reverse: reverse, role: role , pageContainer: $.mobile.pageContainer } );
@@ -3409,8 +3407,9 @@ $.widget( "mobile.page", $.mobile.widget, {
 		$.mobile._handleHashChange = function( hash ) {						
 			//find first page via hash					
 			var to = path.stripHash( hash ),				
+			
 				// XXX FREQUENT: panel-transition routine, activates if panels on the page with data-hash="history"			
-				$panels = $('div:jqmData(hash="history")'),
+				$panels = $('div:jqmData(wrapper="true").ui-page-active div:jqmData(hash="history")'),
 				n = $panels.length,										
 				//transition is false if it's the first page, undefined otherwise (and may be overridden by default)	
 				transition = ( $.mobile.urlHistory.stack.length === 0 || n == 0 ) ? "none" : undefined,
@@ -3422,7 +3421,7 @@ $.widget( "mobile.page", $.mobile.widget, {
 					transition: transition,
 					changeHash: false,
 					fromHashChange: true,
-					pageContainer: null,
+					pageContainer: $.mobile.pageContainer,
 					};
 		
 			//if listening is disabled (either globally or temporarily), or it's a dialog hash
@@ -3471,33 +3470,44 @@ $.widget( "mobile.page", $.mobile.widget, {
 					});
 				}
 			}
-					
-			//if to is defined, load it
+			
+			//if to is defined, load it			
 			if ( to ) {
 				// At this point, 'to' can be one of 3 things, a cached page element from
 				// a history stack entry, an id, or site-relative/absolute URL. If 'to' is
 				// an id, we need to resolve it against the documentBase, not the location.href,
 				// since the hashchange could've been the result of a forward/backward navigation
 				// that crosses from an external page/dialog to an internal page/dialog.
-				to = ( typeof to === "string" && !path.isPath( to ) ) ? ( path.makeUrlAbsolute( '#' + to, documentBase ) ) : to;				
+				to = ( typeof to === "string" && !path.isPath( to ) ) ? ( path.makeUrlAbsolute( '#' + to, documentBase ) ) : to;							
+				
 				// XXX FREQUENT - only continue if no panels-history or it's a dialog
-				if(!n || n>0 && ( urlHistory.stack.length > 1 && to.indexOf( dialogHashKey ) > -1) ){					
-					$.mobile.changePage( to, changePageOptions );
-					}
-				} else {
-					//there's no hash, go to the first page in the dom									
-					// XXX FREQUENT - only continue if no panels-history or it's a dialog
-					if(!n || n>0 && ( urlHistory.stack.length > 1 && to.indexOf( dialogHashKey ) > -1) ){						
+				if( !n || n>0 && urlHistory.stack.length > 1 
+						// if wrapper page is external-page and panel-history is active, 
+						// I cannot leave the wrapper and go back to the page visited 
+						// before going to the wrapper, unless it's done like this	
+						// TODO: not nice...
+						|| ( $('html').data('panel-history') == 'base' && ( to == $.mobile.urlHistory.stack[$.mobile.urlHistory.stack.length-1].url) ) ) {	
+							if ( $('html').data('panel-history') == 'base' && ( to == $.mobile.urlHistory.stack[$.mobile.urlHistory.stack.length-1].url) ) {
+								// reset, set option								
+								$('html').data('panel-history','');
+								changePageOptions = {
+									transition: 'slide'
+									}
+								}							
+							$.mobile.changePage( to, changePageOptions );							
+							}
+				} else {									
+					//there's no hash, go to the first page in the dom														
+					if( !n || n>0 && urlHistory.stack.length > 1 ){							
 						$.mobile.changePage( $.mobile.firstPage, changePageOptions );
 						}
-				}
+					}
 		};
 
-        //hashchange event handler
+		//hashchange event handler
         $window.bind( "hashchange", function( e, triggered ) {
           $.mobile._handleHashChange( location.hash );
         });
-
 		//set page min-heights to be device specific
 		$( document ).bind( "pageshow", resetActivePageHeight );
 		$( window ).bind( "throttledresize", resetActivePageHeight );
@@ -3539,8 +3549,7 @@ $.widget( "mobile.page", $.mobile.widget, {
 			};
 		},
 
-		resetUIKeys: function( url ) {			
-	
+		resetUIKeys: function( url ) {					
 			var dialog = $.mobile.dialogHashKey,
 				subkey = "&" + $.mobile.subPageUrlKey,
 				dialogIndex = url.indexOf( dialog );						
@@ -3563,7 +3572,6 @@ $.widget( "mobile.page", $.mobile.widget, {
 		// NOTE this takes place *after* the vanilla navigation hash change
 		// handling has taken place and set the state of the DOM
 		onHashChange: function( e ) {
-
 			// disable this hash change
 			if( self.onHashChangeDisabled ){
 				return;
@@ -3584,13 +3592,13 @@ $.widget( "mobile.page", $.mobile.widget, {
 			// need to add #id to exisiting URL, (b) if wrapper is 
 			// loaded as external page, need to overwrite initial 
 			// URL with new page URL
-			
+
 			// check for flag set in multiview
 			var flag = $('html').data('pushStateFlag'),
 				// check if #hash belongs to an external wrapper page
 				ext = $('#'+$('html').data('pushStateFlag') ).closest('div:jqmData(wrapper="true"):jqmData(external-page="true")').length;
 			href = ( isPath && flag ) ? $.mobile.path.makeUrlAbsolute( '#'+flag, resolutionUrl ) : ( ext ? location.href : $.mobile.path.makeUrlAbsolute( hash, resolutionUrl ) );
-			// href = $.mobile.path.makeUrlAbsolute( hash, resolutionUrl );
+			//href = $.mobile.path.makeUrlAbsolute( hash, resolutionUrl );
 				
 			if ( isPath ) {		
 				href = self.resetUIKeys( href );
@@ -6532,8 +6540,8 @@ $.mobile.fixedToolbars = (function() {
 		touchStopEvent = supportTouch ? "touchend" : "mouseup",
 		stateBefore = null,
 		scrollTriggered = false,
-		touchToggleEnabled = true;
-
+		touchToggleEnabled = true;				
+				
 	function showEventCallback( event ) {
 		// An event that affects the dimensions of the visual viewport has
 		// been triggered. If the header and/or footer for the current page are in overlay
@@ -6694,7 +6702,8 @@ $.mobile.fixedToolbars = (function() {
 		return top;
 	}
 
-	function setTop( el ) {		
+	function setTop( el ) {			
+	
 		var fromTop = $(window).scrollTop(),			
 			// XXX FREQUENT: need to add this check to keep thisTop at 0 after changePage			
 			thisTop = el.jqmData("panel") == "popover" ? 0 : getOffsetTop( el[ 0 ] ), 
@@ -6740,7 +6749,7 @@ $.mobile.fixedToolbars = (function() {
 	
 			// XXX FREQUENT: Tweak selector to grab wrapper page if panels are on the page
 			// else revert to regular JQM
-			var $ap = $('body').find(':jqmData(role="panel")').length ? $('body div:jqmData(role="page"):first-child') : 
+			var $ap = $('body').find('div:jqmData(wrapper="true")').length ? $('body div:jqmData(wrapper="true").ui-page-active') : 
 																			 page ? $( page ) : ( $.mobile.activePage ? $.mobile.activePage : 
 																					$( ".ui-page-active" ) );
 
@@ -6750,6 +6759,7 @@ $.mobile.fixedToolbars = (function() {
 					fromTop = $( window ).scrollTop(),				
 					// XXX FREQUENT: need to add this check to keep thisTop at 0 after changePage			
 					thisTop = el.jqmData("panel") == "popover" ? 0 : getOffsetTop( el[ 0 ] ), 
+					
 					screenHeight = window.innerHeight,
 					thisHeight = el.outerHeight(),
 					
@@ -6774,7 +6784,7 @@ $.mobile.fixedToolbars = (function() {
 			currentstate = "inline";
 
 			// XXX FREQUENT: same as above
-			var $ap = $('body').find(':jqmData(role="panel")').length ? $('body div:jqmData(role="page"):first-child') : 
+			var $ap = $('body').find('div:jqmData(wrapper="true")').length ? $('body div:jqmData(wrapper="true").ui-page-active') : 
 																			$.mobile.activePage ? $.mobile.activePage :
 																				$( ".ui-page-active" );
 
@@ -6828,9 +6838,8 @@ $.mobile.fixedToolbars = (function() {
 								// where the 120px page ends = middle of screen. So hiding a footer with positive 
 								// thisCSStop has to be done another way. Since overriding 0 with a positive value
 								// increases the page-height, the only other way is to make thisCSStop negative
-								// thereby pushing it out of view on top. (I like this... :-)								
-								el.removeClass( classes ).css( "top", ( ( el.is(".ui-footer-fixed") || el.is( ".ui-footer-global" ) || el.is( ".ui-element-fixed-bottom" ) ) && thisCSStop > 0 ) ? -thisCSStop : 0 );
-								
+								// thereby pushing it out of view on top. (I like this... :-), need to multiply * x to make it work								
+								el.removeClass( classes ).css( "top", ( ( el.is(".ui-footer-fixed") || el.is( ".ui-footer-global" ) || el.is( ".ui-element-fixed-bottom" ) ) && thisCSStop > 0 ) ? -9999 : 0 );								
 							}).addClass( classes );
 						}
 					}
