@@ -3404,15 +3404,16 @@ $.widget( "mobile.page", $.mobile.widget, {
 			});
 		});
 		
-		$.mobile._handleHashChange = function( hash ) {						
+		$.mobile._handleHashChange = function( hash ) {				
+		
 			//find first page via hash					
 			var to = path.stripHash( hash ),				
-			
+				
 				// XXX FREQUENT: panel-transition routine, activates if panels on the page with data-hash="history"			
-				$panels = $('div:jqmData(wrapper="true").ui-page-active div:jqmData(hash="history")'),
-				n = $panels.length,										
+				$panels = $('div:jqmData(wrapper="true").ui-page-active div:jqmData(hash="history")').length,			
+				
 				//transition is false if it's the first page, undefined otherwise (and may be overridden by default)	
-				transition = ( $.mobile.urlHistory.stack.length === 0 || n == 0 ) ? "none" : undefined,
+				transition = ( $.mobile.urlHistory.stack.length === 0 || $panels == 0 ) ? "none" : undefined,
 
 				// default options for the changPage calls made after examining the current state
 				// of the page and the hash
@@ -3422,11 +3423,11 @@ $.widget( "mobile.page", $.mobile.widget, {
 					changeHash: false,
 					fromHashChange: true,
 					pageContainer: $.mobile.pageContainer,
-					};
+					};			
 		
 			//if listening is disabled (either globally or temporarily), or it's a dialog hash
 			if( !$.mobile.hashListeningEnabled || urlHistory.ignoreNextHashChange ) {
-				urlHistory.ignoreNextHashChange = false;
+				urlHistory.ignoreNextHashChange = false;				
 				return;
 			}
 			
@@ -3471,37 +3472,41 @@ $.widget( "mobile.page", $.mobile.widget, {
 				}
 			}
 			
-			//if to is defined, load it			
+			//if to is defined, load it
 			if ( to ) {
 				// At this point, 'to' can be one of 3 things, a cached page element from
 				// a history stack entry, an id, or site-relative/absolute URL. If 'to' is
 				// an id, we need to resolve it against the documentBase, not the location.href,
 				// since the hashchange could've been the result of a forward/backward navigation
 				// that crosses from an external page/dialog to an internal page/dialog.
-				to = ( typeof to === "string" && !path.isPath( to ) ) ? ( path.makeUrlAbsolute( '#' + to, documentBase ) ) : to;							
+				to = ( typeof to === "string" && !path.isPath( to ) ) ? ( path.makeUrlAbsolute( '#' + to, documentBase ) ) : to;
 				
-				// XXX FREQUENT - only continue if no panels-history or it's a dialog
-				if( !n || n>0 && urlHistory.stack.length > 1 
-						// if wrapper page is external-page and panel-history is active, 
-						// I cannot leave the wrapper and go back to the page visited 
-						// before going to the wrapper, unless it's done like this	
-						// TODO: not nice...
-						|| ( $('html').data('panel-history') == 'base' && ( to == $.mobile.urlHistory.stack[$.mobile.urlHistory.stack.length-1].url) ) ) {	
-							if ( $('html').data('panel-history') == 'base' && ( to == $.mobile.urlHistory.stack[$.mobile.urlHistory.stack.length-1].url) ) {
-								// reset, set option								
-								$('html').data('panel-history','');
-								changePageOptions = {
-									transition: 'slide'
-									}
-								}							
-							$.mobile.changePage( to, changePageOptions );							
-							}
-				} else {									
-					//there's no hash, go to the first page in the dom														
-					if( !n || n>0 && urlHistory.stack.length > 1 ){							
-						$.mobile.changePage( $.mobile.firstPage, changePageOptions );
+				// XXX FREQUENT - block if there is an active-wrapper page, with panels using history 
+				// and panels are not stacked down to base setup.
+				if (!$panels>0 || $('html').data('backAtBase') == true ) {
+					
+					// last stand - to block this from firing together with the last panel transition					
+					if ( $('html').data("lastStand") == 'standing') {
+						$('html').data("lastStand", "fallen");
+						// console.log("blocked@lastStand");
+						return;
 						}
+					// console.log("to - JQM backwards transition");
+					$.mobile.changePage( to, changePageOptions );
 					}
+			}	else {			
+				//there's no hash, go to the first page in the dom
+				// XXX FREQUENT - same here
+				if (!$panels>0 || $('html').data('backAtBase') == true ) {
+					if ( $('html').data("lastStand") == 'standing') {
+						$('html').data("lastStand", "fallen");
+						// console.log("blocked@lastStand");
+						return;
+						}
+					// console.log("no to - JQM backwards transition");
+					$.mobile.changePage( $.mobile.firstPage, changePageOptions );
+					}
+			}
 		};
 
 		//hashchange event handler

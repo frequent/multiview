@@ -226,13 +226,13 @@ div[data-wrapper="true"] 					{ margin: 0px; padding: 0px; height: inherit; widt
 	margin-right: -1px; 
 	border-left: 1px solid #000000;
 }
-.ui-splitview-mode div.ui-panel {
+.ui-popover-mode div.ui-popover, .ui-splitview-mode div.ui-panel {
 	overflow-x: visible; 
 	/*
 	 need to override this to hide menu-scrollbars in splitview mode
 	   and make popover triangles to re-appear. As this is needs to be
 	   'hidden' for Android select menu (only?), it should be ok 
-	   on Android smartphones. On Android tablets, needs to be checked 
+	   on Android smartphones, as this would be fullscreen mode. 	   
 	   */	   
 }
 								
