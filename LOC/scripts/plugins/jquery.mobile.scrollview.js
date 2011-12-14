@@ -799,4 +799,71 @@ jQuery.widget( "mobile.scrolllistview", jQuery.mobile.scrollview, {
         }
 });
 
+//  XXX FREQUENT #bugfix 2072 slider inside scrollview
+// $().isChildOf
+// TODO: make this work properly
+/*
+ $.fn.extend({
+      isChildOf: function (filter_string) {
+
+         var parents = $(this).parents().get();
+
+         for (j = 0; j < parents.length; j++) {
+            if ($(parents[j]).is(filter_string)) {
+               return true;
+            }
+         }
+
+         return false;
+      }
+   });
+
+$(function () {
+   $( document ).bind('touchmove', function (e) { if (!IsSlider()) { e.preventDefault(); } });
+});
+
+
+
+var hd = $.mobile.scrollview.prototype._handleDragStart;
+var hm = $.mobile.scrollview.prototype._handleDragMove;
+var hu = $.mobile.scrollview.prototype._handleDragStop;
+
+function IsSlider(e) {
+   var element = $(e);
+   return element.hasClass('ui-slider')
+      || element.hasClass('noscroll')
+      || element.isChildOf('.noscroll');
+	}
+
+$.mobile.scrollview.prototype._handleDragStart = function (e, x, y) {
+   if (IsSlider(e.target)) return; 
+
+   hd.call(this, e, x, y);
+};
+
+$.mobile.scrollview.prototype._handleDragMove = function (e, x, y) {
+   if (IsSlider(e.target)) {
+      e.preventDefault();
+
+      return;
+   } 
+
+   hm.call(this, e, x, y);
+};
+
+$.mobile.scrollview.prototype._handleDragStop = function (e) {
+   if (IsSlider(e.target)) return; 
+
+   hu.call(this, e);
+};
+*/
 })(jQuery,window,document); // End Component
+
+
+
+
+
+  
+
+
+

@@ -1,15 +1,31 @@
+#### Log. Updates  
+* 2011-11-08: reworked data-context, included in panel-history, updated page2.html to show example - first link in menu
+* 2011-11-08: tested loading external pages into containers, updated page2.html to include example - popover1, page1-4 
+* 2011-11-12: reworked toolbars, added support global/local header/footer and ui-element-fixed-top/bottom 
+* 2011-11-17: added orientationchange support, removed panel-nav and hashChange from plugin, reworked panel CSS, bug fixes
+* 2011-11-17: updated to JQM 1.0  
+* 2011-11-21: fixes to history, integrated context and crumbs into panel-history routine, started integrating data-multiview="true" as trigger
+* 2011-11-22: fixed popover toggles, added pop() transitions, keep panels alive with scrollview and loading pages into DOM, fixed active class removal
+* 2011-11-23: fixed activeclass removal (again), fixed event bubbling, fixed plugin setup running for +1 wrapper pages in DOM, removed stuff not necessary anymore 
+* 2011-11-28: enabled deep-linking, started panel-cache-management, partially fixed flickering footer, broke vertical scrolling (for now... )
+* 2011-12-01: fixed deep-linking, done panel-cache-management, reworked CSS to fix scrolling, scrollbars showing, panel positioning, fixed jquery panel width and height
+* 2011-12-05: added new options: _ui-menu-button-flex_ to place menu button anywhere on page, _data-autoshow="once"_ to open a popover once on load
+* 2011-12-06: added switchable option to hide/show menu in splitview mode, bug fixed panel height and width, reworked history (still not good, but improving)
+* 2011-12-14: improved fixed toolbars show/hide, new feature button-wrapper-right/left (controlgroups inside header), fixed back button/crumbs button, 
+              added padding for iconpos="notext" buttons, added menu-button options, fixes to checkwidth
+*****
+
 
 1. Enable popover panels 
 2. Enable multipage
 3. Enable splitview  
 
-#### B. Concept
-![multiview-1](http://www.stokkers.mobi/valuables/multiview/IMG/how1.png "multiview-concept1")  
-![multiview-2](http://www.stokkers.mobi/valuables/multiview/IMG/how2.png "multiview-concept2")  
-
-
-#### C. Demo
+#### B. Demo
 The demo is **work-in-progress**. Go here: [Multiview Demo](http://www.stokkers.mobi/valuables/multiview/show/index.html "multiview")
+
+
+#### C. Concept
+ 
 
 #### D. Getting started
 

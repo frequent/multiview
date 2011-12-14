@@ -6538,7 +6538,7 @@ $.mobile.fixedToolbars = (function() {
 		showDelay = 100,
 		ignoreTargets = "a,input,textarea,select,button,label,.ui-header-fixed,.ui-footer-fixed",
 		/* XXX FREQUENT - add fixed-element top and bottom mimicing fixed header and footer  */						
-		toolbarSelector = ".ui-header-fixed, .ui-element-fixed-top, .ui-element-fixed-bottom, .ui-footer-fixed:not(.ui-footer-duplicate):last",
+		toolbarSelector = "div.ui-header-fixed, div.ui-element-fixed-top, div.ui-element-fixed-bottom, div.ui-footer-fixed:not(div.ui-footer-duplicate):last",
 		// for storing quick references to duplicate footers
 		supportTouch = $.support.touch,
 		touchStartEvent = supportTouch ? "touchstart" : "mousedown",
@@ -6715,13 +6715,14 @@ $.mobile.fixedToolbars = (function() {
 			// el.offset().top returns the wrong value on iPad iOS 3.2.1, call our workaround instead.			
 			// XXX FREQUENT: need to add this check for popovers to avoid thisCSStop stacking up, when function is bubbling			
 			thisCSStop =  (el.css( "top" ) == "auto" || el.jqmData("panel") == "popover") ? 0 : parseFloat(el.css( "top" )),						
+			
 			screenHeight = window.innerHeight,
 			thisHeight = el.outerHeight(),
 			useRelative = el.parents( ".ui-page:not(.ui-page-fullscreen)" ).length,
 			relval;		
 			
 		/* XXX FREQUENT - add fixed-top to check */
-		if ( el.is( ".ui-header-fixed" ) || el.is ( ".ui-element-fixed-top" ) ) {	
+		if ( el.is( ".ui-header-fixed, .ui-element-fixed-top" ) ) {	
 
 			relval = fromTop - thisTop + thisCSStop;
 
@@ -6751,15 +6752,16 @@ $.mobile.fixedToolbars = (function() {
 			$.mobile.fixedToolbars.clearShowTimer();
 
 			currentstate = "overlay";
-	
-			// XXX FREQUENT: Tweak selector to grab wrapper page if panels are on the page
-			// else revert to regular JQM
-			var $ap = $('body').find('div:jqmData(wrapper="true")').length ? $('body div:jqmData(wrapper="true").ui-page-active') : 
-																			 page ? $( page ) : ( $.mobile.activePage ? $.mobile.activePage : 
-																					$( ".ui-page-active" ) );
+			
+			// XXX FREQUENT: "prepend" this with wrapper	
+			var $ap = $('div:jqmData(wrapper="true").ui-page-active') ? $('div:jqmData(wrapper="true").ui-page-active') :
+																page ? $( page ) :
+																	( $.mobile.activePage ? $.mobile.activePage :
+																		$( ".ui-page-active" ) );	
 
+																					
 			return $ap.find( toolbarSelector ).each(function() {				
-				
+
 				var el = $( this ),
 					fromTop = $( window ).scrollTop(),				
 					// XXX FREQUENT: need to add this check to keep thisTop at 0 after changePage			
@@ -6769,8 +6771,8 @@ $.mobile.fixedToolbars = (function() {
 					thisHeight = el.outerHeight(),
 					
 					/* XXX FREQUENT include new classes */
-					alreadyVisible = (( el.is( ".ui-header-fixed" ) || el.is( ".ui-element-fixed-top" ) ) && fromTop <= thisTop + thisHeight ) ||
-														( ( el.is( ".ui-footer-fixed") || el.is( ".ui-element-fixed-bottom" ) ) && thisTop <= fromTop + screenHeight );																					
+					alreadyVisible = (( el.is( ".ui-header-fixed,.ui-element-fixed-top" ) ) && fromTop <= thisTop + thisHeight ) ||
+														( ( el.is( ".ui-footer-fixed,.ui-element-fixed-bottom" ) ) && thisTop <= fromTop + screenHeight );																					
 
 				// Add state class
 				el.addClass( "ui-fixed-overlay" ).removeClass( "ui-fixed-inline" );
@@ -6788,47 +6790,52 @@ $.mobile.fixedToolbars = (function() {
 			
 			currentstate = "inline";
 
-			// XXX FREQUENT: same as above
-			var $ap = $('body').find('div:jqmData(wrapper="true")').length ? $('body div:jqmData(wrapper="true").ui-page-active') : 
-																			$.mobile.activePage ? $.mobile.activePage :
-																				$( ".ui-page-active" );
-
-			return $ap.find( toolbarSelector ).each(function() {
-
+			// XXX FREQUENT: add wrapper page as first option
+			var $ap = $('div:jqmData(wrapper="true").ui-page-active') ? $('div:jqmData(wrapper="true").ui-page-active') :
+							$.mobile.activePage ? $.mobile.activePage :
+									$( "div.ui-page-active" );
+			
+			// XXX TODO: does this speed up hiding of toolbars vs. doing it inside each()?
+			return $ap.find( toolbarSelector ).addClass( "ui-fixed-inline" ).removeClass( "ui-fixed-overlay" ).each(function() {
+				
 				var el = $(this),
 					thisCSStop = el.css( "top" ),
-					classes;					
+					classes;									
 				
 				thisCSStop = thisCSStop == "auto" ? 0 :
-											parseFloat(thisCSStop);								
-				
-				// Add state class
-				el.addClass( "ui-fixed-inline" ).removeClass( "ui-fixed-overlay" );
+									parseFloat(thisCSStop);																
+									
+				// Add state class				
+				// el.addClass( "ui-fixed-inline" ).removeClass( "ui-fixed-overlay" );
 					
-				// XXX FREQUENT - this is now a lot more complicated... and took time to get to work
-				// this is what happens: 
+				// XXX FREQUENT - this is now a lot more complicated... this is what happens: 
 				// 1. also block global-footer and fixed-element-bottom with negative position = already 
-				//    positioned correctly (I think...)
+				//    positioned correctly
 				// 2. also add ui-element-fixed-top to second check - behaves the same as fixed-header 
 				// 3. also add global-footer and element-fixed-bottom to second check, because their 
-				//    position is >0, when outside of a panel or on pages with content<page.height,
-				//    causing their thisCSStop to stack up with every event (250px>500px>1000px)
-				//    (not sure here anymore)
-				// 4. but only include them if immediately is not true, otherwise footer 
+				//    css.top will be mispositioned at 0, when outside of a panel(!) or >0 on pages 
+				//    with content<page.height, causing their thisCSStop to stack up with every event 
+				//    (250px>500px>1000px).
+				// 4. but only include them if immediately is not false (forgot why), otherwise footer 
 				//    and fix-element-bottom jump up during transitions, because they pass the 
-				//    if-statement and since immediately is true, el.top("top") will be set to 0 
-				//    before being re-set to their correct position
-				// 5. it also works with regular JQM... 
-				if ( thisCSStop < 0 && ( el.not( ".ui-footer-global" ) || el.not( ".ui-element-fixed-bottom" ) ) 
-					 ||  ( el.is( ".ui-header-fixed" ) || el.is( ".ui-element-fixed-top" ) 
-							|| ( el.is( ".ui-footer-global" ) || ( el.is( ".ui-element-fixed-bottom" ) || el.is( ".ui-footer-fixed" )) && immediately != true )  ) && thisCSStop !== 0 ) {
-					
-					if ( immediately ) {							
-						el.css( "top", 0);						
-					} else {
+				//    if-statement and since immediately is false, el.top("top") will be set to 0 
+				//    before being re-set to their correct position.				
 	
-						if ( el.css( "top" ) !== "auto" && parseFloat( el.css( "top" ) ) !== 0 ) {
-							
+				if ( ( thisCSStop < 0 && ( el.not( ".ui-footer-global" ) || el.not( ".ui-element-fixed-bottom" ) ) ) 
+					 ||  ( el.is( ".ui-header-fixed,.ui-element-fixed-top" ) && thisCSStop !== 0 )
+							|| ( el.is( ".ui-footer-global,.ui-element-fixed-bottom,.ui-footer-fixed" ) && immediately != false ) && thisCSStop >= 0 ) {
+					
+					if ( immediately ) {	
+						// XXX FREQUENT - only way to hide global footer during scroll is here
+						// checking for "true" to block jumping up when loading an external page
+						// into a panel/DOM
+						el.is( ".ui-footer-global" ) && immediately == true ? el.css("top",-9999) 
+							: el.css( "top", 0);														
+						} else {
+						// XXX FREQUENT - need to pass global-footer in here, too to set top to -9999px on click (immediately = undefined)
+						if ( ( el.css( "top" ) !== "auto" && parseFloat( el.css( "top" ) ) !== 0 ) 
+								|| (el.is( ".ui-footer-global" ) && parseFloat( el.css( "top" ) ) == 0 )) {
+					
 							classes = "out reverse";
 
 							el.animationComplete(function() {
@@ -6840,13 +6847,12 @@ $.mobile.fixedToolbars = (function() {
 								// For example: page height 120px, screen height 600px, footer will be 
 								// positioned at top=+480px, which is the bottom of screen initially, but on 
 								// tap/click the footer will be hidden by setting top=0px, which now is right 
-								// where the 120px page ends = middle of screen. So hiding a footer with positive 
-								// thisCSStop has to be done another way. Since overriding 0 with a positive value
-								// increases the page-height, the only other way is to make thisCSStop negative
-								// thereby pushing it out of view on top. (I like this... :-), need to multiply * x to make it work								
-								el.removeClass( classes ).css( "top", ( ( el.is(".ui-footer-fixed") || el.is( ".ui-footer-global" ) || el.is( ".ui-element-fixed-bottom" ) ) && thisCSStop > 0 ) ? -9999 : 0 );								
+								// where the 120px page ends = middle of screen. So hiding a footer with positive/0 
+								// thisCSStop has to be done another way = setting to -9999px, because 9999px would
+								// increase page size
+								el.removeClass( classes ).css( "top", ( el.is(".ui-footer-global,.ui-element-fixed-bottom") ) ? -9999 : 0 );								
 							}).addClass( classes );
-						}
+						} 
 					}
 				} 
 			});
