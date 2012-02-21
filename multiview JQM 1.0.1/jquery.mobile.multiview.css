@@ -1,0 +1,334 @@
+/* jQuery Mobile Framework : panelview plugin */
+
+html { -webkit-font-smoothing: antialiased;}
+body { visibility: hidden; margin: 0; width: inherit; overflow-y: auto !important;}
+.ui-header { height: 41px;}
+*[data-theme="a"] .ui-collapsible-heading-toggle .ui-btn-text { color: #000; }
+.ui-mobile-viewport	{ height: inherit; }
+
+.headWrapLeft > * { 
+	display: inline-block; 
+	margin: 0; 
+	vertical-align: top;
+	}
+.headWrapRight > * { 
+	display: inline-block; 
+	margin: 0; 
+	vertical-align: top;
+	}
+.headWrapLeft a.ui-btn, .headWrapRight  a.ui-btn { 
+	-moz-box-shadow: none; 
+	-webkit-box-shadow: none; 
+	box-shadow: none;
+	}
+
+/* increase padding for icon-only buttons - just too difficult to click them */
+.ui-btn-icon-notext	{
+	height: 28px; width: 28px; 
+	}
+.ui-btn-icon-notext .ui-btn-inner { 
+	padding: 4px 5px 4px 5px;
+	}
+/* fix offset in mixed controlgroups */	
+.ui-controlgroup-horizontal .ui-btn, .ui-controlgroup-horizontal .ui-select {
+	vertical-align: middle;
+	}	
+
+
+
+/* popovers
+-----------------------------------------------------------------------------------------------------------	
+ * popover css for portrait orientation, modified from
+ * http://www.cagintranet.com/archive/create-an-ipad-like-dropdown-popover/
+ *
+/* popover formatting, doesn't apply in fullscreen mode */
+.ui-popover { 
+	position:  absolute; 
+	/* if not important CSS3 transition change z-index to 10 during transition */
+	z-index:1005 !important; 
+	color: black; 
+	font-weight: normal; 
+	line-height: 1;
+	cursor: auto;
+	background-color: black; 
+	border: 3px solid black; 
+	border-radius: 4px;
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	border-radius: 4px;
+	-webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+	-webkit-transition: opacity 0.25s linear;
+	-moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+	-moz-transition: opacity 0.25s linear;
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+	transition: opacity 0.25s linear;	
+	left: auto;
+}
+.ui-popover .ui-header						{ bottom: auto; left: 0; position: absolute !important; right: 0; top: 0 !important; }
+.ui-popover .ui-content        					{ z-index: 999; bottom: 0; left: 0; overflow-x: hidden !important; overflow-y: visible;  position: absolute !important;right: 0; top: 43px;}
+
+/* button horizontal controlgroup combo DON'T TOUCH!!! */
+.ui-controlgroup-btn-notext    				{padding: 0; width: 28px; height: 28.75px !important; vertical-align: middle;}
+.ui-controlgroup-btn-notext .ui-btn-inner                
+											{height: 15px; padding: 6px 0;}
+.ui-controlgroup-btn-notext .ui-btn-inner .ui-icon       
+											{left: 3.5px; position: relative; top: -1px;}
+.ui-controlgroup-btn-left        				{vertical-align: middle;}
+
+/* popover1 = topleft
+-----------------------------------------------------------------------------------------------------------*/
+.popover1                             					{display: none; /* why? */ overflow-x:visible !important; /* override on small screens */ height:25em; width: 15em; top: 0em; margin-top: 3.25em; right: 5em;}
+.popover1 .popover_triangle  				{right: 0.25em;}
+/*
+.popover1 .ui-btn-text .ui-link-inherit  		{font-size: 90%; padding-top: 12px !important; padding-bottom: 8px !important;}
+.popover1 .ui-li-icon    						{top: 0.75em;}
+*/
+/* popover2 = topright
+-----------------------------------------------------------------------------------------------------------*/
+.popover2                             					{display: none; /* why? */ overflow-x:visible !important; /* override on small screens */ height:25em; width: 15em; top: 0em; margin-top: 3.25em; right: 0.5em;}
+.popover2 .popover_triangle 					{right: 0;}
+/*
+.popover2 .ui-btn-text .ui-link-inherit		{font-size: 90%; padding-top: 12px !important; padding-bottom: 8px !important;}
+.popover2 .ui-li-icon    						{top: 0.75em;}
+*/
+/* popoverAnywhere
+-----------------------------------------------------------------------------------------------------------*/
+.popoverAnywhere                            			{display: none; /* why? */ overflow-x:visible; height:25em; width: 15em; top: 1px; margin-top: 15%; right: 40%;}
+.popoverAnywhere .popover_triangle 			{right: 0.25em;}
+/*
+.popoverAnywhere .ui-btn-text .ui-link-inherit	{font-size: 90%; padding-top: 12px !important; padding-bottom: 8px !important;}
+.popoverAnywhere .ui-li-icon    				{top: 0.75em;}
+*/
+/* menu
+-----------------------------------------------------------------------------------------------------------*/
+.pop_menuBox  								{display: none; height:25em; width: 15em; top: 0em; margin-top: 3.25em; left: 1em; overflow-x: visible;}
+.pop_menuBox .popover_triangle				{top: -32px; z-index: 1051; /* why */}
+/*
+.pop_menuBox .ui-btn-text .ui-link-inherit
+											{ padding-top: 12px !important; padding-bottom: 8px !important; }
+.pop_menuBox .ui-li-icon             				{ top: 0.75em;}
+*/
+/* show/hide popovers */
+.ui-footer-fixed							{ z-index: 1100; max-height: 48px; }
+.popover-btn								{ position: static; vertical-align: middle; margin: 3px 0 0 5px !important;}
+.div[data-panel="popover"] > div[data-role="page"], .div[data-panel="menu"] > div[data-role="page"]
+											{ height: inherit; overflow-y: auto; min-height: inherit !important;}	
+.tweakMe									{ display: inline-block; }											
+											
+/* fullscreen mode
+-----------------------------------------------------------------------------------------------------------*/											
+.ui-panel-hidden {
+	/* this way popover panel does not stack up below */
+	display: none; 
+}
+.pop_fullscreen { 
+	margin-top: 0px !important; 
+	top: 0px !important; 
+	left: 0px !important; 
+	right: 0px! important; 
+	z-index:1005 !important; 
+	width: 100% !important; 
+	height: 100%;
+	/* Alternative to this would be leaving it away = pos:static like JQM body.viewport. However this causes the 
+	   panel to stay in the content flow = be positioned after the page content. Panel pages are pulled up using
+	   pos:abs, BUT on Android doing like this disables Select-elements, so only way is pos:abs.*/
+	position: absolute; 
+	overflow: hidden !important;	   	   	   
+	}
+/* z-indexing - make sure popover is above any other background content and footer stays on top of everything - not nice */
+
+.ui-fullscreen-mode .ui-panel .ui-page-active {
+	z-index: 1010;
+}
+.ui-fullscreen-mode .ui-panel .ui-page-active .ui-header-fixed {
+	z-index: 1011;
+}
+.ui-fullscreen-mode .ui-footer-fixed {
+	z-index: 1025; /* must always be on top!!!*/
+}
+.ui-fullscreen-mode div.ui-mobile-viewport { 
+	overflow-y: auto /* panels have scrollbar, because they act as viewport if panel is open! overriding body!, hides panel toolbar, question is on mobile devices, how scroll will work*/ 
+					 
+}
+.pop_fullscreen .ui-page-active { 
+	z-index: 1; /* background-color: #ffffff; necessary to expand page down to bottom on smartphones */
+	}
+.pop_fullscreen div[data-role="content"] { 
+	z-index: 999 !important; 
+	bottom: 0; 
+	left: 0; 
+	overflow-x: hidden; 
+	overflow-y: auto; /* must not be scroll!! */	
+	right: 0; 
+	top: 43px;
+	padding-bottom: 50px;
+	/* position: absolute !important; this will give two scrollbars on desktop */	
+		
+}
+.ui-triangle-top  .popover_triangle{ 
+	position: absolute; 
+	top: -32px; 
+	font-size: 0px; 
+	line-height: 0%; 
+	width: 0px; 
+	border-top: 16px solid rgba(0,0,0,0); 
+	border-left: 16px solid rgba(0,0,0,0); 
+	border-right: 16px solid rgba(0,0,0,0);
+	border-bottom: 16px solid black;
+	}
+.ui-triangle-bottom  .popover_triangle { 
+	position: absolute; 
+	bottom: -34px; 
+	font-size: 0px; 
+	line-height: 0%; 
+	width: 0px; 
+	border-bottom: 16px solid rgba(0,0,0,0); 
+	border-left: 16px solid rgba(0,0,0,0); 
+	border-right: 16px solid rgba(0,0,0,0);
+	border-top: 16px solid black;
+	}
+
+
+/* multiview CSS
+-----------------------------------------------------------------------------------------------------------*/
+div[data-wrapper="true"] 					{ margin: 0px; padding: 0px; height: inherit; width: inherit /* does this work cross-browser?*/;}
+
+.coverUp									{ display: none !important; }
+.ui-mobile body                  					{ visibility: visible; }
+.ui-popover .ui-page                         			{ bottom: 0 /* makes popover pages content expand to the full available width on iPad...*/; }
+.ui-popover .ui-page-active					{ min-height: inherit !important;}
+.ui-content                      						{ /* overflow: visible; overflow-x: hidden !important;  background-color: #fff;*/}
+
+.ui-panel-left { 
+	width: 25%; 
+	min-width: 250px; 
+	z-index: 55; 
+	position: relative; /* hides transitions: */ 
+	float: left; 
+	}
+.ui-panel-left .ui-page	{ 
+	min-width: inherit; 
+	z-index:1050; 
+	}
+.ui-panel-right { 
+	z-index: 45; 
+	margin-left: 25%; 
+	/* width: 75%; if set specifially, 1px too much, if omitted, fits perfectly */ 
+	right: 0; 
+	}
+.ui-panel-right .ui-page { 
+	margin-left: 25%; 
+	width: 75%; 
+	right: 0; 
+	}
+.ui-splitview-hidden { 
+	display:none; 
+}
+.menuToggle	{ 
+	position: absolute; 
+	/* need to make menu button 'absolute' to position h1-header correctly - still needed*/ 
+}
+.ui-menu-button-flex .menuToggle {
+	position: static;
+	float: left;
+	display: inline-block;
+	margin: 0.5em 5px !important; /* override ui-popover margin-important */
+}
+.ui-splitview-mode .ui-panel-left {
+	min-width: 250px;
+	}
+
+.ui-panel-border-right .ui-page	{ 
+	margin-left: -1px; 
+	border-right: 1px solid #000000;
+}
+.ui-panel-border-left .ui-page { 
+	margin-right: -1px; 
+	border-left: 1px solid #000000;
+}
+.ui-popover-mode div.ui-popover, .ui-splitview-mode div.ui-panel {
+	overflow-x: visible; 
+	/*
+	 need to override this to hide menu-scrollbars in splitview mode
+	   and make popover triangles to re-appear. As this is needs to be
+	   'hidden' for Android select menu (only?), it should be ok 
+	   on Android smartphones, as this would be fullscreen mode. 	   
+	   */	   
+}
+
+/* experimental tab viewer */
+.ui-collapsible-set-horizontal { 
+	position: relative; 
+	overflow: visible; 
+	min-height: 250px; 
+	}			
+.ui-collapsible-set-horizontal .ui-collapsible-heading { 
+	width: 100%; 
+	margin: 0;
+	}
+.ui-collapsible-set-horizontal .ui-collapsible-content { 
+	position: absolute; 
+	left: 0; 
+	right: 0; 
+	margin: 0 1px 0 0;
+	}
+/* this avoids pos:abs in two-tab collapsible */
+.ui-collapsible-set-horizontal.ui-grid-a .ui-block-a .ui-collapsible-content {
+	position: relative;
+	width: 199.3%;
+	padding: 0;
+
+	}	
+.ui-collapsible-set-horizontal.ui-grid-a .ui-block-b .ui-collapsible-content {
+	left: -100%;
+	width: 199.3%;
+	position: relative;
+	}
+/* this for a four-tab-collapsible */
+.ui-collapsible-set-horizontal.ui-grid-c .ui-block-a .ui-collapsible-content {
+	position: relative;
+	width: 399%;
+	padding-right: 0;
+	padding-left: 0;
+	padding-bottom: 0;
+
+}
+.ui-collapsible-set-horizontal.ui-grid-c .ui-block-b .ui-collapsible-content {
+	position: relative;
+	width: 399%;
+	padding-right: 0;
+	padding-left: 0;
+	padding-bottom: 0;
+	left: -100%;
+
+}
+.ui-collapsible-set-horizontal.ui-grid-c .ui-block-c .ui-collapsible-content {
+	position: relative;
+	width: 399%;
+	padding-right: 0;
+	padding-left: 0;
+	padding-bottom: 0;
+	left: -200%;
+
+}
+.ui-collapsible-set-horizontal.ui-grid-c .ui-block-d .ui-collapsible-content {
+	position: relative;
+	width: 399%;
+	padding-right: 0;
+	padding-left: 0;
+	padding-bottom: 0;
+	left: -300%;
+}
+.ui-collapsible-set-horizontal .ui-box-inner {
+	display: block;
+}
+.ui-collapsible-set-horizontal .ui-collapsible-heading:not(.ui-collapsible-heading-collapsed) a {
+	border-bottom-color: #ffffff;
+	background: #ffffff;
+}
+@media all and (max-width: 480px){
+.ui-collapsible-set-horizontal.ui-grid-c .ui-block-a .ui-collapsible-content,
+.ui-collapsible-set-horizontal.ui-grid-c .ui-block-b .ui-collapsible-content,
+.ui-collapsible-set-horizontal.ui-grid-c .ui-block-c .ui-collapsible-content,
+.ui-collapsible-set-horizontal.ui-grid-c .ui-block-d .ui-collapsible-content { width: 397%; }
+}

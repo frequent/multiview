@@ -1,109 +1,213 @@
-#### Log. Updates  
-* 2011-11-08: reworked data-context, included in panel-history, updated page2.html to show example - first link in menu
-* 2011-11-08: tested loading external pages into containers, updated page2.html to include example - popover1, page1-4 
-* 2011-11-12: reworked toolbars, added support global/local header/footer and ui-element-fixed-top/bottom 
-* 2011-11-17: added orientationchange support, removed panel-nav and hashChange from plugin, reworked panel CSS, bug fixes
-* 2011-11-17: updated to JQM 1.0  
-* 2011-11-21: fixes to history, integrated context and crumbs into panel-history routine, started integrating data-multiview="true" as trigger
-* 2011-11-22: fixed popover toggles, added pop() transitions, keep panels alive with scrollview and loading pages into DOM, fixed active class removal
-* 2011-11-23: fixed activeclass removal (again), fixed event bubbling, fixed plugin setup running for +1 wrapper pages in DOM, removed stuff not necessary anymore 
-* 2011-11-28: enabled deep-linking, started panel-cache-management, partially fixed flickering footer, broke vertical scrolling (for now... )
-* 2011-12-01: fixed deep-linking, done panel-cache-management, reworked CSS to fix scrolling, scrollbars showing, panel positioning, fixed jquery panel width and height
-* 2011-12-05: added new options: _ui-menu-button-flex_ to place menu button anywhere on page, _data-autoshow="once"_ to open a popover once on load
-* 2011-12-06: added switchable option to hide/show menu in splitview mode, bug fixed panel height and width, reworked history (still not good, but improving)
-* 2011-12-14: improved fixed toolbars show/hide, new feature button-wrapper-right/left (controlgroups inside header), fixed back button/crumbs button, 
-              added padding for iconpos="notext" buttons, added menu-button options, fixes to checkwidth
-*****
+#### Jquery Mobile Multiview Plugin ####
 
+version based on **JQM 1.0.1**
 
-1. Enable popover panels 
-2. Enable multipage
-3. Enable splitview  
+1. Quick Guide  
+To use this plugin you will need 3 files:  
+     
+     - jquery.mobile.multiview.js - plugin  
+     - jquery.mobile.multiview.css - css  
+     - jquery.mobile-1.0.1multiview - Jquery Mobile with slight modifications  
 
-#### B. Demo
-The demo is **work-in-progress**. Go here: [Multiview Demo](http://www.stokkers.mobi/valuables/multiview/show/index.html "multiview")
+2. Current Status  
+I have rewritten parts of the plugin trying to get by without having to modify Jquery Mobile. Slowly progressing... With the upcoming JQM 1.1. I will need to rewrite the popover part of the plugin, because right now popovers just tap into the fixed toolbar routine, so they reposition as you scroll.   
+As JQM 1.1 will switch to position fixed, I will need to redo the popover positioning. 
 
+ Other than that the plugin is coming along. Panel transitions are now running without touching JQM except for adding pageContainer as changePage option, which also reduces duplicate code inside the 
+plugin considerably. I'm still looking for a way to do the same to hashchange navigation.
 
-#### C. Concept
+3. Setup  
+   - start with a regular JQM page
+   - add data-wrapper="true" to this page and other pages you want to run the plugin on. Multiview runs in a single instance, so if you pull in a page into the DOM labelled with data-wrapper="true" it will also be "plugged".
+   - add your panels inside(!) this page.
+
+4. Panel Layouts  
+ a) **Plain Popovers** - your page should look like this:
+   
+	    header
+	    content 
+	    popover 1
+	      nested pages
+	    popover 2
+	      nested pages
+	    ... 
+	    footer 
+    
+			
+ b) **Fullwidth panel** (and popovers) = **a true multipage** - your page should look like this:
+
+            header
+	    fullwidth panel
+	         nested pages
+	    popover 1
+	         nested pages
+	    popover 2
+	         nested pages
+	    ... 
+	    footer
+
+ c) **Splitscreen menu/main** (and popovers) - your page should look like this:
+
+	    header
+	    menu panel
+	        nested pages
+	    main panel
+	        nested pages
+	    popover 1
+	        nested pages
+	    popover 2
+	        nested pages
+	    ... 
+	    footer
+
+5. Attributes:  
+A run-through of all attributes, where to specify and what they do:
+
+a) general  
+<TABLE cellspacing="2" border="1">
+<tr>
+<td>data-wrapper="true"</td><td>REQUIRED on div-page</td><td>put this on your wrapper page to fire the plugin</td>
+</tr>
+<tr>
+<td>data-role="panel"</td>
+<td>REQUIRED on div-panel</td>
+<td>tells the plugin this ... is a panel</td>
+</tr>
+<tr>
+<td>data-id="your_panel_name"</td>
+<td>REQUIRED on div-panel</td>
+<td>the name of your panel </td>
+</tr>
+<tr>
+<td>data-panel="panel_type"</td>
+<td>REQUIRED on div-panel</td>
+<td>type of panel "fullwidth", "menu", "main" or "popover"</td>
+</tr>
+<tr>
+<td>data-hash="history"</td>
+<td>optional on div-panel</td>
+<td>add this if you want to have a panel history (not perfect yet!)</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</TABLE>
+
+b) on the menu
+
+<TABLE cellspacing="2" border="1">
+<tr>
+<td>data-switchable="true"</td>
+<td>optional on div-menu</td>
+<td>toggle the menu in splitview mode (default false)</td>
+</tr>
+<tr>
+<td>data-switchableHideOnLoad="true"</td>
+<td>optional on div-menu</td>
+<td>hide the toggle menu when the page loads (default false)</td>
+</tr>
+<tr>
+<td>data-menu-text="text"</td>
+<td>optional on div-menu</td>
+<td>text for the menu button shown in popover mode, which opens/hides the menu, default "menu" </td>
+</tr>
+<tr>
+<td>data-menu-iconpos="yourIconpos"</td>
+<td>optional on div-menu</td>
+<td>iconpos for the menu button shown in popover mode, default "left"</td>
+</tr>
+<tr>
+<td>data-menu-theme="your_theme"</td>
+<td>optional on div-menu</td>
+<td>theme for the menu button shown in popover mode, default "a"</td>
+</tr>
+<tr>
+<td>data-menu-icon="search"</td>
+<td>optional on div-menu</td>
+<td>icon for the menu button shown in popover mode, default "search"</td>
+</tr>
+</table>
+
+c) on panel pages
+
+<TABLE cellspacing="2" border="1">
+<tr>
+<td>data-show="first"</td>
+<td>REQUIRED on div-page</td>
+<td>tell the plugin which page to show first on a panel. Omit this if you want a blank panel</td>
+</tr>
+</table>
  
+d) on popovers
+<TABLE cellspacing="2" border="1">
+<tr>
+<td>data-show="once"</td>
+<td>optional on div-popover</td>
+<td>show this popover once the first time this page is loaded (think login popover)</td>
+</tr>
+</table>		
+	
+e) used in methods(!)
+<TABLE cellspacing="2" border="1">
+<tr>
+<td>data-panel="panel-data-id"</td>
+<td>REQUIRED on links</td>
+<td>sets $.mobile.pageContainer from body to panel before transitions. That's where your transition will go to</td>
+</tr>
+<tr>
+<td colspan="3">to call a transition programmatically add the respective panel as pageContainer option  
+ example: $.mobile.changePage('#pageo', {transition: 'slide', pageContainer: $('div:jqmData(id="your_panel_ID")') });
+ to open a popover panel, create a link with href="#", data-panel="popover" and a class of .toggle__popover  
+ example: a href="#" data-transition="pop" data-role="button" data-panel="popoverShow" class="toggle_popover"</td>
+</tr>
+<tr>
+<td>data-context</td>
+<td>REQUIRED on context links</td>
+<td>add this if you want a context transition = changePage on panel A and change corresponding page on panel B</td>
+</tr>
+<tr>
+<td>data-context-panel</td>
+<td>REQUIRED on context links</td>
+<td>add this to tell JQM where your context transition should go to</td>
+</tr>
+</table>
 
-#### D. Getting started
+f) Bonus  
+<TABLE cellspacing="2" border="1">
+<tr>
+<td>data-type="horizontal"</td>
+<td>optional on collapsible-set</td>
+<td>still working on it. Add this to make change a collapsible-set into a horizontal tab viewer</td>
+</tr>
+<tr>
+<td>.iconposSwitcher-a</td>
+<td colspan="2">optional on a-buttons			changes buttons to icon-only on smartphones</td>
 
-#### 1. Integration
-A multiview page is a regular JQM page. To make it a multiview page, just add the _data-wrapper="true"_ attribute to your container page. Any header or footer added to this page will act as a global header/footer for all nested pages, while header/footer on the nested-page level are local.
-
-If you just want to add popover panels to your page, drop them after the content section. For splitview or fullwidth panels, replace the content section with the respective panels.
-
-Panel keys:  
-* a panel can contain any number of nested pages (regular JQM pages)  
-* nested pages can have header/footer spanning panel width and being local elements vs. global header/footer defined on the wrapping page  
-* there are four supported panel types: (1) menu, (2) main and (3) fullwidth and (4) popover  
-* any number of popovers are possible, but only one menu, main and fullwidth panel per "wrapper-page"  
-* panels use **data-id**, while JQM pages use **id**, this ensures JQM doesn't mix them up  
-* for a panel to work the first page to show needs to be specified by assigning **data-show="first"** to a page inside each panel   
- 
-
-#### 2. Screen Modes
-Multiview is using three screenmodes:   
-**(1) FullWidth/Splitview-Mode** with main section or menu/main section visible  
-**(2) popover mode** on smaller screens (with toggle button) are similar to the original plugin.   
-**(3) Fullscreen mode** for smaller displays. In this mode, everything that pops up (popovers or the menu in popover mode) becomes a fullscreen element layering on top of the actual page (sort of like a dialog).  
+</tr>
+<tr>
+<td>.iconposSwitcher-div</td>
+<td>optional on input-buttons</td>
+<td>changes buttons to icon-only on smartphones</td>
+</tr>
+</table>						
 
 
-#### 3. Popovers
-All popovers share the same functionalities, including the menu in popover mode. Popover panels can be formatted via CSS to be any size and position. However, only one popover can currently be open at a time(!).  
 
-Setting up popovers requires a trigger button with the class of **.toggle_popover** and corresponding **data-panel="panel_name"** attribute. 
+6. Please also note:
+ - I'm using 3 screen modes: >768 = splitview, >468 = popover, <468 = fullscreen
+ - in fullscreen mode, all popovers are changed to fullsize JQM pages, opening a popover in fullscreen pop-transition a regular JQM page. 
+ - scrollview is only used for popovers in splitview and popver mode. 
+ - the history plays nice as long as all pages are on board. Once you start to load in external pages, things still get messy.
+ - you will get automatic back buttons on all panels, which have data-history="hash". these work fine.
+ - I had deeplinking working for "onboard" pages, but something is broken with JQM 1.0.1. - still searching
+ - for deeplinking external pages ("offboard"), I'm thinking about a sitemap option - otherwise the plugin does which panel external.html goes to
+ - I'm still tinkering with another layout mode for smartphones, in which the menu is shown first and the main panel is the next page being shown. 
+ - if you want to fill up your header with buttons7form elements etc, add .headWrapRight and .headWrapLeft to your header and drop your elements - all snuggly aligned (I recommend using iconposSwitcher-a/div on all buttons in a crammed header) 
+ - You should be able to use a global header/footer (on wrapper), local header/footer (on nested pages) or any mix you like. Not sure if this works ok anymore though.
+ - Multiview should work with forms, Photoswipe, (tweaked Pagination). 
 
+That's it. Hope you enjoy the plugin. 
 
-#### 4. Navigation
-The plugin adds a second navigation layer which fires on any link that includes a **data-target="panel_name"**. This target tells JQM to not use regular transition from page to page. Instead a panel-transition is used, which can be either inside a panel (changepage inside panel A) or cross-panel (like changepage panel B fired from A). If no data-target is defined, normal JQM will handle the transition (easiest way to mess up things).  
-
-
-#### 5. History
-The plugin allows two types of "history".   
-
-By adding **data-hash="crumbs"** to a panel, the plugin adds a back-button on every transitioned-to-page. Clicking this button reverses the transition (also works across panels).  
-
-Adding **data-hash="history"** to a panel allows to use the browser or device back-button. This is done by panel-history-stacks, which the plugin initiates when a panel is created. As long as a panel is visible new entries are made to the respective stack on every pagechange with main/menu panels increasing together. On clicking the back button, the plugin checks for the highest panel history stack(s), picks the stack to be used and transitions to the last (non-yield) stack-entry. When all panel stacks are on the same level (this should be the basic setup), normal JQM takes over and does a regular hash-change based reverse transition. This is still WORK-IN-PROGRESS
-A possible panel history scenario might look like this:
-![multiview-2](http://www.stokkers.mobi/valuables/multiview/IMG/how3.png "multiview-concept3") 
-
-
-#### 6. Fullscreen Mode
-This mode fires automatically below a threshold screen width (320px) or if any popover.height plus offset from top is larger than screen.avail-height. In Fullscreen Mode the following things change:  
-* buttons with class **.iconpos-switcher-a/div** are set to icon-only buttons to save space   
-* the popover formatting is dropped. Menu and popovers are set to fullscreen size   
-* Toggling a popover will open the popovers as a layer above the main-panel (maybe eventually make this a dialog)  
-* any fixed header/footers on main panel are unfixed, header/footer on popover remain fixed  
-* The main panel height (actual page height) is matched to the visible popovers height to enable device scrolling (user sees popover-panel, and scrolls main-panel behind). Once the panel is closed, the height is set back to its original value  
-
-
-#### 7. Scrolling
-Multiview uses the scrollview plugin, which will only be initiated on touch devices, while in splitview/fullscreen mode. In this case (should be tablets only) all popovers and the menu use scrollview, while the main section uses device scrolling.     
-
-On desktop all panels have regular scrollbars. In fullscreen mode only the main panel device-scrolls with its height being matched to any open popover (see above). The idea is to keep scrollview use to a minimum versus device scrolling and more importantly, to not end up with device scrolling and scrollview firing at the same time.  
-
-#### 8. Fixed Elements and global header/footer
-Multiview adds two new fixed elements:  
-
-**.ui-element-fixed-top** and **.ui-fixed-element-bottom**   
-
-These can be used to attach panels (or any other element) to a fixed header/footer. This way when scrolling on a page, the panels will be re-positioned together with the fixed header/footer. Otherwise they would be stuck at their set position which is scrolled out of view. 
-Fixed elements will be hidden together with header/footer once scrolling starts. However, they do not re-appear automatically. The user has to click the toggle-button to make them show up again.  
-
-To setup a global header or footer, just position it outside the panel and inside the wrapper page. These elements will be used across all panel pages.
-*****
-
-#### 9. Autoshow, Centered Popovers and Switchable
-The plugin offers some additional functionalities, among them:  
-* set _data-autoshow="once"_ on a po tpover and it will show once when the page finishes loading (think login window for an application)  
-* give your popover a class of _.ui-popover-center_ and the popover will be positioned center-screen
-* if you want to toggle the menu in splitview mode, you can add the plugin option _switchable:true_, which will show the menu toggle button in splitview mode, too. Use the additional options to configure the button icon and whether to show the menu on load.  
-* by default, the menu button is inside the header. You can now move it to any element in the main section by adding a class of _.ui-menu-button-flex_ to this element.
-
-#### 10. Context Loading  
-Specifying **data-context="page_name"** and **data-context-panel="panel_name"** on a link will trigger an additional (context-)changePage when this link is fired. For example calling a submenu in the menu panel could trigger a changepage in the main section to transition to a related page simultaneously. Context loading will also adds entries to the panel history, so clicking the back button twice will revert both transitions (still in wrong order).
-
-#### 11. Deep Linking
-Deeplinks work for all pages that are in the wrapper page when it's loaded. For pages that are added programmatically or via AJAX, the plugin currently breaks. Will be changed to at least showing the main page, or solved by adding a sitemap in the plugin options, which specifies pages-not-on-board-on-load and which panels they should be in. 
+I'm not progressing as fast as I would like (need to earn my living, too), but please go ahead and post issues. I will try to work on them whenever possible.
