@@ -979,6 +979,8 @@ if ( eventCaptureSupported ) {
 	}, true);
 }
 })( jQuery, window, document );
+
+
 /* 
 * "events" plugin - Handles events
 */
@@ -1327,6 +1329,8 @@ $.each({
 });
 
 })( jQuery, this );
+
+
 // Script: jQuery hashchange event
 // 
 // *Version: 1.3, Last updated: 7/21/2010*
@@ -1706,6 +1710,8 @@ $.each({
   })();
   
 })(jQuery,this);
+
+
 /*
 * "page" plugin
 */
@@ -1740,6 +1746,8 @@ $.widget( "mobile.page", $.mobile.widget, {
 	}
 });
 })( jQuery );
+
+
 /*
 * "core" - The base file for jQm
 */
@@ -3206,6 +3214,11 @@ $.widget( "mobile.page", $.mobile.widget, {
 				//remove initial build class (only present on first pageshow)
 				$html.removeClass( "ui-mobile-rendering" );
 
+				// Send focus to the newly shown page. Moved from promise .done binding in transitionPages
+				// itself to avoid ie bug that reports offsetWidth as > 0 (core check for visibility)
+				// despite visibility: hidden addresses issue #2965
+				// https://github.com/jquery/jquery-mobile/issues/2965
+				reFocus( toPage );
 				releasePageTransitionLock();
 
 				// Let listeners know we're all done changing the current page.
@@ -3993,14 +4006,15 @@ $.widget( "mobile.collapsible", $.mobile.widget, {
 		theme: null,
 		contentTheme: null,
 		iconTheme: "d",
-		mini: false,
+		mini: false,		
 		initSelector: ":jqmData(role='collapsible')"
 	},
 	_create: function() {
 
 		var $el = this.element,
-			o = this.options,
+			o = this.options,			
 			collapsible = $el.addClass( "ui-collapsible" ),
+			collapsibleIcon = $el.jqmData("icon"),
 			collapsibleHeading = $el.children( o.heading ).first(),
 			collapsibleContent = collapsible.wrapInner( "<div class='ui-collapsible-content'></div>" ).find( ".ui-collapsible-content" ),
 			collapsibleSet = $el.closest( ":jqmData(role='collapsible-set')" ).addClass( "ui-collapsible-set" );
@@ -4020,13 +4034,11 @@ $.widget( "mobile.collapsible", $.mobile.widget, {
 			// Inherit the content-theme from collapsible-set
 			if ( !o.contentTheme ) {
 				o.contentTheme = collapsibleSet.jqmData( "content-theme" );
-			}
-			
+			}			
             // Gets the preference icon position in the set
             if ( !o.iconPos ) {
                 o.iconPos = collapsibleSet.jqmData( "iconpos" );
-            }
-			
+            }			
 			if( !o.mini ) {
 				o.mini = collapsibleSet.jqmData( "mini" );
 			}
@@ -4046,11 +4058,11 @@ $.widget( "mobile.collapsible", $.mobile.widget, {
 					shadow: false,
 					corners: false,
 					iconpos: $el.jqmData( "iconpos" ) || o.iconPos || "left",
-					icon: "plus",
+					icon:  collapsibleIcon ? collapsibleIcon : "plus",
 					mini: o.mini,
 					theme: o.theme
 				})
-			.add( ".ui-btn-inner" )
+			.add( ".ui-btn-inner", $el )
 				.addClass( "ui-corner-top ui-corner-bottom" );
 
 		//events
@@ -4132,8 +4144,14 @@ $.widget( "mobile.collapsibleset", $.mobile.widget, {
 		}
 		// XXX FREQUENT - Add class and grid
 		if ( o.direction == "horizontal" ) {
+		
+			if ( $el.jqmData('inset') == true ) {
+				$el.addClass('ui-collapsible-inset');
+				}
 			$el.addClass("ui-collapsible-set-horizontal")
-				.grid({ grid: this.options.grid })				
+				.grid({ grid: this.options.grid })
+				.find( ".ui-collapsible-content" ).addClass( "ui-corner-bottom" ).end()
+				.find( ".ui-collaspible-heading" ).removeClass( "ui-corner-bottom" );					
 		}
 
 		// Initialize the collapsible set if it's not already initialized
@@ -4147,10 +4165,10 @@ $.widget( "mobile.collapsibleset", $.mobile.widget, {
 						widget = collapsible.data( "collapsible" ),
 					    contentTheme = widget.options.contentTheme;
 					// XXX FREQUENT - add clause for horizontal
-					if ( contentTheme && collapsible.jqmData( "collapsible-last" ) && o.direction != "horizontal" ) {
+					if ( contentTheme && collapsible.jqmData( "collapsible-last" ) && o.direction != "horizontal" ) {						
 						collapsible.find( widget.options.heading ).first()
 							.find( "a" ).first()
-							.add( ".ui-btn-inner" )
+							.add( ".ui-btn-inner", $el )
 							.toggleClass( "ui-corner-bottom", isCollapse );
 						collapsible.find( ".ui-collapsible-content" ).toggleClass( "ui-corner-bottom", !isCollapse );
 					}
@@ -4162,12 +4180,11 @@ $.widget( "mobile.collapsibleset", $.mobile.widget, {
 						// XXX FREQUENT - toggle corners
 						collapsiblesInSet.first().find( "a" ).first().add( ".ui-btn-inner").toggleClass( "ui-corner-bl", isCollapse && allClosed == true);
 						collapsiblesInSet.last().find( "a" ).first().add( ".ui-btn-inner").toggleClass( "ui-corner-br", isCollapse && allClosed == true);
-						// XXX FREQUENT - bottom corners on all content sections
-						$el.find( ".ui-collapsible-content" ).addClass( "ui-corner-bottom" );																		
+						collapsiblesInSet.last().find( "a" ).first().add( ".ui-btn-inner").removeClass( "ui-corner-bottom", isCollapse );
 						}
 										
 				})
-				.bind( "expand", function( event ) {
+				.bind( "expand", function( event ) {					
 					$( event.target )
 						.closest( ".ui-collapsible" )
 						.siblings( ".ui-collapsible" )
@@ -4176,14 +4193,13 @@ $.widget( "mobile.collapsibleset", $.mobile.widget, {
 				});
 
 			// clean up borders
-			collapsiblesInSet.each( function() {
+			collapsiblesInSet.each( function() {			
 				$( this ).find( $.mobile.collapsible.prototype.options.heading )
 					.find( "a" ).first()
-					.add( ".ui-btn-inner" )
+						.add( ".ui-btn-inner", $el )
 					// XXX FREQUENT - add bottom left right
 					.removeClass( "ui-corner-top ui-corner-bottom ui-corner-bl ui-corner-br" );
 			});
-
 			collapsiblesInSet.first()
 				.find( "a" )
 					.first()
@@ -4820,7 +4836,8 @@ $( document ).delegate( ":jqmData(role='listview')", "listviewcreate", function(
 			}
 			listview._refreshCorners();
 		})
-		.appendTo( wrapper )
+		// XXX Frequent - relocate filter - only moves filter, not form!!!
+		.appendTo( $('.ui-page-active .ui-filter-destination').length > 0 ? $('.ui-filter-destination') : wrapper )
 		.textinput();
 
 	if ( $( this ).jqmData( "inset" ) ) {
@@ -7096,6 +7113,108 @@ $( document ).bind( "pagecreate", function( event ) {
 });
 
 })( jQuery );
+
+
+(function( $, undefined ) {
+
+$.widget( "mobile.fetchlink", $.mobile.widget, {
+	options: {
+		initSelector: ":jqmData(target)"
+	},
+	_create: function() {
+		var self = $( this.element ),
+			target = self.attr( "href" ) ? self : self.find( "a" ).not( ":jqmData(target)" );
+			
+		 target.bind("click", function(e) {			 
+			var el			= $( this ),
+				url		    = el.attr( "href" ),
+				target		= self.jqmData( "target" ),
+				targetEl	= target && $( target ) || self,
+				fragment    = self.jqmData( "fragment" ),
+				load		= fragment || $( fragment ) || ":jqmData(role='page')",
+				threshold	= screen.width > parseInt( el.jqmData( "breakpoint" ) || 0 ),
+				methods		= [ "append", "prepend", "replace", "before", "after" ],
+				method      = "html",
+				url;
+
+			if ( threshold ) {
+				
+				for( var ml = methods.length, i = 0; i < ml; i++ ){
+					if( el.is( ":jqmData(method='" + methods[ i ] + "')" ) ){
+						method	= methods[ i ];
+					}
+				}
+
+				if ( method === "replace" ){
+					method += "With";
+				}
+
+				if ( url && method ) {
+					
+					targetEl.ajaxStart(function(){
+						var $el = $(this);
+
+						$el
+							.addClass('ui-loading-inline')
+							.trigger('inlineLoader', { method: method })
+							.height( $el.height() );
+					 });
+					
+					$.get( url, function( resp ) {
+					
+						var rscript = /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
+							data = $( $("<div/>").append( resp.replace( rscript, "" ) ).find( load ) ),
+							responseEl = !fragment ? $( data.html() ) : data,
+							normalizePath = function( sel, attr ) {
+								responseEl.find( sel ).each(function() {
+									var $el = $(this),
+										oPath = $el.attr( attr );
+									 $el.attr( attr, $.mobile.path.parseUrl( url ).directory + oPath );
+								});
+							};
+
+						normalizePath( 'img', 'src' );
+						normalizePath( 'a', 'href');
+						
+						setTimeout(function() {		
+							targetEl[ method ]( responseEl.addClass('fade in') );
+
+							targetEl.filter( ':jqmData(role="listview")' ).length && targetEl.listview( "refresh" );
+							targetEl.filter( ':jqmData(role="tableview")' ).length && targetEl.tableview( "refresh" );
+							
+							targetEl
+								.removeClass('ui-loading-inline')
+								.height('auto');
+							
+							responseEl.trigger( "create" );
+					
+						}, 300);
+					});
+				}
+			}
+			return false;
+		});
+
+	}
+});
+
+$( document ).bind( "inlineLoader", function( e, ui ){	
+		if( ui.method === "html" ) {
+			//$( e.target ).children().removeClass('fade in').addClass('fade out');
+			
+			setTimeout(function() {
+				//$( e.target ).html( "<div class='ui-loader-inline fade in'><span class='ui-icon ui-icon-loading spin'></span></div>" );
+			}, 300);
+		}
+});
+
+//auto self-init widgets
+$( document ).bind( "pagecreate create", function( e ){
+	$( $.mobile.fetchlink.prototype.options.initSelector, e.target ).fetchlink();
+});
+
+})( jQuery );
+
 /*
 * "init" - Initialize the framework
 */
