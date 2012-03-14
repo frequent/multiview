@@ -1,9 +1,9 @@
-/* jQuery Mobile Framework : panelview plugin */
+/* jQuery Mobile Framework : multiview plugin */
 
 html { -webkit-font-smoothing: antialiased;}
 body { visibility: hidden; margin: 0; width: inherit; overflow-y: auto !important;}
 .ui-header { height: 41px;}
-*[data-theme="a"] .ui-collapsible-heading-toggle .ui-btn-text { color: #000; }
+/* *[data-theme="a"] .ui-collapsible-heading-toggle .ui-btn-text { color: #000; } this overwrites all collapsible colors, why did I do this`?*/
 .ui-mobile-viewport	{ height: inherit; }
 
 .headWrapLeft > * { 
@@ -147,9 +147,10 @@ body { visibility: hidden; margin: 0; width: inherit; overflow-y: auto !importan
 	z-index: 1025; /* must always be on top!!!*/
 }
 .ui-fullscreen-mode div.ui-mobile-viewport { 
-	overflow-y: auto /* panels have scrollbar, because they act as viewport if panel is open! overriding body!, hides panel toolbar, question is on mobile devices, how scroll will work*/ 
-					 
+	overflow-y: auto; /* panels have scrollbar, because they act as viewport if panel is open! overriding body!, hides panel toolbar, question is on mobile devices, how scroll will work*/ 						 
 }
+
+
 .pop_fullscreen .ui-page-active { 
 	z-index: 1; /* background-color: #ffffff; necessary to expand page down to bottom on smartphones */
 	}
@@ -197,7 +198,9 @@ div[data-wrapper="true"] 					{ margin: 0px; padding: 0px; height: inherit; widt
 .ui-mobile body                  					{ visibility: visible; }
 .ui-popover .ui-page                         			{ bottom: 0 /* makes popover pages content expand to the full available width on iPad...*/; }
 .ui-popover .ui-page-active					{ min-height: inherit !important;}
-.ui-content                      						{ /* overflow: visible; overflow-x: hidden !important;  background-color: #fff;*/}
+.ui-content                      						{  overflow: visible; /*  background-color: #fff;*/}
+.ui-fullscreen-mode .ui-content				{ overflow-x: hidden !important; padding: 15px !important; }
+
 
 .ui-panel-left { 
 	width: 25%; 
@@ -234,6 +237,12 @@ div[data-wrapper="true"] 					{ margin: 0px; padding: 0px; height: inherit; widt
 	display: inline-block;
 	margin: 0.5em 5px !important; /* override ui-popover margin-important */
 }
+.dataTables_filter.ui-menu-button-flex .menuToggle {
+	position: static;
+	display: inline-block;
+	float: none; 
+	margin: 2px 0.25em !important;
+}
 .ui-splitview-mode .ui-panel-left {
 	min-width: 250px;
 	}
@@ -255,80 +264,113 @@ div[data-wrapper="true"] 					{ margin: 0px; padding: 0px; height: inherit; widt
 	   on Android smartphones, as this would be fullscreen mode. 	   
 	   */	   
 }
-
-/* experimental tab viewer */
+	
+/* tab viewer */	
 .ui-collapsible-set-horizontal { 
-	position: relative; 
-	overflow: visible; 
-	min-height: 250px; 
-	}			
+	}	
+.ui-collapsible-set-horizontal legend{ 
+	padding: 1em 0 !important;
+	}	
+.ui-collapsible-set-horizontal .ui-collapsible h3 {
+	font-size: .875em;
+	}
+.ui-collapsible-inset {
+	margin: 15px;
+	}
+.ui-fullscreen-mode .ui-collapsible-inset {
+	margin: 5px;
+}
 .ui-collapsible-set-horizontal .ui-collapsible-heading { 
 	width: 100%; 
 	margin: 0;
 	}
-.ui-collapsible-set-horizontal .ui-collapsible-content { 
-	position: absolute; 
-	left: 0; 
-	right: 0; 
-	margin: 0 1px 0 0;
-	}
-/* this avoids pos:abs in two-tab collapsible */
-.ui-collapsible-set-horizontal.ui-grid-a .ui-block-a .ui-collapsible-content {
+.ui-collapsible-set-horizontal .ui-collapsible-content {	
+	margin: 0 2px;
 	position: relative;
+	padding-right: 0;
+	padding-left: 0;
+	padding-bottom: 0;
+	border: 0 none;
+	padding-top: 0;
+	}	
+/* 2tabs */
+.ui-collapsible-set-horizontal.ui-grid-a .ui-block-a .ui-collapsible-content {	
 	width: 199.3%;
 	padding: 0;
-
 	}	
 .ui-collapsible-set-horizontal.ui-grid-a .ui-block-b .ui-collapsible-content {
 	left: -100%;
 	width: 199.3%;
-	position: relative;
 	}
-/* this for a four-tab-collapsible */
+/* 3tabs */
+.ui-collapsible-set-horizontal.ui-grid-b .ui-block-a .ui-collapsible-content {
+	width: 299%;
+	/* 1px off.... */
+	margin: 0 0 0 1px
+}
+.ui-collapsible-set-horizontal.ui-grid-b .ui-block-b .ui-collapsible-content {
+	width: 299%;
+	left: -100%;
+}
+.ui-collapsible-set-horizontal.ui-grid-b .ui-block-c .ui-collapsible-content {
+	width: 299%;
+	left: -200%;
+}
+/* 4tabs */
 .ui-collapsible-set-horizontal.ui-grid-c .ui-block-a .ui-collapsible-content {
-	position: relative;
 	width: 399%;
-	padding-right: 0;
-	padding-left: 0;
-	padding-bottom: 0;
-
 }
 .ui-collapsible-set-horizontal.ui-grid-c .ui-block-b .ui-collapsible-content {
-	position: relative;
 	width: 399%;
-	padding-right: 0;
-	padding-left: 0;
-	padding-bottom: 0;
 	left: -100%;
-
 }
 .ui-collapsible-set-horizontal.ui-grid-c .ui-block-c .ui-collapsible-content {
-	position: relative;
 	width: 399%;
-	padding-right: 0;
-	padding-left: 0;
-	padding-bottom: 0;
 	left: -200%;
-
 }
 .ui-collapsible-set-horizontal.ui-grid-c .ui-block-d .ui-collapsible-content {
-	position: relative;
 	width: 399%;
-	padding-right: 0;
-	padding-left: 0;
-	padding-bottom: 0;
 	left: -300%;
 }
 .ui-collapsible-set-horizontal .ui-box-inner {
 	display: block;
 }
-.ui-collapsible-set-horizontal .ui-collapsible-heading:not(.ui-collapsible-heading-collapsed) a {
+/* override JQM */
+.ui-collapsible-set-horizontal .ui-collapsible-heading-collapsed a {
+	margin: 0 -1px;
+}
+.ui-collapsible-set-horizontal .ui-collapsible-heading-collapsed a .ui-btn-text{
+	color: #ffffff;
+}
+/* for highlighting */
+.ui-collapsible-set-horizontal .ui-collapsible-content {
+	border-color: transparent;
+	background: #ffffff !important;
+}
+.ui-collapsible-set-horizontal .ui-collapsible-heading:not(.ui-collapsible-heading-collapsed) a {	
 	border-bottom-color: #ffffff;
 	background: #ffffff;
+	text-shadow: none;
+	color: #000000;
 }
+/* nested tables */
+.ui-collapsible-set-horizontal .ui-collapsible-content .table-top-wrapper {
+	-moz-border-radius: 0;
+	-webkit-border-radius: 0;
+	border-radius: 0;
+}
+
+
 @media all and (max-width: 480px){
 .ui-collapsible-set-horizontal.ui-grid-c .ui-block-a .ui-collapsible-content,
 .ui-collapsible-set-horizontal.ui-grid-c .ui-block-b .ui-collapsible-content,
 .ui-collapsible-set-horizontal.ui-grid-c .ui-block-c .ui-collapsible-content,
 .ui-collapsible-set-horizontal.ui-grid-c .ui-block-d .ui-collapsible-content { width: 397%; }
+}
+/* if collapsibles contain tables - .containsTable class as trigger */
+.ui-collapsible.containsTable .ui-collapsible-content {
+	padding: 0;
+}
+.ui-collapsible.containsTable .ui-collapsible-content .row  {
+	margin: 0;	
 }
