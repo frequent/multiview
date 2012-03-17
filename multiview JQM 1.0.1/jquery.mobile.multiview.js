@@ -3,7 +3,7 @@
 * jQuery Mobile Framework : "panelview" plugin
 * Copyright (c) Sven Franck
 * Dual licensed under the MIT or GPL Version 2 licenses.
-* Version 17.03.2012 - Jquery 1.7.1 adapted - on()/off()
+* Version 27.02.2012 - Jquery 1.7.1 adapted - on()/off()
 */
 		
 (function( $, window) {	
@@ -1084,7 +1084,7 @@
 		// panel navigation and panel hash routines
 		// adding entries to panel history stacks
 		stackUp: function (source, event, data) {
-				 // console.log("=====  panel UP, source= "+source+" =====");
+				// console.log("=====  panel UP, source= "+source+" =====");
 				// /*							
 				
 				var self = this;														
@@ -1170,7 +1170,7 @@
 			
 		// reduce panel history stacks
 		stackDown: function ( source, whereToGo ) {
-			// console.log("=====  panel DOWN, source= "+source+" =====");			
+			 // console.log("=====  panel DOWN, source= "+source+" =====");			
 			 // /*
 			var self = this,
 				getHash = $.mobile.path.parseUrl( whereToGo );
@@ -1393,7 +1393,7 @@
 				var self = this;														
 				
 				// stop Android for 500ms
-				window.setTimeout(function () { $blockMultiClick = false; alert("on") }, 500);				
+				window.setTimeout(function () { self.options.$blockMultiClick = false; }, 500);				
 				
 				// stop JQM 
 				e.preventDefault();
@@ -1420,38 +1420,6 @@
 					fromHashChange: true,
 					pageContainer: null,
 					};
-				
-				// --------------------------- panel history rountine ------------------------
-				// works like this:
-				// * every panel with data-hash="history" gets a history stack on panel-init
-				// * panel stacks receive entries (hash only) on every changePage
-				// * initial stack height = 1 = panel page withd data-show = first
-				// * popover panel stacks only increase while visible and are reset to 1 when the panel hides
-				// * popover panel stacks always supercede all other panels 
-				// * = first undo the panel, then the rest
-				// * main&menu stack increase together, so if you change page on menu
-				// * main gets a "yield" entry. So they always have the same stack height
-				// on every transition plugin checks all stacks for the heightest
-				// a new array is created from the heighest stacks (may be more than one)
-				// only when all panels are on the same height (should be =1) JQM is allowed
-				// to do a regular hashChange.
-				
-				// example: 3 higehst stacks with 2 entries each, the combo-array longest[]
-				// will contain 3 arrays [array1, array2, array3] and each array will contain two entries
-				
-				// if there are panels with active history, check them
-				if (n) {
-					$panels.each(function(){					
-						var data = $(this).data("stack");										
-						if(data.length > longestLen){					
-								longest = [data];
-								longestLen = data.length;							
-								}
-								else if(data.length == longestLen) {
-									longest.push(data);																					
-									}
-							});							
-					}				
 				
 				// block hashChanges firing from regular JQM transition, 
 				// when the plugin panel history is active, it keeps the
@@ -1485,7 +1453,39 @@
 					self.options.$blockPaginationHashChange = false;					
 					return;
 					}
-				console.log("danger");
+				
+				// --------------------------- panel history rountine ------------------------
+				// works like this:
+				// * every panel with data-hash="history" gets a history stack on panel-init
+				// * panel stacks receive entries (hash only) on every changePage
+				// * initial stack height = 1 = panel page withd data-show = first
+				// * popover panel stacks only increase while visible and are reset to 1 when the panel hides
+				// * popover panel stacks always supercede all other panels 
+				// * = first undo the panel, then the rest
+				// * main&menu stack increase together, so if you change page on menu
+				// * main gets a "yield" entry. So they always have the same stack height
+				// on every transition plugin checks all stacks for the heightest
+				// a new array is created from the heighest stacks (may be more than one)
+				// only when all panels are on the same height (should be =1) JQM is allowed
+				// to do a regular hashChange.
+				
+				// example: 3 higehst stacks with 2 entries each, the combo-array longest[]
+				// will contain 3 arrays [array1, array2, array3] and each array will contain two entries
+				
+				// if there are panels with active history, check them
+				if (n) {
+					$panels.each(function(){					
+						var data = $(this).data("stack");										
+						if(data.length > longestLen){					
+								longest = [data];
+								longestLen = data.length;							
+								}
+								else if(data.length == longestLen) {
+									longest.push(data);																					
+									}
+							});							
+					}				
+												
 				// --------------------------- start JQM copy ------------------------ 
 				// TODO: try referencing directly into JQM, this is duplicate code
 				//existing base tag?
@@ -1832,8 +1832,8 @@
 			// panel history handler
 			$(window).on('hashchange', function(e) {
 				
-				if ( $blockMultiClick == false ) {
-					$blockMultiClick = true;
+				if ( self.options.$blockMultiClick == false ) {
+					self.options.$blockMultiClick = true;
 					self.panelHash( e, location.hash, "#"+location.pathname );												
 					}
 				});						
@@ -1869,8 +1869,3 @@ var trigger = $('div:jqmData(wrapper="true")').on( 'pagecreate',function(event){
 });
 
 }) (jQuery,this);
-
-
-
-
-
