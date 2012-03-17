@@ -1,13 +1,9 @@
+
 /*
-* jQuery Mobile Framework : "multiview" plugin
+* jQuery Mobile Framework : "panelview" plugin
 * Copyright (c) Sven Franck
 * Dual licensed under the MIT or GPL Version 2 licenses.
-* Version 12.03.2012 
-* 
-* requires JQM scrollview
-* requires JQM 1.0.1. modified 
-* requires Jquery easing
-* requires Jquery 1.7.1
+* Version 17.03.2012 - Jquery 1.7.1 adapted - on()/off()
 */
 		
 (function( $, window) {	
@@ -61,7 +57,10 @@
 			$blockContextScrollTop:'',
 			
 			// splitview/popover threshold width
-			$thresh: 768
+			$thresh: 768, 
+			
+			// Android multi-click-prevent
+			$blockMultiClick: false
 
 		},
 
@@ -245,7 +244,7 @@
 
 			// hidePanels
 			function hideAllPanels (from) {
-				
+		
 				$('.toggle_popover').removeClass('ui-btn-active');	
 						
 				// run through all panels				
@@ -288,6 +287,9 @@
 						// make sure all externally loaded pages inside this panel are dropped again
 						// TODO: questions is if a panel-page like this is also cached by the browser						
 						$(this).find('div:jqmData(external-page="true")').remove();
+				
+						// clean up bleed through Android clicks
+						$('.androidSucks').removeClass('ui-disabled androidSucks').removeAttr('disabled');
 				
 						// clean up url and remove last visited page on panel from URL
 						// ipad errors "type of expression" undefined if I have not done a transition, so
@@ -375,16 +377,23 @@
 									//remove all other active pages to make sure popover is visible $popPanel.find('.ui-page-active')	
 									//assign a reActivate flag to activate pages again once this panel hides
 									$('.ui-page-active')
-										.not( "div:jqmData(wrapper='true'), div:jqmData(id='"+$correspond+"') .ui-page-active" )
-										.addClass("reActivate")
-										.removeClass('ui-page-active');		
-									
+											.not( "div:jqmData(wrapper='true'), div:jqmData(id='"+$correspond+"') .ui-page-active" )
+											.addClass("reActivate")
+											.removeClass('ui-page-active')																		
+											
+									// "fix" for Android bleeding through clicks... requires to disable background page buttons and 
+									// inputs/selects while navigating overlay pages, otherwise click goes through to background page
+									// http://code.google.com/p/android/issues/detail?id=6721	
+									$('.ui-page').not( $popPanel.find('.ui-page-active') )
+										.find(".ui-header").first().find(".ui-btn, input, select, textarea").addClass('ui-disabled androidSucks').attr('disabled','disabled')
+												
+																							
 									// get active or data-show first page on the panel
 									var activePage = $popPanel.find('.ui-page-active'),
 										firstPage = $popPanel.find('div:jqmData(show="first")'),
 										refPage = activePage.length > 0 ? activePage : firstPage;
 										
-									// tweak background page height	to enable natural scrolling#
+									// tweak background page height	to enable natural scrolling
 									self.backPageHeight( refPage, "set" )
 									}
 
@@ -765,7 +774,7 @@
 
 		// scrollview handler
 		scrollMe: function ( panel ) {	
-					// /*
+					/*
 					// page selector
 					var $page = panel.find('div:jqmData(role="page")');
 												
@@ -796,7 +805,7 @@
 							// 2072 enable slider in scrollview area - putting this here unfreezes screen if toolbars are hidden
 							// breaks scrollview if active, check what's undefined
 							// $().isChildOf - https://github.com/jquery/jquery-mobile/issues/2072					
-							/* function isChildOf (filter_string) {
+							function isChildOf (filter_string) {
 
 									 var parents = $(this).parents().get();
 
@@ -826,10 +835,10 @@
 							$.mobile.scrollview.prototype._handleDragMove = function (e, x, y) { if (IsSlider(e.target)) { e.preventDefault(); return; } hm.call(this, e, x, y); };
 							$.mobile.scrollview.prototype._handleDragStop = function (e) { if (IsSlider(e.target)) return; hu.call(this, e); };
 
-							*/
+							
 							
 						}						
-						// */
+						*/
 					},
 			
 		// helper
@@ -915,8 +924,7 @@
 				// set a listener to adapt height of all active pages to the height of the page currently in view. 
 				// if you have a long page in the background and fire a popover in fullscreen mode, the page length 
 				// should match the popovers active page length, otherwise the background page is visible underneath
-				$(document).on('pagebeforeshow', $popPanels.find('div:jqmData(role="page")'), function () {								
-					console.log("panelheight activated");
+				$(document).on('pagebeforeshow', $popPanels.find('div:jqmData(role="page")'), function () {													
 					self.backPageHeight( $(this), "set" );
 					});
 				
@@ -932,10 +940,10 @@
 					
 			// initialize scrollview - only on touch devices MENU and POPOVERS, if not in fullscreen mode. 
 			// other scenarios handled by device scrolling or desktop scrollbars
-			if ( !$("html").hasClass('ui-fullscreen-mode')  && $("html").hasClass('touch') ) {
+			// if ( !$("html").hasClass('ui-fullscreen-mode')  && $("html").hasClass('touch') ) {
 					// only popovers! to include menu use $allPanels
-					self.scrollMe( $popPanels );			
-				} 					
+					// self.scrollMe( $popPanels );			
+				// } 					
 			
 
 			$allPanels.each(function(index) {	
@@ -995,23 +1003,27 @@
 					}
 			// */
 			}, 
+			
 		backPageHeight: function (page, mode) {
-			// /*
-			var allActive = $('.ui-page-active').not( page ), maxHeight;
+			// /*			
+			var allActive = $('.ui-page').not( page ), maxHeight;
 			
 			// only tweak page height if a popover panel is opened
 			if ( $('div:jqmData(panel="popover") .ui-page-active').length > 0 && mode == "set" ) {
+				
 					// reference height
-					maxHeight = page.outerHeight()					
+					maxHeight = page.outerHeight();					
+
 					// remember
-					allActive.addClass("shrunk").css({	'height': maxHeight,
-														/*'overflow': 'hidden'*/ });																		
+					allActive.addClass("shrunk").css({	'height': maxHeight-1,
+														'overflow': 'hidden' })					
 				}	
 				// always try to clear
 				if ( mode == "clear")  {						
+
 						$('.shrunk').each( function() {
 							allActive.css({'height': '', 
-										 /* 'overflow': '' */ })
+										   'overflow': 'visible' })
 							}).removeClass('shrunk');						
 						}
 						
@@ -1378,7 +1390,10 @@
 					
 				// /*
 				// remove panelHash again
-				var self = this;						
+				var self = this;														
+				
+				// stop Android for 500ms
+				window.setTimeout(function () { $blockMultiClick = false; alert("on") }, 500);				
 				
 				// stop JQM 
 				e.preventDefault();
@@ -1587,6 +1602,7 @@
 				// but if a regular JQM transition fires pageContainer would be stuck at the 
 				// panel the last page was loaded into. Therefore reset (like for the loader:
 				$.mobile.pageContainer == $('body') ? $.mobile.pageContainer : $('body'); 
+								
 			// */
 		},
 		
@@ -1814,8 +1830,12 @@
 				});								
 			
 			// panel history handler
-			$(window).on('hashchange', function(e) {						
-				self.panelHash( e, location.hash, "#"+location.pathname );												
+			$(window).on('hashchange', function(e) {
+				
+				if ( $blockMultiClick == false ) {
+					$blockMultiClick = true;
+					self.panelHash( e, location.hash, "#"+location.pathname );												
+					}
 				});						
 			
 			
@@ -1849,3 +1869,8 @@ var trigger = $('div:jqmData(wrapper="true")').on( 'pagecreate',function(event){
 });
 
 }) (jQuery,this);
+
+
+
+
+
