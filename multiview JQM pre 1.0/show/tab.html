@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html class="no-js multiview">
+<head>
+		
+		<title>JQM tab viewer</title>
+		
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	
+		
+		<link rel="stylesheet" type="text/css" href="../../../demo/loc/scripts/jquery.mobile-1.0/jquery.mobile-1.0.css" />	
+        <link rel="stylesheet" type="text/css" href="../../../demo/loc/style/jquery.mobile.scrollview.css" />
+        <link rel="stylesheet" type="text/css" href="../../../demo/loc/style/jquery.mobile.multiview.css" />
+		<link rel="stylesheet" type="text/css" href="../../../demo/loc/style/main.css" />
+		
+		<style type="text/css">
+		
+			.ui-collapsible-set-horizontal { position: static; min-height: 1000px;}
+			/*.ui-collapsible-set-horizontal .ui-collapsible { display: inline-block; margin: 0 -5px 0 0; width: 33.33%;}*/
+			.ui-collapsible-set-horizontal .ui-collapsible-heading { width: 100%;}
+			.ui-collapsible-set-horizontal .ui-collapsible-content { position: absolute; left: 0; right: 0;}
+		
+		</style>
+</head>
+<body>
+	
+				
+<div data-role="page" id="tabview">			
+
+			<div data-role="header" data-position="fixed" data-theme="a">				                  					
+				<h1>tabview</h1>
+			</div>
+		
+			<div data-role="content" class="resultsBox">
+				
+								<!--
+								<p>regular collapsible set</p>
+								
+								<div data-role="collapsible-set" data-content-theme="d">
+									<div data-role="collapsible" data-collapsed="true">
+										<h3>Tab One</h3>
+										<p> Contents of Tab one </p>
+										<span>	Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore 
+												magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata 
+												sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod</span>											
+										</span>																			
+									</div>
+									<div data-role="collapsible" data-collapsed="true">
+										<h3>Tab Two</h3>	
+										<p> Contents of Tab Two </p>
+										<span>	Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore 
+												magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata 
+												sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod</span>											
+										</span>		
+									</div>
+									<div data-role="collapsible" data-collapsed="true">
+										<h3>Tab Three</h3>
+										<p> Contents of Tab Two </p>
+										<span>	Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore 
+												magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata 
+												sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod</span>											
+										</span>										
+									</div>
+								</div>
+								-->
+								
+								<p>tabview collapsible set, just add <strong>data-type="horizontal"</strong></p>
+								
+								<div data-role="collapsible-set" data-type="horizontal" data-content-theme="d">
+									<div data-role="collapsible" data-collapsed="true">
+										<h3>Tab One</h3>
+										<p> Contents of Tab one </p>
+										<span>	Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore 
+												magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata 
+												sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod</span>											
+										</span>																			
+									</div>
+									<div data-role="collapsible" data-collapsed="true">
+										<h3>Tab Two</h3>	
+										<p> Contents of Tab Two </p>
+										<span>	Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore 
+												magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata 
+												sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod</span>											
+										</span>		
+									</div>
+									<div data-role="collapsible" data-collapsed="true">
+										<h3>Tab Three</h3>
+										<p> Contents of Tab Two </p>
+										<span>	Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore 
+												magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata 
+												sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod</span>											
+										</span>										
+									</div>
+								</div>
+								
+								<div><p>THIS SHOULD NOT COVER THE ABOVE</p></div>
+							</div>
+					
+					
+					
+</div><!-- end page -->
+				
+				
+
+
+</body>
+		
+		<script type="text/javascript" src="http://code.jquery.com/jquery-1.6.4.min.js"></script>					
+		<script type="text/javascript" src="../../../demo/loc/scripts/jquery.mobile-1.0/jquery.mobile-1.0multiview.js"></script>		
+		<script type="text/javascript" src="../../../demo/loc/scripts/plugins/jquery.mobile.multiview.js"></script>
+
+		
+
+				
+		
+		
+		
+		
+		
+		
+		
+</html>
+

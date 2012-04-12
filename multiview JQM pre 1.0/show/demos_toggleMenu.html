@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html class="no-js multiview">
+<head>
+		
+		<title>multiview demos - toggle menu</title>
+		
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />		
+		<link rel="stylesheet" href="http://code.jquery.com/mobile/1.0/jquery.mobile-1.0.min.css" />	
+        <link rel="stylesheet" type="text/css" href="../LOC/style/jquery.mobile.scrollview.css" />
+		<link rel="stylesheet" type="text/css" href="../LOC/style/jquery.mobile.multiview.css" />
+	
+		<style type="text/css">
+			.middleClass {text-align: center; margin-top: 25%;}
+			code { padding: 0 0.5em;}
+			.blank, .blank li {font-size: 95%;}
+			.ui-page { background: #ffffff;}
+			ui-grid-d {text-align: center;}
+			fieldset img, img {display: block; margin: 0 auto; }
+			* {font-size: 13px;}
+		</style>
+</head>
+<body>
+	
+			
+<div data-role="page" id="wrap1" data-wrapper="true">
+		
+		
+		
+		<!-- ////////////// embedded menu panel /////////////  -->
+		<div data-role="panel" data-id="menu" data-panel="menu">				  		 	 
+		
+			<div data-role="page" id="first" data-show="first">
+				<div data-role="header" data-position="fixed" data-theme="a">			
+					<h1>Menu</h1>
+					
+				</div>
+				<div data-role="content">
+						<p>Search Criteria</p>						
+						<ul data-role="listview">
+							<li><a href="">A</a></li>
+							<li><a href="">B</a></li>
+							<li><a href="">C</a></li>
+							<li><a href="">D</a></li>
+							<li><a href="">E</a></li>
+							<li><a href="">F</a></li>
+							<li><a href="">G</a></li>
+							<li><a href="">H</a></li>
+						</ul>
+						
+				</div>
+			</div>
+			
+			
+
+		</div><!-- end panel -->
+		
+		<!-- ////////////// embedded main panel ///////////////  -->		
+		<div data-role="panel" data-id="main" data-panel="main">		
+			
+			<div data-role="page" id="one" data-show="first">
+				<div data-role="header" data-position="fixed" data-theme="a">			
+					
+					<h1>Toggle Menu</h1>
+					
+				</div>
+				<div data-role="content">
+						<p>Something that needs space, like images etc.</p>
+					
+						
+						
+						
+				</div>
+			</div>
+			
+			
+		</div><!-- end panel -->
+		
+		<!-- global footer = inside wrapper, outside panel -->
+		<div data-role="footer" data-id="mainFooter" data-position="fixed">
+			<div data-role="navbar" data-grid="d">
+				<ul>	
+	
+					<li><a rel="external" href="index.html" data-iconpos="top" data-icon="plus">Home</a></li>
+					<li><a rel="external" href="index.html#useCases" data-iconpos="top" data-icon="plus">Layouts</a></li>
+					<li><a rel="external" href="index.html#modes" data-iconpos="top" data-icon="plus">Screen Modes</a></li>
+					<li><a rel="external" href="index.html#demos" data-iconpos="top" data-icon="plus">Demos</a></li>				
+					<li><a rel="external" href="index.html#features" data-iconpos="top" data-icon="plus">Features</a></li>	
+					
+				</ul>
+			</div>
+		</div>	
+
+		
+		
+</div><!-- end wrapper page -->
+				
+				
+
+
+</body>
+
+		<script type="text/javascript" src="http://code.jquery.com/jquery-1.6.4.min.js"></script>					
+		<script type="text/javascript" src="../LOC/scripts/jquery.mobile-1.0/jquery.mobile-1.0multiview.js"></script>		
+		<script type="text/javascript" src="../LOC/scripts/plugins/jquery.easing.1.3.js"></script>
+        <script type="text/javascript" src="../LOC/scripts/plugins/jquery.mobile.scrollview.js"></script>
+		<script type="text/javascript" src="jquery.mobile.multiviewB.js"></script>
+			
+</html>
+

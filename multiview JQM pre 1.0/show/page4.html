@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html class="no-js multiview">
+<head>
+		
+		<title>multiview plugin - page 4</title>
+		
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		
+		<link rel="stylesheet" href="http://code.jquery.com/mobile/1.0/jquery.mobile-1.0.min.css" />	
+        <link rel="stylesheet" type="text/css" href="../LOC/style/jquery.mobile.scrollview.css" />
+		<link rel="stylesheet" type="text/css" href="../LOC/style/jquery.mobile.multiview.css" />
+	
+		<style type="text/css">
+			.middleClass {text-align: center; margin-top: 25%;}
+			code { padding: 0 0.5em;}
+			.blank, .blank li {font-size: 95%;}
+			.ui-page { background: #ffffff;}
+			ui-grid-d {text-align: center;}
+			fieldset img, img {display: block; margin: 0 auto; }
+			* {font-size: 13px;}
+		</style>
+
+</head>
+<body>
+					
+<div data-role="page" id="wrap4" data-wrapper="true">
+					
+			
+				<div data-role="header" data-position="fixed" data-theme="a">
+					<h1>demo global header/global footer</h1>					
+				</div>
+		
+		
+		<!-- ////////////// embedded fullwidth panel ///////////////  -->		
+		<div class="ui-panel-fullwidth" data-role="panel" data-id="fullwidthPage" data-panel="fullwidth" data-hash="history">		
+			
+			<div data-role="page" id="fw-page1" data-show="first">
+				<div data-role="content">
+					<h3 style="text-align: center">multiview</h3>
+					<br>
+					<p style="text-align: center">This page is a multipage inside a fullwidth panel and wrapped by a wrapper page. It contains 3 subpages</p>
+					<br>
+					<br>
+					
+					
+													
+										<ul data-role="listview" data-inset="true" data-theme="d" data-divider-theme="a">
+											<li data-role="list-divider">Pages in this Panel</li>
+											<li><a href="#fw-page2" data-target="fullwidthPage"><h3>Fullwidth page 2</h3></a></li>
+											<li><a href="#fw-page3" data-target="fullwidthPage"><h3>Fullwidth page 3</h3></a></li>
+											<li><a href="#fw-page4" data-target="fullwidthPage"><h3>Fullwidth page 4</h3></a></li>
+										</ul>	
+		
+						
+							
+									
+				</div>
+				
+			</div><!-- end page -->
+			
+			<div data-role="page" id="fw-page2">	
+				
+				<div data-role="content">										
+					<p>this is fullwidth page2. Continue to the following pages</p>
+						<ul data-role="listview" data-inset="true" data-theme="d" data-divider-theme="b">
+								<li data-role="list-divider">Pages in this Panel</li>
+								<li><a href="#fw-page1" data-target="fullwidthPage"><h3>Fullwidth page 1</h3></a></li>
+								<li><a href="#fw-page3" data-target="fullwidthPage"><h3>Fullwidth page 3</h3></a></li>
+								<li><a href="#fw-page4" data-target="fullwidthPage"><h3>Fullwidth page 4</h3></a></li>
+						</ul>
+				</div>								
+			</div><!-- end page -->
+			
+			<div data-role="page" id="fw-page3">	
+				
+				<div data-role="content">										
+					<p>this is fullwidth page3. Continue to the following pages</p>
+						<ul data-role="listview" data-inset="true" data-theme="d" data-divider-theme="b">
+								<li data-role="list-divider">Pages in this Panel</li>
+								<li><a href="#fw-page1" data-target="fullwidthPage"><h3>Fullwidth page 1</h3></a></li>
+								<li><a href="#fw-page2" data-target="fullwidthPage"><h3>Fullwidth page 2</h3></a></li>
+								<li><a href="#fw-page4" data-target="fullwidthPage"><h3>Fullwidth page 4</h3></a></li>
+						</ul>
+				</div>								
+			</div><!-- end page -->
+			
+			<div data-role="page" id="fw-page4">	
+				
+				<div data-role="content">
+					<p style="text-align: center;">this is MainPage4. Only some text here to check scrolling</p>
+					<p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.   
+				   Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.   
+				   Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.   
+				   Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.   
+				   Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis.   
+				</p>
+				</div>								
+			</div><!-- end page -->
+			
+			
+		</div><!-- end panel -->
+
+
+		<!-- global footer = inside wrapper, outside panel -->
+		<div data-role="footer" data-id="mainFooter" data-position="fixed">
+			<div data-role="navbar" data-grid="d">
+				<ul>	
+	
+					<li><a href="index.html" data-iconpos="top" data-icon="plus">Home</a></li>
+					<li><a href="index.html#useCases" data-iconpos="top" data-icon="plus">Layouts</a></li>
+					<li><a href="index.html#modes" data-iconpos="top" data-icon="plus">Screen Modes</a></li>
+					<li><a href="index.html#demos" data-iconpos="top" data-icon="plus">Demos</a></li>				
+					<li><a href="index.html#features" data-iconpos="top" data-icon="plus">Features</a></li>	
+					
+				</ul>
+			</div>
+		</div>	
+
+</div><!-- end wrapper page -->
+				
+				
+
+
+</body>
+
+		<script type="text/javascript" src="http://code.jquery.com/jquery-1.6.4.min.js"></script>					
+		<script type="text/javascript" src="../LOC/scripts/jquery.mobile-1.0/jquery.mobile-1.0multiview.js"></script>		
+		<script type="text/javascript" src="../LOC/scripts/plugins/jquery.easing.1.3.js"></script>
+        <script type="text/javascript" src="../LOC/scripts/plugins/jquery.mobile.scrollview.js"></script>
+		<script type="text/javascript" src="../LOC/scripts/plugins/jquery.mobile.multiview.js"></script>
+			
+</html>
+

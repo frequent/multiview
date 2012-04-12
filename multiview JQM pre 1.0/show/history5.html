@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html class="no-js multiview">
+<head>
+		
+		<title>multiview plugin - history 5</title>
+		
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />		
+		<link rel="stylesheet" href="http://code.jquery.com/mobile/1.0/jquery.mobile-1.0.min.css" />	
+        <link rel="stylesheet" type="text/css" href="../LOC/style/jquery.mobile.scrollview.css" />
+		<link rel="stylesheet" type="text/css" href="../LOC/style/jquery.mobile.multiview.css" />
+		<style type="text/css">
+			.middleClass {text-align: center; margin-top: 25%;}
+			code { padding: 0 0.5em;}
+			.blank, .blank li {font-size: 95%;}
+			.ui-page { background: #ffffff;}
+			ui-grid-d {text-align: center;}
+			fieldset img, img {display: block; margin: 0 auto; }
+			* {font-size: 13px;}
+		</style>
+</head>
+<body>
+	
+<!-- the wrapper page loaded through AJAX -->				
+<div data-role="page" id="wrap5" data-wrapper="true">
+		
+	
+		<!-- ////////////// embedded fullwidth panel ///////////////  -->		
+		<div class="ui-panel-fullwidth" data-role="panel" data-id="fullwidthWithPops" data-panel="fullwidth" data-hash="history">		
+			
+			<div data-role="page" id="fw2-page1" data-show="first"  >	
+				<div data-role="header" data-position="fixed" data-theme="a">
+					<h1>single page with popups</h1>
+					<div class="headWrapRight ui-btn-right">
+						<div data-role="controlgroup" data-type="horizontal" class="headLogg headerMenuRight iconposSwitcher-div">
+							<a href="#" data-theme="a" data-role="button" data-panel="popover3" data-icon="lang" data-inline="true" data-iconpos="left" class="toggle_popover">Pop3</a>
+							<a href="#" data-theme="a" data-role="button" data-panel="popover4" data-icon="exit" data-inline="true" data-iconpos="left" class="toggle_popover">Pop4</a>
+						</div>					
+					</div>
+				</div>
+				<div data-role="content">
+					<h3 style="text-align: center">multiview</h3>
+					<br>
+					<p style="text-align: center">This page is a single page inside a wrapper panel and page. It has two popover boxes.</p>
+					<br>
+					<br>
+					
+					
+						
+								<div data-role="collapsible" data-collapsed="false">
+									<h3 class="col_Head blockHeading">Fixed Element Trial</h3>
+									
+										<ul data-role="listview" data-inset="true" data-theme="d" data-divider-theme="a">											
+											<li><a href="#fw2-page3" data-target="fullwidthWithPops"><h3>Fullwidth page 3 internal</h3></a></li>											
+											<li><a href=""  data-target=""><h3>not active</h3></a></li>
+										</ul>	
+								</div>
+						
+				</div>
+				
+			</div><!-- end page -->
+			
+			<div data-role="page" id="fw2-page2" >	
+				<div data-role="header" data-position="fixed" data-theme="a">					
+					<h1>Full width2 page2</h1>
+					<div class="headWrapRight ui-btn-right">
+						<div data-role="controlgroup" data-type="horizontal" class="headLogg headerMenuRight iconposSwitcher-div">
+							<a href="#" data-theme="a" data-role="button" data-panel="popover3" data-icon="lang" data-inline="true" data-iconpos="left" class="toggle_popover">Pop3</a>
+							<a href="#" data-theme="a" data-role="button" data-panel="popover4" data-icon="exit" data-inline="true" data-iconpos="left" class="toggle_popover">Pop4</a>
+						</div>
+					</div>
+				</div>
+				<div data-role="content">										
+					<p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.   
+				   Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.   
+				   Ut...</p>						
+				</div>								
+			</div><!-- end page -->
+
+			
+			<div data-role="page" id="fw2-page3"  >	
+				<div data-role="header" data-position="fixed" data-theme="a">					
+					<h1>Fixed element trial</h1>					
+					<a href="#" data-theme="a" data-role="button" data-panel="popover5" data-inline="true" data-iconpos="left" class="toggle_popover ui-btn-right">Fixed Top</a>										
+				</div>
+				<div data-role="content">										
+					<p>
+					Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.   
+
+Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.   
+
+Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.   
+
+Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.   
+
+Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis.   
+
+At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, At accusam aliquyam diam diam dolore dolores duo eirmod eos erat, et nonumy sed tempor et et invidunt justo labore Stet clita ea et gubergren, kasd magna no rebum. sanctus sea sed takimata ut vero voluptua. est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat.   
+
+Consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus.   
+
+Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.   
+
+Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.   
+
+Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.   
+
+Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.   
+
+Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis.   
+
+At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, At accusam aliquyam diam diam dolore dolores duo eirmod eos erat, et nonumy sed tempor et et invidunt justo labore Stet clita ea et gubergren, kasd magna no rebum. sanctus sea sed takimata ut vero voluptua. est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat.   
+
+Consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus.   
+
+Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.   
+
+Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.   
+
+Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.   
+
+Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.   
+
+Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis.   
+
+At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, At accusam aliquyam diam diam dolore dolores duo eirmod eos erat, et nonumy sed tempor et et invidunt justo labore Stet clita ea et gubergren, kasd magna no rebum. sanctus sea sed takimata ut vero voluptua. est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat.   
+
+Consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus.   
+
+Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.   
+
+tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.   
+
+Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis.   
+
+At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, At accusam aliquyam diam diam dolore dolores duo eirmod eos erat, et nonumy sed tempor et et invidunt justo labore Stet clita ea et gubergren, kasd magna no rebum. sanctus sea sed takimata ut vero voluptua. est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat.   
+
+Consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus.   
+
+Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et
+					</p>						
+				</div>								
+			</div><!-- end page -->
+			
+		</div><!-- end panel -->
+		
+		<!-- ///////////////// popover panel 3 ////////////  -->
+
+		<div data-role="panel" data-id="popover3" data-panel="popover" data-hash="history" class="ui-element-fixed-top  ui-triangle-top popover1">
+			
+			<div data-role="page" data-show="first" id="popover3-1" class="popoverPage"  >
+				<div data-role="header" data-position="fixed" data-theme="a">
+					<h1>Popover3</h1>
+				</div>
+				<div data-role="content">				
+					<h3>Pop3</h3>
+					<p>This is a popover. It contains two more pages</p>
+					<ul data-role="listview" data-inset="true">
+						<li><a href="#popover3-2" data-target="popover3" data-transition="flip"><span>Popover3 page2</span></a></li>
+						<li><a href="#popover3-1" data-target="popover3" data-transition="pop"><span>Popover3 page3</span></a></li>
+					</ul>						
+				</div>
+			</div><!-- end page-->
+			
+			<div data-role="page" id="popover3-2" class="popoverPage"  >
+				<div data-role="header" data-position="fixed" data-theme="a">
+					<h1>Popover3-page2</h1>
+				</div>
+				<div data-role="content">				
+					<h3>Pop3-2</h3>
+					<p>Some more transition effects</p>
+					<ul data-role="listview" data-inset="true">
+						<li><a href="#popover3-1" data-target="popover3" data-transition="slideup"><span>Popover3 page1 </span></a></li>
+						<li><a href="#popover3-3" data-target="popover3" data-transition="fade"><span>Popover3 page3</span></a></li>
+					</ul>
+					<p>You could also load a new page in main...</p>
+					<ul data-role="listview" data-inset="true">
+						<li><a href="#fw2-page2" data-target="fullwidthWithPops" data-transition="slideup"><span>load a new main page</span></a></li>						
+					</ul>					
+				</div>
+			</div><!-- end page-->
+			
+			<div data-role="page" id="popover3-3" class="popoverPage" >
+				<div data-role="header" data-position="fixed" data-theme="a">
+					<h1>Popover3-page3</h1>
+				</div>
+				<div data-role="content">				
+					<h3>Pop3-3</h3>
+					
+					<p>nothing here</p>					
+				</div>
+			</div><!-- end page-->
+		</div>
+		
+		<!-- ///////////////// popover panel 4 ////////////  -->
+
+		<div data-role="panel" data-id="popover4" data-hash="history" data-panel="popover" class="ui-element-fixed-top  ui-triangle-top popover2">
+		
+			<div data-role="page" data-show="first" id="popover4-1" class="popoverPage" >
+				<div data-role="header" data-position="fixed" data-theme="a">
+					<h1>pop4 page1</h1>
+				</div>
+				<div data-role="content">
+					
+					<ul data-role="listview">
+						<li><a href="#popover4-2" data-target="popover4"><span>level down</span></a></li>
+						<li><a href="#popover4-2" data-target="popover4"><span>level down</span></a></li>
+						<li><a href="#popover4-2" data-target="popover4"><span>level down</span></a></li>
+						<li><a href="#popover4-2" data-target="popover4"><span>level down</span></a></li>
+						<li><a href="#popover4-2" data-target="popover4"><span>level down</span></a></li>
+						<li><a href="#popover4-2" data-target="popover4"><span>level down</span></a></li>
+						<li><a href="#popover4-2" data-target="popover4"><span>level down</span></a></li>
+						<li><a href="#popover4-2" data-target="popover4"><span>level down</span></a></li>
+						<li><a href="#popover4-2" data-target="popover4"><span>level down</span></a></li>
+						<li><a href="#popover4-2" data-target="popover4"><span>level down</span></a></li>
+						<li><a href="#popover4-2" data-target="popover4"><span>level down</span></a></li>
+						<li><a href="#popover4-2" data-target="popover4"><span>level down</span></a></li>
+						<li><a href="#popover4-2" data-target="popover4"><span>level down</span></a></li>
+						<li><a href="#popover4-2" data-target="popover4"><span>level down</span></a></li>
+						<li><a href="#popover4-2" data-target="popover4"><span>level down</span></a></li>
+						<li><a href="#popover4-2" data-target="popover4"><span>level down</span></a></li>
+					</ul>						
+				</div>
+			</div><!-- end page-->
+			
+			<div data-role="page" id="popover4-2" class="popoverPage" >
+				<div data-role="header" data-position="fixed" data-theme="a">					
+					<h1>The END</h1>
+				</div>
+				<div data-role="content">				
+					<p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.   
+				   Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.   
+				   Ut...</p>
+										
+				</div>
+			</div><!-- end page-->				
+			
+		</div>
+		
+		<!-- ///////////////// popover panel 5 ////////////  -->
+
+		<div data-role="panel" data-id="popover5" data-hash="history" data-panel="popover" class="ui-element-fixed-top popoverAnywhere">
+		
+			<div data-role="page" data-show="first" id="popover5-1" class="popoverPage" >
+				<div data-role="header" data-position="fixed" data-theme="a">
+					<h1>fixed element trial</h1>
+				</div>
+				<div data-role="content">
+					
+					<ul data-role="listview">
+						<li><a href="#popover5-2" data-target="popover5"><span>click to continue</span></a></li>
+						<li><a href="#popover5-2" data-target="popover5"><span>click to continue</span></a></li>
+						<li><a href="#popover5-2" data-target="popover5"><span>click to continue</span></a></li>
+						<li><a href="#popover5-2" data-target="popover5"><span>click to continue</span></a></li>
+						<li><a href="#popover5-2" data-target="popover5"><span>click to continue</span></a></li>
+						<li><a href="#popover5-2" data-target="popover5"><span>click to continue</span></a></li>
+						<li><a href="#popover5-2" data-target="popover5"><span>click to continue</span></a></li>
+						<li><a href="#popover5-2" data-target="popover5"><span>click to continue</span></a></li>
+						<li><a href="#popover5-2" data-target="popover5"><span>click to continue</span></a></li>
+						<li><a href="#popover5-2" data-target="popover5"><span>click to continue</span></a></li>
+						<li><a href="#popover5-2" data-target="popover5"><span>click to continue</span></a></li>
+						<li><a href="#popover5-2" data-target="popover5"><span>click to continue</span></a></li>
+						<li><a href="#popover5-2" data-target="popover5"><span>click to continue</span></a></li>
+						<li><a href="#popover5-2" data-target="popover5"><span>click to continue</span></a></li>
+						<li><a href="#popover5-2" data-target="popover5"><span>click to continue</span></a></li>
+						<li><a href="#popover5-2" data-target="popover5"><span>click to continue</span></a></li>
+					</ul>						
+				</div>
+			</div><!-- end page-->
+			
+			<div data-role="page" id="popover5-2" class="popoverPage" >
+				<div data-role="header" data-position="fixed" data-theme="a">					
+					<h1>Done</h1>
+				</div>
+				<div data-role="content">				
+					<p>this is ui-element-fixed-top</p>
+										
+				</div>
+			</div><!-- end page-->				
+			
+		</div>
+		
+		
+		
+
+		<!-- global footer across all panel pages -->
+		<div data-role="footer" data-id="mainFooter" data-position="fixed">
+					<div data-role="navbar" data-grid="d">
+						<ul>						
+							<li><a href="history1.html" data-iconpos="top" data-icon="plus">history1</a></li>
+							<li><a href="history2.html" data-iconpos="top" data-icon="info">history2</a></li>
+							<li><a href="history3.html" data-iconpos="top" data-icon="plus">history3</a></li>				
+							<li><a href="history4.html" data-iconpos="top" data-icon="plus">history4</a></li>	
+							<li><a href="#" class="ui-btn-active ui-state-persist" data-iconpos="top" data-icon="plus">history5</a></li>	
+						</ul>
+					</div>
+				</div>	
+
+</div><!-- end wrapper page -->
+				
+				
+
+
+</body>
+
+		<script type="text/javascript" src="http://code.jquery.com/jquery-1.6.4.min.js"></script>					
+		<script type="text/javascript" src="../LOC/scripts/jquery.mobile-1.0/jquery.mobile-1.0multiview.js"></script>		
+		<script type="text/javascript" src="../LOC/scripts/plugins/jquery.easing.1.3.js"></script>
+        <script type="text/javascript" src="../LOC/scripts/plugins/jquery.mobile.scrollview.js"></script>
+		<script type="text/javascript" src="../LOC/scripts/plugins/jquery.mobile.multiview.js"></script>
+			
+</html>
+

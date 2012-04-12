@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html class="no-js multiview">
+<head>
+		
+		<title>multiview plugin - combo</title>
+		
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />		
+		<link rel="stylesheet" href="http://code.jquery.com/mobile/1.0/jquery.mobile-1.0.min.css" />	
+        <link rel="stylesheet" type="text/css" href="../LOC/style/jquery.mobile.scrollview.css" />
+		<link rel="stylesheet" type="text/css" href="../LOC/style/jquery.mobile.multiview.css" />
+		<style type="text/css">
+			.middleClass {text-align: center; margin-top: 25%;}
+			code { padding: 0 0.5em;}
+			.blank, .blank li {font-size: 95%;}
+			.ui-page { background: #ffffff;}
+			ui-grid-d {text-align: center;}
+			fieldset img, img {display: block; margin: 0 auto; }
+			* {font-size: 13px;}
+		</style>
+</head>
+<body>
+				
+<div data-role="page" id="wrap1" data-wrapper="true" data-show="first">
+		
+	
+		<!-- ////////////// embedded menu panel /////////////  -->
+		<div data-role="panel" data-id="menu" data-panel="menu">				  		 	 
+		
+			<div data-role="page" id="menuPage" data-show="first">
+				<div data-role="header" data-position="fixed" data-theme="a">
+					<h1>menu</h1>
+				</div>
+				<div data-role="content">
+					<p>Splitview with popovers, same as demos_history only:</p>
+					<p><STRONG>HISTORY IF OFF</STRONG></p>
+					
+					<ul data-role="listview" data-inset="true" data-theme="d" data-divider-theme="a">
+						<li data-role="list-divider">Menu Pages</li>
+						<li data-icon="false"><a href="#menuSub1" data-target="menu" data-context="#mainPage2" data-context-panel="main" >menuSub1-1 +context</a></li>
+						<li data-icon="false"><a href="#menuSub2" data-target="menu">menuSub1-2</a></li>					
+					</ul>
+					<ul data-role="listview" data-inset="true" data-theme="d" data-divider-theme="a">
+						<li data-role="list-divider">Main Pages</li>
+						<li><a href="#mainPage2" data-target="main">Main Page 2</a></li>					
+						<li><a href="#mainPage3" data-target="main">Main Page 3</a></li>
+					</ul>
+				</div>
+			</div><!-- end page-->
+			
+			<div data-role="page" id="menuSub1" class="subLevel1">
+					<div data-role="header" data-position="fixed" data-theme="a">			
+						<h1>Sublevel-1 page#1</h1>
+					</div>
+					<div data-role="content">
+						<p>Your on page 1 of subLevel1. You can continue 1 level down</p>
+						
+						<ul data-role="listview" data-inset="true" data-theme="d" data-divider-theme="a">
+							<li data-role="list-divider">subLevel2 pages</li>
+							<li><a href="#menuSubSub1" data-target="menu">SubLevel-2 page#1</a></li>					
+							<li><a href="#menuSubSub2" data-target="menu">SubLevel-2 page#2</a></li>
+						</ul>
+						
+					</div>
+					
+			</div>
+			
+			<div data-role="page" id="menuSub2" class="subLevel1">
+				<div data-role="header" data-position="fixed"  data-theme="a">			
+						<h1>Sublevel-1 page#2</h1>
+					</div>
+					<div data-role="content">
+						<p>Your on page 2 of subLevel-1. You can continue 1 level down</p>
+						<br>
+						<p>Please go back and click "subLevel1 page1" to go to SubLevel-2</p>						
+					</div>
+				
+			</div>
+			
+			<div data-role="page" id="menuSubSub1" class="subLevel2">
+				<div data-role="header" data-position="fixed"  data-theme="a">			
+					<h1>SubLevel-2 page#1</h1>
+				</div>
+				<div data-role="content">
+					<p>Your on page 1 of subLevel-2. You can open Main Page 3 and 4 from here</p>
+					<ul data-role="listview" data-inset="true" data-theme="d" data-divider-theme="a">						
+						<li><a href="#mainPage3" data-target="main">Main Page 3</a></li>					
+						<li><a href="#mainPage4" data-target="main">Main Page 4</a></li>
+					</ul>
+						
+				</div>
+				
+			</div>
+			
+			<div data-role="page" id="menuSubSub2" class="subLevel2">
+				<div data-role="header" data-position="fixed" data-theme="a">			
+					<h1>SubLevel-2 page2</h1>
+				</div>
+				<div data-role="content">
+						
+						<ul data-role="listview" data-theme="d">							
+							<li><a href="#">noLink</a></li>					
+							<li><a href="#">noLink</a></li>
+							<li><a href="#">noLink</a></li>
+							<li><a href="#">noLink</a></li>
+							<li><a href="#">noLink</a></li>
+							<li><a href="#">noLink</a></li>
+							<li><a href="#">noLink</a></li>
+							<li><a href="#">noLink</a></li>
+							<li><a href="#">noLink</a></li>
+							<li><a href="#">noLink</a></li>
+							<li><a href="#">noLink</a></li>
+							<li><a href="#">noLink</a></li>
+							<li><a href="#">noLink</a></li>
+							<li><a href="#">noLink</a></li>
+							<li><a href="#">noLink</a></li>
+							<li><a href="#">noLink</a></li>
+							<li><a href="#">noLink</a></li>
+							<li><a href="#">noLink</a></li>
+							<li><a href="#">noLink</a></li>
+							
+						</ul>
+						
+				</div>
+			</div>
+			
+		</div>
+		
+		<!-- ////////////// embedded main panel ///////////////  -->		
+		<div data-role="panel" data-id="main" data-panel="main">		
+			
+			<div data-role="page" id="mainPage" data-show="first">				
+				<div data-role="header" data-position="fixed" data-theme="a">
+					
+					<h1>main section</h1>
+					<div class="headWrapRight ui-btn-right">
+					<div data-role="controlgroup" data-type="horizontal" class="headLogg headerMenuRight iconposSwitcher-div">
+						<a href="#" data-transition="pop" data-theme="a" data-role="button" data-panel="popover1" data-icon="lang" data-inline="true" data-iconpos="left" class="toggle_popover">Pop1</a>
+						<a href="#" data-transition="pop" data-theme="a" data-role="button" data-panel="popover2" data-icon="exit" data-inline="true" data-iconpos="left" class="toggle_popover">Pop2</a>
+					</div>
+					</div>
+				</div>
+				<div data-role="content">						
+						
+								
+								<a href="demos_combo.html" rel="external" data-role="button" data-inline="true" data-icon="home">reload page</a>
+								<div data-role="collapsible" data-collapsed="false">
+										<h3 class="col_Head blockHeading">Navigation</h3>																			
+										<ul data-role="listview" data-inset="true" data-theme="d" data-divider-theme="a">
+											<li data-role="list-divider">4 panels and 16 nested pages in here</li>
+											<li><a href="#mainPage3" data-target="main"><h3>MainPage 3</h3></a></li>
+											<li><a href="#mainPage4" data-target="main"><h3>MainPage 4</h3></a></li>
+											<li><a href="#mainPage5" data-target="main"><h3>MainPage 5</h3></a></li>
+										</ul>										
+										<ul data-role="listview" data-inset="true" data-theme="d" data-divider-theme="a">
+											<li><a href="page1.html"><h3>regular changePage to Page 1</h3></a></li>
+											<li><a href="page3.html"><h3>regular changePage to Page 3</h3></a></li>
+										</ul>
+									
+												
+							
+								
+						</div>
+						
+										
+				</div>
+				
+			</div><!-- end page -->
+			
+			<div data-role="page" id="mainPage2">	
+				<div data-role="header" data-position="fixed" data-theme="a">					
+					<h1>mainPage2</h1>
+					<div class="headWrapRight ui-btn-right">
+					<div data-role="controlgroup" data-type="horizontal" class="headLogg headerMenuRight iconposSwitcher-div">
+						<a href="#" data-theme="a" data-role="button" data-panel="popover1" data-icon="lang" data-inline="true" data-iconpos="left" class="toggle_popover">Pop1</a>
+						<a href="#" data-theme="a" data-role="button" data-panel="popover2" data-icon="exit" data-inline="true" data-iconpos="left" class="toggle_popover">Pop2</a>
+					</div>
+					</div>
+				</div>
+				<div data-role="content">										
+					<p>this is MainPage2. Continue to the following pages</p>
+					<a href="demos_combo.html" rel="external" data-role="button" data-inline="true" data-icon="home">reload page</a>
+					<ul data-role="listview" data-inset="true" data-theme="d" data-divider-theme="a">
+						<li><a href="#mainPage3" data-target="main"><h3>MainPage 3</h3><span>another page inside the multipage</span></a></li>
+						<li><a href="#mainPage4" data-target="main"><h3>MainPage 4</h3><span>another page inside the multipage</span></a></li>
+						<li><a href="page1.html"><h3>Page 1</h3><span>page 1 outside of multiview. Click here to leave the multiview page</span></a></li>
+						<li><a href="page3.html"><h3>Page 3</h3><span>page 3 outside of multiview. Click here to leave the multiview page</span></a></li>
+					</ul>
+				</div>								
+			</div><!-- end page -->
+			
+			<div data-role="page" id="mainPage3">	
+				<div data-role="header" data-position="fixed" data-theme="a">					
+					<h1>mainPage3</h1>	
+					<div class="headWrapRight ui-btn-right">
+					<div data-role="controlgroup" data-type="horizontal" class="headLogg headerMenuRight iconposSwitcher-div">
+						<a href="#" data-theme="a" data-role="button" data-panel="popover1" data-icon="lang" data-inline="true" data-iconpos="left" class="toggle_popover">Pop1</a>
+						<a href="#" data-theme="a" data-role="button" data-panel="popover2" data-icon="exit" data-inline="true" data-iconpos="left" class="toggle_popover">Pop2</a>
+					</div>
+					</div>
+				</div>
+				<div data-role="content">
+					<a href="demos_combo.html" rel="external" data-role="button" data-inline="true" data-icon="home">reload page</a>
+					<p>this is MainPage3. Continue to the following pages</p>
+					<ul data-role="listview" data-inset="true" data-theme="d" data-divider-theme="a">
+						<li><a href="#mainPage" data-target="main"><h3>MainPage 1</h3><span>another page inside the multipage</span></a></li>
+						<li><a href="#mainPage2" data-target="main"><h3>MainPage 2</h3><span>another page inside the multipage</span></a></li>
+						<li><a href="#mainPage4" data-target="main"><h3>MainPage 4</h3><span>another page inside the multipage</span></a></li>
+						<li><a href="page1.html"><h3>Page 1</h3><span>page 1 outside of multiview. Click here to leave the multiview page</span></a></li>
+						<li><a href="page3.html"><h3>Page 3</h3><span>page 3 outside of multiview. Click here to leave the multiview page</span></a></li>
+					</ul>
+				</div>								
+			</div><!-- end page -->
+			
+			<div data-role="page" id="mainPage4">	
+				<div data-role="header" data-position="fixed" data-theme="a">					
+					<h1>mainPage4</h1>
+					<div class="headWrapRight ui-btn-right">
+					<div data-role="controlgroup" data-type="horizontal" class="headLogg headerMenuRight iconposSwitcher-div">
+						<a href="#" data-theme="a" data-role="button" data-panel="popover1" data-icon="lang" data-inline="true" data-iconpos="left" class="toggle_popover">Pop1</a>
+						<a href="#" data-theme="a" data-role="button" data-panel="popover2" data-icon="exit" data-inline="true" data-iconpos="left" class="toggle_popover">Pop2</a>
+					</div>
+					</div>
+				</div>
+				<div data-role="content">
+					<a href="demos_combo.html" rel="external" data-role="button" data-inline="true" data-icon="home">reload page</a>
+					<p style="text-align: center;">this is MainPage4. Only some text here to check scrolling</p>
+					<p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.   
+				   Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.   
+				   Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.   
+				   Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.   
+				   Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis.   
+				</p>
+				</div>								
+			</div><!-- end page -->
+			
+			
+		</div><!-- end panel -->
+		
+		<!-- ///////////////// popover panel 1 ////////////  -->
+		
+		<div data-role="panel" data-id="popover1" data-panel="popover" class="ui-element-fixed-top  ui-triangle-top popover1">
+			
+			<div data-role="page" data-show="first" id="popover1-1">
+				<div data-role="header" data-position="fixed" data-theme="a">
+					<h1>Title 1</h1>
+				</div>
+				<div data-role="content">				
+					
+					<ul data-role="listview" data-inset="true">
+						<li><a href="#popover1-2" data-target="popover1"><span>Pop1-2 </span></a></li>
+						<li><a href="#popover1-3" data-target="popover1"><span>Pop1-3 </span></a></li>
+						<li><a href="#popover1-4" data-target="popover1"><span>Pop1-4 </span></a></li>
+					</ul>						
+				</div>
+			</div><!-- end page-->
+			
+			<div data-role="page" id="popover1-2" >
+				<div data-role="header" data-position="fixed" data-theme="a">
+					<h1>Title 2</h1>
+				</div>
+				<div data-role="content">
+				
+					<ul data-role="listview" data-inset="true">
+						<li><a href="#popover1-1" data-target="popover1"><span>Pop1-1 </span></a></li>
+						<li><a href="#popover1-3" data-target="popover1"><span>Pop1-3 </span></a></li>
+						<li><a href="#popover1-4" data-target="popover1"><span>Pop1-4 </span></a></li>
+					</ul>						
+				</div>
+			</div><!-- end page-->
+			
+			<div data-role="page" id="popover1-3"  >
+				<div data-role="header" data-position="fixed" data-theme="a">
+					<h1>Title 3</h1>
+				</div>
+				<div data-role="content">					
+					
+					<ul data-role="listview" data-inset="true">
+						<li><a href="#popover1-2" data-target="popover1"><span>Pop1-2 </span></a></li>
+						<li><a href="#popover1-3" data-target="popover1"><span>Pop1-3 </span></a></li>
+						<li><a href="#popover1-4" data-target="popover1"><span>Pop1-4 </span></a></li>
+					</ul>						
+				</div>
+			</div><!-- end page-->
+			
+			<div data-role="page" id="popover1-4" >
+				<div data-role="header" data-position="fixed" data-theme="a">
+					<h1>Title 4</h1>
+				</div>
+				<div data-role="content">					
+										
+					<ul data-role="listview" data-inset="true">
+						<li><a href="ext5.html" data-target="popover1" data-transition="flip"><span>external page1</span></a></li>
+					</ul>						
+				</div>
+			</div><!-- end page-->
+			
+		</div>
+		
+		<!-- ///////////////// popover panel 2 ////////////  -->
+
+		<div data-role="panel" data-id="popover2" data-panel="popover" class="ui-element-fixed-top  ui-triangle-top popover2">
+			<div data-role="page" data-show="first" id="popover2-1">
+				<div data-role="header" data-position="fixed" data-theme="a">
+					<h1>Title A</h1>
+				</div>
+				<div data-role="content">		
+					
+					<ul data-role="listview" data-inset="true">
+						<li><a href="#popover2-2" data-target="popover2"><span>Pop2-2</span></a></li>
+						<li><a href="#popover2-3" data-target="popover2"><span>Pop2-3</span></a></li>
+					</ul>						
+				</div>
+			</div><!-- end page-->
+			
+			<div data-role="page" id="popover2-2" >
+				<div data-role="header" data-position="fixed" data-theme="a">					
+					<h1>Title 2</h1>
+				</div>
+				<div data-role="content">
+			
+					<ul data-role="listview" data-inset="true">
+						<li><a href="#popover2-1" data-target="popover2"><span>Pop2-1</span></a></li>
+						<li><a href="#popover2-3" data-target="popover2"><span>Pop2-3</span></a></li>
+					</ul>						
+				</div>
+			</div><!-- end page-->
+			
+			<div data-role="page" id="popover2-3" >
+				<div data-role="header" data-position="fixed" data-theme="a">
+					<h1>Title 3</h1>
+				</div>
+				<div data-role="content">
+					
+				
+					<ul data-role="listview" data-inset="true">
+						<li><a href="#popover2-1" data-target="popover2"><span>Pop2-1 fixed headers</span></a></li>
+						<li><a href="#popover2-2" data-target="popover2"><span>Pop2-2 transitions</span></a></li>
+					</ul>	
+					
+				</div>
+			</div><!-- end page-->				
+			
+		</div>
+		
+		
+
+		
+		<!-- global footer = inside wrapper, outside panel -->
+		<div data-role="footer" data-id="mainFooter" data-position="fixed">
+			<div data-role="navbar" data-grid="d">
+				<ul>	
+	
+					<li><a rel="external" href="index.html" data-iconpos="top" data-icon="plus">Home</a></li>
+					<li><a rel="external" href="index.html#useCases" data-iconpos="top" data-icon="plus">Layouts</a></li>
+					<li><a rel="external" href="index.html#modes" data-iconpos="top" data-icon="plus">Screen Modes</a></li>
+					<li><a rel="external" href="index.html#demos" data-iconpos="top" data-icon="plus">Demos</a></li>				
+					<li><a rel="external" href="index.html#features" data-iconpos="top" data-icon="plus">Features</a></li>	
+					
+				</ul>
+			</div>
+		</div>	
+
+</div><!-- end wrapper page -->
+				
+				
+
+
+</body>
+
+		<script type="text/javascript" src="http://code.jquery.com/jquery-1.6.4.min.js"></script>					
+		<script type="text/javascript" src="../LOC/scripts/jquery.mobile-1.0/jquery.mobile-1.0multiview.js"></script>		
+		<script type="text/javascript" src="../LOC/scripts/plugins/jquery.easing.1.3.js"></script>
+        <script type="text/javascript" src="../LOC/scripts/plugins/jquery.mobile.scrollview.js"></script>
+		<script type="text/javascript" src="../LOC/scripts/plugins/jquery.mobile.multiview.js"></script>
+			
+</html>
+

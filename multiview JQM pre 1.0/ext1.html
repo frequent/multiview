@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html class="no-js multiview">
+<head>
+		
+		<title>multiview plugin - external page1</title>
+		
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		
+		 <link rel="stylesheet" href="http://code.jquery.com/mobile/1.0/jquery.mobile-1.0.min.css" />		 
+         <link rel="stylesheet" type="text/css" href="LOC/style/jquery.mobile.scrollview.css" />
+         <link rel="stylesheet" type="text/css" href="LOC/style/jquery.mobile.multiview.css" />
+
+</head>
+<body>
+	
+				
+<div data-role="page" id="ext1" data-theme="a">
+<!-- this is an external page loaded into a panel! -->		
+
+				<div data-role="header" data-position="fixed" data-theme="a">
+					<h1>external page1</h1>					
+				</div>
+				<div data-role="content">
+				
+						<ul data-role="listview" data-theme="d">							
+							<li><a href="#mainPage2" data-target="main" data-transition="slide"><h3>mainPage2</h3><p>load internal page into main</p></a></li>
+							<li><a href="#menuSub1" data-target="menu" data-transition="flip"><h3>menuSub1</h3><p>load internal page into menu</p></a></li>
+							<li><a href="ext2.html" data-target="menu" data-transition="slide"><h3>external ext2</h3><p>load external page into menu</p></a></li>
+						</ul>
+			
+				</div>
+
+		
+		
+		
+						
+
+</div><!-- end wrapper page -->
+				
+				
+
+
+</body>
+
+		<script type="text/javascript" src="http://code.jquery.com/jquery-1.6.4.min.js"></script>					
+		<script type="text/javascript" src="LOC/scripts/jquery.mobile-1.0/jquery.mobile-1.0multiview.js"></script>		
+		<script type="text/javascript" src="LOC/scripts/plugins/jquery.easing.1.3.js"></script>
+        <script type="text/javascript" src="LOC/scripts/plugins/jquery.mobile.scrollview.js"></script>
+		<script type="text/javascript" src="LOC/scripts/plugins/jquery.mobile.multiview.js"></script>
+		
+			
+</html>
+

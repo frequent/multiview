@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html class="no-js multiview">
+<head>
+		
+		<title>multiview plugin - page 2</title>
+		
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />		
+		<link rel="stylesheet" href="http://code.jquery.com/mobile/1.0/jquery.mobile-1.0.min.css" />	
+        <link rel="stylesheet" type="text/css" href="LOC/style/jquery.mobile.scrollview.css" />
+		<link rel="stylesheet" type="text/css" href="LOC/style/jquery.mobile.multiview.css" />
+
+</head>
+<body>
+	
+<!-- the wrapper page loaded through AJAX -->				
+<div data-role="page" id="wrap1" data-wrapper="true" data-show="first">
+		
+	
+		<!-- ////////////// embedded menu panel /////////////  -->
+		<div data-role="panel" data-id="menu" data-hash="history" data-panel="menu">				  		 	 
+		
+			<div data-role="page" id="menuPage" data-show="first" data-theme="a">
+				<div data-role="header" data-position="fixed" data-theme="a">
+					<h1>menu</h1>
+				</div>
+				<div data-role="content">
+					<ul data-role="listview" data-inset="true" data-theme="d" data-divider-theme="a">
+						<li data-role="list-divider">Menu Pages</li>
+						<li data-icon="false"><a href="#menuSub1" data-target="menu" data-context="#mainPage2" data-context-panel="main" >menuSub1-1 +context</a></li>
+						<li data-icon="false"><a href="#menuSub2" data-target="menu">menuSub1-2</a></li>					
+					</ul>
+					<ul data-role="listview" data-inset="true" data-theme="d" data-divider-theme="a">
+						<li data-role="list-divider">Main Pages</li>
+						<li><a href="#mainPage2" data-target="main">Main Page 2</a></li>					
+						<li><a href="#mainPage3" data-target="main">Main Page 3</a></li>
+					</ul>
+				</div>
+			</div><!-- end page-->
+			
+			<div data-role="page" id="menuSub1" class="subLevel1" data-theme="a">
+					<div data-role="header" data-position="fixed" data-theme="a">			
+						<h1>Sublevel-1 page#1</h1>
+					</div>
+					<div data-role="content">
+						<p>Your on page 1 of subLevel1. You can continue 1 level down</p>
+						
+						<ul data-role="listview" data-inset="true" data-theme="d" data-divider-theme="a">
+							<li data-role="list-divider">subLevel2 pages</li>
+							<li><a href="#menuSubSub1" data-target="menu">SubLevel-2 page#1</a></li>					
+							<li><a href="#menuSubSub2" data-target="menu">SubLevel-2 page#2</a></li>
+						</ul>
+						
+					</div>
+					
+			</div>
+			
+			<div data-role="page" id="menuSub2" class="subLevel1" data-theme="a">
+				<div data-role="header" data-position="fixed"  data-theme="a">			
+						<h1>Sublevel-1 page#2</h1>
+					</div>
+					<div data-role="content">
+						<p>Your on page 2 of subLevel-1. You can continue 1 level down</p>
+						<br>
+						<p>Please go back and click "subLevel1 page1" to go to SubLevel-2</p>						
+					</div>
+				
+			</div>
+			
+			<div data-role="page" id="menuSubSub1" class="subLevel2" data-theme="a">
+				<div data-role="header" data-position="fixed"  data-theme="a">			
+					<h1>SubLevel-2 page#1</h1>
+				</div>
+				<div data-role="content">
+					<p>Your on page 1 of subLevel-2. You can open Main Page 3 and 4 from here</p>
+					<ul data-role="listview" data-inset="true" data-theme="d" data-divider-theme="a">						
+						<li><a href="#mainPage3" data-target="main">Main Page 3</a></li>					
+						<li><a href="#mainPage4" data-target="main">Main Page 4</a></li>
+					</ul>
+						
+				</div>
+				
+			</div>
+			
+			<div data-role="page" id="menuSubSub2" class="subLevel2" data-theme="a">
+				<div data-role="header" data-position="fixed" data-theme="a">			
+					<h1>SubLevel-2 page2</h1>
+				</div>
+				<div data-role="content">
+						
+						<ul data-role="listview" data-theme="d">							
+							<li><a href="#">noLink</a></li>					
+							<li><a href="#">noLink</a></li>
+							<li><a href="#">noLink</a></li>
+							<li><a href="#">noLink</a></li>
+							<li><a href="#">noLink</a></li>
+							<li><a href="#">noLink</a></li>
+							<li><a href="#">noLink</a></li>
+							<li><a href="#">noLink</a></li>
+							<li><a href="#">noLink</a></li>
+							<li><a href="#">noLink</a></li>
+							<li><a href="#">noLink</a></li>
+							<li><a href="#">noLink</a></li>
+							<li><a href="#">noLink</a></li>
+							<li><a href="#">noLink</a></li>
+							<li><a href="#">noLink</a></li>
+							<li><a href="#">noLink</a></li>
+							<li><a href="#">noLink</a></li>
+							<li><a href="#">noLink</a></li>
+							<li><a href="#">noLink</a></li>
+							
+						</ul>
+						
+				</div>
+			</div>
+			
+		</div>
+		
+		<!-- ////////////// embedded main panel ///////////////  -->		
+		<div data-role="panel" data-id="main" data-panel="main" data-hash="history">		
+			
+			<div data-role="page" id="mainPage" data-show="first" class="mainPages"  data-theme="a">	
+				<div data-role="header" data-position="fixed" data-theme="a">
+					<h1>main section</h1>
+					<div data-role="controlgroup" data-type="horizontal" class="headLogg headerMenuRight iconposSwitcher-div">
+						<a href="#" data-transition="pop" data-theme="a" data-role="button" data-panel="popover1" data-icon="lang" data-inline="true" data-iconpos="left" class="toggle_popover">Pop1</a>
+						<a href="#" data-transition="pop" data-theme="a" data-role="button" data-panel="popover2" data-icon="exit" data-inline="true" data-iconpos="left" class="toggle_popover">Pop2</a>
+					</div>
+				</div>
+				<div data-role="content">						
+						<div data-role="collapsible-set">
+								<div data-role="collapsible" data-collapsed="true">
+										<h3 class="col_Head blockHeading">Setup</h3>
+
+<pre>
+  &lt;!-- wrapper page --&gt;
+  &lt;div data-role="page"&gt; id="type-home"&gt;
+    (&lt;!-- global header --&gt;)
+    &lt;!-- menu panel --&gt;
+    &lt;div data-role="panel" data-panel="menu" data-id="thisPanelsID"&gt;
+
+      &lt;!-- JQM pages for menu (nested!) --&gt;
+
+    &lt;/div&gt;
+	&lt;!-- main panel --&gt;
+    &lt;div data-role="panel" data-panel="main" data-id="thisPanelsID"&gt;
+
+      &lt;!-- JQM pages for main (nested!) --&gt;
+
+    &lt;/div&gt;
+	&lt;div data-role="panel" data-panel="popover" data-id="thisPanelsID"&gt;
+
+      &lt;!-- JQM pages for popovers (nested!) --&gt;
+
+    &lt;/div&gt;
+	&lt;div data-role="panel" data-panel="popover" data-id="thisPanelsID"&gt;
+
+      &lt;!-- JQM pages for popovers (nested!) --&gt;
+
+    &lt;/div&gt;
+    (&lt;!-- global footer --&gt;)
+  &lt;/div&gt;
+</pre>										
+										
+								</div>
+								<div data-role="collapsible" data-collapsed="true">
+										<h3 class="col_Head blockHeading">Info</h3>	
+										<p>This page is a multiview page containing 4 panels and 16 pages, which all were added to the DOM when loading the page (directly or from another JQM-page!).</p>
+										<br>						
+										<p>The main difference between regular JQM pages and multiview JQM pages is the use of <strong>panels</strong> instead of <strong>content</strong> sections. Four panel types are possible "main", "menu", "fullwidth" 
+										and "popover" (any number). Panels are containers with nested JQM pages. The wrapper-page ensures normal JQM navigation between pages is possible with the whole multiview-page being added or removed to/from the DOM.</p>										
+										<br>
+										<p>To setup a multiview page specify a wrapper page and optional <strong>global</strong> header/footer, then add panels containing all nested pages.</p>
+										<br>
+										<p>To navigate on and between panels, a <code>data-target="panelID"</code> is required on all panel-links. This tells JQM to use panel-navigation (inside the wrapper page) instead
+										of regular navigation (between wrapper page and other JQM pages). Be careful not to target to <code>data-panel</code>, which descripes the panel type, like "popover".
+										Since there can be more than one popover on page, the <code>data-target</code> always needs to point to the <code>data-id</code> of the respective panel</p>
+										<br>
+										<p>On each panel one nested page needs a <code>data-show="first"</code> attribute. This page will be shown first when the panel is shown.</p>
+										<br>
+										<p>By default JQM creates a single history entry for the whole page including all nested pages. You can however specify a "hash-history" for each panel, which supercedes
+										JQM-history while the panel is visible(!). To do this, set <code>data-hash="history"</code> on the panel - not the page! The panel-history starts at the page labelled with <code>data-show="first"</code> and
+										increase as you navigate through the panels. If you close a panel (popover), this panel's history is reset. When you click the back-button, the highest history stack-entry from all active
+										panels will be reversed.</p>
+										<br>
+										<p>
+										You can also enable a back-btn navigation by adding <code>yyy</code> to the respective panel. On every changePage call, the plugin will then add a back-btn to the previous page. This way 
+										there are two ways of navigating back inside a multiview page.
+										</p>
+										<br>
+										<p>Click through the pages to see how it works and find out more about the plugins other features.</p>
+								
+								</div>
+								
+								
+								<div data-role="collapsible" data-collapsed="true">
+										<h3 class="col_Head blockHeading">Navigation</h3>																			
+										<ul data-role="listview" data-inset="true" data-theme="d" data-divider-theme="a">
+											<li data-role="list-divider">4 panels and 16 nested pages in here</li>
+											<li><a href="#mainPage3" data-target="main"><h3>MainPage 3</h3></a></li>
+											<li><a href="#mainPage4" data-target="main"><h3>MainPage 4</h3></a></li>
+											<li><a href="#mainPage5" data-target="main"><h3>MainPage 5</h3></a></li>
+										</ul>										
+										<ul data-role="listview" data-inset="true" data-theme="d" data-divider-theme="a">
+											<li><a href="page1.html"><h3>regular changePage to Page 1</h3></a></li>
+											<li><a href="page3.html"><h3>regular changePage to Page 3</h3></a></li>
+										</ul>
+									
+												
+								</div>
+								
+						</div>
+						<!--<div class="ui-menu-button-flex"></div>-->
+										
+				</div>
+				
+			</div><!-- end page -->
+			
+			<div data-role="page" id="mainPage2" class="mainPages"  data-theme="a">	
+				<div data-role="header" data-position="fixed" data-theme="a">
+					<h1>mainPage2</h1>
+					<div data-role="controlgroup" data-type="horizontal" class="headLogg headerMenuRight iconposSwitcher-div">
+						<a href="#" data-theme="a" data-role="button" data-panel="popover1" data-icon="lang" data-inline="true" data-iconpos="left" class="toggle_popover">Pop1</a>
+						<a href="#" data-theme="a" data-role="button" data-panel="popover2" data-icon="exit" data-inline="true" data-iconpos="left" class="toggle_popover">Pop2</a>
+					</div>
+				</div>
+				<div data-role="content">										
+					<p>this is MainPage2. Continue to the following pages</p>
+					<ul data-role="listview" data-inset="true" data-theme="d" data-divider-theme="a">
+						<li><a href="#mainPage3" data-target="main"><h3>MainPage 3</h3><span>another page inside the multipage</span></a></li>
+						<li><a href="#mainPage4" data-target="main"><h3>MainPage 4</h3><span>another page inside the multipage</span></a></li>
+						<li><a href="page1.html"><h3>Page 1</h3><span>page 1 outside of multiview. Click here to leave the multiview page</span></a></li>
+						<li><a href="page3.html"><h3>Page 3</h3><span>page 3 outside of multiview. Click here to leave the multiview page</span></a></li>
+					</ul>
+				</div>								
+			</div><!-- end page -->
+			
+			<div data-role="page" id="mainPage3" class="mainPages"  data-theme="a">	
+				<div data-role="header" data-position="fixed" data-theme="a">
+					<h1>mainPage3</h1>
+					<div data-role="controlgroup" data-type="horizontal" class="headLogg headerMenuRight iconposSwitcher-div">
+						<a href="#" data-theme="a" data-role="button" data-panel="popover1" data-icon="lang" data-inline="true" data-iconpos="left" class="toggle_popover">Pop1</a>
+						<a href="#" data-theme="a" data-role="button" data-panel="popover2" data-icon="exit" data-inline="true" data-iconpos="left" class="toggle_popover">Pop2</a>
+					</div>
+				</div>
+				<div data-role="content">
+					<p>this is MainPage3. Continue to the following pages</p>
+					<ul data-role="listview" data-inset="true" data-theme="d" data-divider-theme="a">
+						<li><a href="#mainPage" data-target="main"><h3>MainPage 1</h3><span>another page inside the multipage</span></a></li>
+						<li><a href="#mainPage2" data-target="main"><h3>MainPage 2</h3><span>another page inside the multipage</span></a></li>
+						<li><a href="#mainPage4" data-target="main"><h3>MainPage 4</h3><span>another page inside the multipage</span></a></li>
+						<li><a href="page1.html"><h3>Page 1</h3><span>page 1 outside of multiview. Click here to leave the multiview page</span></a></li>
+						<li><a href="page3.html"><h3>Page 3</h3><span>page 3 outside of multiview. Click here to leave the multiview page</span></a></li>
+					</ul>
+				</div>								
+			</div><!-- end page -->
+			
+			<div data-role="page" id="mainPage4" class="mainPages"  data-theme="a">	
+				<div data-role="header" data-position="fixed" data-theme="a">
+					<h1>mainPage4</h1>
+					<div data-role="controlgroup" data-type="horizontal" class="headLogg headerMenuRight iconposSwitcher-div">
+						<a href="#" data-theme="a" data-role="button" data-panel="popover1" data-icon="lang" data-inline="true" data-iconpos="left" class="toggle_popover">Pop1</a>
+						<a href="#" data-theme="a" data-role="button" data-panel="popover2" data-icon="exit" data-inline="true" data-iconpos="left" class="toggle_popover">Pop2</a>
+					</div>
+				</div>
+				<div data-role="content">
+					<p style="text-align: center;">this is MainPage4. Only some text here to check scrolling</p>
+					<p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.   
+				   Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.   
+				   Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.   
+				   Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.   
+				   Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis.   
+				</p>
+				</div>								
+			</div><!-- end page -->
+			
+			
+		</div><!-- end panel -->
+		
+		<!-- ///////////////// popover panel 1 ////////////  -->
+		
+		<div data-role="panel" data-id="popover1" data-panel="popover" data-hash="history" class="ui-element-fixed-top  ui-triangle-top popover1">
+			
+			<div data-role="page" data-show="first" id="popover1-1" class="popoverPage" data-theme="a">
+				<div data-role="header" data-position="fixed" data-theme="a">
+					<h1>Overview</h1>
+				</div>
+				<div data-role="content">				
+										
+					<p>Popovers can be positioned anywhere on screen, have an optional triangel and own history. Click the links to find out more.</p>
+					
+					<ul data-role="listview" data-inset="true">
+						<li><a href="#popover1-2" data-target="popover1"><span>Pop1-2 fullscreen</span></a></li>
+						<li><a href="#popover1-3" data-target="popover1"><span>Pop1-3 scrolling</span></a></li>
+						<li><a href="#popover1-4" data-target="popover1"><span>Pop1-4 external pages</span></a></li>
+					</ul>						
+				</div>
+			</div><!-- end page-->
+			
+			<div data-role="page" id="popover1-2" class="popoverPage"  data-theme="a">
+				<div data-role="header" data-position="fixed" data-theme="a">
+					<h1>Fullscreen Mode</h1>
+				</div>
+				<div data-role="content">
+					<p>Popover pages change to fullscreen mode if screen size is less than 320px or
+					a popovers' height is larger than the screen height. In fullscreen mode popovers (and menu)
+					sit on top of the main-panel (sort of like a dialog...). 
+					</p>
+					<ul data-role="listview" data-inset="true">
+						<li><a href="#popover1-1" data-target="popover1"><span>Pop1-1 basics</span></a></li>
+						<li><a href="#popover1-3" data-target="popover1"><span>Pop1-3 scrolling</span></a></li>
+						<li><a href="#popover1-4" data-target="popover1"><span>Pop1-4 external pages</span></a></li>
+					</ul>						
+				</div>
+			</div><!-- end page-->
+			
+			<div data-role="page" id="popover1-3" class="popoverPage"  data-theme="a">
+				<div data-role="header" data-position="fixed" data-theme="a">
+					<h1>Scrolling</h1>
+				</div>
+				<div data-role="content">					
+					<p>On touch devices popovers and menu are scrollable using scrollview. On desktop
+					you get normal scrollbars, in fullscreen mode, scrollview is deactivated. If you open a popover or the menu in fullscreen mode
+					the height of the main-area behind is matched to the popover/menu height, so you think 
+					you are scrolling the popover or menu, when in fact you are scrolling the main-panel behind.
+					</p>
+					<ul data-role="listview" data-inset="true">
+						<li><a href="#popover1-2" data-target="popover1"><span>Pop1-2 fullscreen</span></a></li>
+						<li><a href="#popover1-3" data-target="popover1"><span>Pop1-3 scrolling</span></a></li>
+						<li><a href="#popover1-4" data-target="popover1"><span>Pop1-4 external pages</span></a></li>
+					</ul>						
+				</div>
+			</div><!-- end page-->
+			
+			<div data-role="page" id="popover1-4" class="popoverPage"  data-theme="a">
+				<div data-role="header" data-position="fixed" data-theme="a">
+					<h1>External pages</h1>
+				</div>
+				<div data-role="content">					
+					<p>The following button loads an external page (not part of this multipage) into this popover. Use this technique to remove low-priority pages from your 
+					multipage document and only load them on user demand</p>					
+					<ul data-role="listview" data-inset="true">
+						<li><a href="ext1.html" data-target="popover1" data-transition="flip"><span>external page1</span></a></li>
+					</ul>						
+				</div>
+			</div><!-- end page-->
+			
+		</div>
+		
+		<!-- ///////////////// popover panel 2 ////////////  -->
+
+		<div data-role="panel" data-id="popover2" data-hash="history" data-panel="popover" class="ui-element-fixed-top  ui-triangle-top popover2">
+			<div data-role="page" data-show="first" id="popover2-1" class="popoverPage" data-theme="a">
+				<div data-role="header" data-position="fixed" data-theme="a">
+					<h1>Fixed Toolbars</h1>
+				</div>
+				<div data-role="content">		
+					<p>In fullscreen mode, any header/footer of the underlying main panel are "unfixed" and fixed behavior is attached to the popover/menu
+					header/footer. This way fixed toolbars should look normal in fullscreen mode, too.
+					</p>
+					<ul data-role="listview" data-inset="true">
+						<li><a href="#popover2-2" data-target="popover2"><span>Pop2-2 transitions</span></a></li>
+						<li><a href="#popover2-3" data-target="popover2"><span>Pop2-3 back buttons</span></a></li>
+					</ul>						
+				</div>
+			</div><!-- end page-->
+			
+			<div data-role="page" id="popover2-2" class="popoverPage">
+				<div data-role="header" data-position="fixed" data-theme="a">					
+					<h1>Page loading</h1>
+				</div>
+				<div data-role="content">
+					
+					<p>Besides changing pages is popovers/menu you can also load pages in any other panel. You will need to add a data-target with the
+					ID of the destination panel to ALL links, including changing pages inside this panel.
+					</p>
+					<ul data-role="listview" data-inset="true">
+						<li><a href="#popover2-1" data-target="popover2"><span>Pop2-1 fixed headers</span></a></li>
+						<li><a href="#popover2-3" data-target="popover2"><span>Pop2-3 back buttons</span></a></li>
+					</ul>						
+				</div>
+			</div><!-- end page-->
+			
+			<div data-role="page" id="popover2-3" class="popoverPage">
+				<div data-role="header" data-position="fixed" data-theme="a">
+					<h1>History</h1>
+				</div>
+				<div data-role="content">
+					<h3></h3>
+					<p>By default, JQM treats all multipages as single history stack entry. You can specify an optional panel-history using <code>data-hash="history"</code> for every panel.</p>
+					<br>
+					<p>The plugin then creates entrys on those panels whenever you changePage. When you click the browser back button, the plugin checks all panels for the last entry and does a backward transition 
+					to this page. When all panel history stacks are empty, normal JQM back-button behavior is active again. So panel history always overrides JQM history.
+					</p>
+					<br>
+					<p>With active panel-history, the plugin also adds back-buttons to the corresponding page by default. Turn this behavior off by assigning <code>data-history-button="false"</code>
+					to the panel. Then you only have the browser-back button to navigate.</p>
+					
+					<ul data-role="listview" data-inset="true">
+						<li><a href="#popover2-1" data-target="popover2"><span>Pop2-1 fixed headers</span></a></li>
+						<li><a href="#popover2-2" data-target="popover2"><span>Pop2-2 transitions</span></a></li>
+					</ul>	
+
+					<p>With active panel-history, the plugin also adds back-buttons to the corresponding page by default. Turn this behavior off by assigning <code>data-history-button="false"</code>
+					to the panel. Then you only have the browser-back button to navigate.</p>
+					
+					<p>With active panel-history, the plugin also adds back-buttons to the corresponding page by default. Turn this behavior off by assigning <code>data-history-button="false"</code>
+					to the panel. Then you only have the browser-back button to navigate.</p>
+					
+					<p>With active panel-history, the plugin also adds back-buttons to the corresponding page by default. Turn this behavior off by assigning <code>data-history-button="false"</code>
+					to the panel. Then you only have the browser-back button to navigate.</p>
+					
+				</div>
+			</div><!-- end page-->				
+			
+		</div>
+		
+		
+
+		
+		<!-- global footer across all panel pages -->
+		<div data-role="footer" data-id="mainFooter" data-position="fixed">
+					<div data-role="navbar" data-grid="d">
+						<ul>						
+							<li><a href="page1.html" data-iconpos="top" data-icon="plus">page1</a></li>
+							<li><a href="#" class="ui-btn-active ui-state-persist" data-iconpos="top" data-icon="info">page2</a></li>
+							<li><a href="page3.html" data-iconpos="top" data-icon="plus">page3</a></li>				
+							<li><a href="page4.html" data-iconpos="top" data-icon="plus">page4</a></li>	
+							<li><a href="page5.html" data-iconpos="top" data-icon="plus">page5</a></li>	
+						</ul>
+					</div>
+				</div>	
+
+</div><!-- end wrapper page -->
+				
+				
+
+
+</body>
+
+		<script type="text/javascript" src="http://code.jquery.com/jquery-1.6.4.min.js"></script>					
+		<script type="text/javascript" src="LOC/scripts/jquery.mobile-1.0/jquery.mobile-1.0multiview.js"></script>		
+		<script type="text/javascript" src="LOC/scripts/plugins/jquery.easing.1.3.js"></script>
+        <script type="text/javascript" src="LOC/scripts/plugins/jquery.mobile.scrollview.js"></script>
+		<script type="text/javascript" src="LOC/scripts/plugins/jquery.mobile.multiview.js"></script>
+			
+</html>
+

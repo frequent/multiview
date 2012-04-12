@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html class="no-js multiview">
+<head>
+		
+		<title>multiview demos</title>
+		
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />		
+		<link rel="stylesheet" href="http://code.jquery.com/mobile/1.0/jquery.mobile-1.0.min.css" />	
+        <link rel="stylesheet" type="text/css" href="../LOC/style/jquery.mobile.scrollview.css" />
+		<link rel="stylesheet" type="text/css" href="../LOC/style/jquery.mobile.multiview.css" />
+	
+		<style type="text/css">
+			.middleClass {text-align: center; margin-top: 25%;}
+			code { padding: 0 0.5em;}
+			.blank, .blank li {font-size: 95%;}
+			.ui-page { background: #ffffff;}
+			ui-grid-d {text-align: center;}
+			fieldset img, img {display: block; margin: 0 auto; }
+			* {font-size: 13px;}
+		</style>
+</head>
+<body>
+	
+			
+<div data-role="page" id="wrap1" data-wrapper="true">
+		
+	
+		<!-- ////////////// embedded menu panel /////////////  -->
+		<div data-role="panel" data-id="menu" data-panel="menu">				  		 	 
+		
+			<div data-role="page" id="first" data-show="first">
+				<div data-role="header" data-position="fixed" data-theme="a">			
+					<h1>Menu</h1>
+					
+				</div>
+				<div data-role="content">
+						<p>Context loading always calls a 2nd change page once the first one is over</p>						
+						<a href="#one" data-role="button" data-target="menu" data-context="#two" data-context-panel="main">Context Load</a>
+						
+				</div>
+			</div>
+			
+			<div data-role="page" id="one">
+				<div data-role="header" data-position="fixed" data-theme="a">			
+					<h1>2nd page</h1>
+					
+				</div>
+				<div data-role="content">
+						<p>This could be your inbox folder containing a list of emails</p>
+						<a href="#first" data-role="button" data-inline="true">back to first menu page</a>
+						
+						
+						
+				</div>
+			</div>
+
+		</div><!-- end panel -->
+		
+		<!-- ////////////// embedded main panel ///////////////  -->		
+		<div data-role="panel" data-id="main" data-panel="main">		
+			
+			<div data-role="page" id="firstMain" data-show="first">
+				<div data-role="header" data-position="fixed" data-theme="a">			
+					<h1>First Page on main</h1>
+					<a href="#" data-transition="pop" data-theme="a" data-role="button" data-panel="popover2" data-icon="lang" data-inline="true" data-iconpos="left" class="toggle_popover ui-btn-right">Pop2</a>
+				</div>
+				<div data-role="content">
+					<p class="middleClass">Nothing here for now... </p>																		
+
+				</div>
+			</div>
+			
+			<div data-role="page" id="two">
+				<div data-role="header" data-position="fixed" data-theme="a">			
+					<h1>Context Two</h1>
+					<a href="#" data-transition="pop" data-theme="a" data-role="button" data-panel="popover2" data-icon="lang" data-inline="true" data-iconpos="left" class="toggle_popover ui-btn-right">Pop2</a>
+				</div>
+				<div data-role="content">
+					<p class="middleClass">This page is context loaded. Could be a starter page for emails or the first email in the menu list. If history or crumbs are active, you can also reverse both transitions by 
+					either the browser back button or the crumbs buttons.<br><br>Currently not working are context loads from main to menu or any other panel. Still searching as to why. Try the below links to see what works:</p>	
+					
+					<a data-role="button" data-inline="true" href="three" data-panel="popover2" data-context="#first" data-context-panel="menu">Load page in popover and context in menu</a>
+
+					<a href="#firstMain" data-inline="true" data-role="button">Back to First Page Main</a>
+
+				</div>
+			</div>
+			
+			
+		</div><!-- end panel -->
+
+		<!-- ///////////////// popover panel 2 ////////////  -->
+		
+		<div data-role="panel" data-id="popover2" data-panel="popover" class="ui-element-fixed-top ui-popover-center popover2">
+			
+			<div data-role="page" data-show="first" id="popover2-1">
+				<div data-role="header" data-position="fixed" data-theme="a">
+					<h1>First page</h1>
+				</div>
+				<div data-role="content">														
+					<p>This is the first page of the popover</p>	
+				</div>
+			</div><!-- end page-->	
+
+			<div data-role="page" id="three">
+				<div data-role="header" data-position="fixed" data-theme="a">
+					<h1>Context Loaded</h1>
+				</div>
+				<div data-role="content">														
+					<p>This is the context loaded page</p>						
+					<a href="#popover2-1" data-role="button" data-target="popover" data-context="#firstMain" data-context-panel="main">back to first panel and context main</a>
+			
+				</div>
+			</div><!-- end page-->
+						
+			
+		</div>
+		
+		<!-- global footer = inside wrapper, outside panel -->
+		<div data-role="footer" data-id="mainFooter" data-position="fixed">
+			<div data-role="navbar" data-grid="d">
+				<ul>	
+	
+					<li><a href="#starthere" data-target="menu" data-iconpos="top" data-icon="plus">Home</a></li>
+					<li><a href="#useCases" data-target="menu" data-iconpos="top" data-icon="plus">Layouts</a></li>
+					<li><a href="#modes" data-target="menu" data-iconpos="top" data-icon="plus">Screen Modes</a></li>
+					<li><a href="#demos" data-target="menu" data-iconpos="top" data-icon="plus">Demos</a></li>				
+					<li><a href="#one" data-target="menu" data-context="firstMain" data-context-panel="main" data-iconpos="top" data-icon="plus">CONTEXT</a></li>	
+					
+				</ul>
+			</div>
+		</div>	
+
+		
+		
+</div><!-- end wrapper page -->
+				
+				
+
+
+</body>
+
+		<script type="text/javascript" src="http://code.jquery.com/jquery-1.6.4.min.js"></script>					
+		<script type="text/javascript" src="../LOC/scripts/jquery.mobile-1.0/jquery.mobile-1.0multiview.js"></script>		
+		<script type="text/javascript" src="../LOC/scripts/plugins/jquery.easing.1.3.js"></script>
+        <script type="text/javascript" src="../LOC/scripts/plugins/jquery.mobile.scrollview.js"></script>
+		<script type="text/javascript" src="../LOC/scripts/plugins/jquery.mobile.multiview.js"></script>
+			
+</html>
+

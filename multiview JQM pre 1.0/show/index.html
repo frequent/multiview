@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+<html class="no-js multiview">
+<head>
+		
+		<title>multiview demos</title>
+		
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />		
+		<link rel="stylesheet" href="http://code.jquery.com/mobile/1.0/jquery.mobile-1.0.min.css" />	
+        <link rel="stylesheet" type="text/css" href="../LOC/style/jquery.mobile.scrollview.css" />
+		<link rel="stylesheet" type="text/css" href="../LOC/style/jquery.mobile.multiview.css" />
+	
+		<style type="text/css">
+			.middleClass {text-align: center; margin-top: 25%;}
+			code { padding: 0 0.5em;}
+			.blank, .blank li {font-size: 95%;}
+			.ui-page { background: #ffffff;}
+			ui-grid-d {text-align: center;}
+			fieldset img, img {display: block; margin: 0 auto; }
+			* {font-size: 13px;}
+		</style>
+</head>
+<body>
+	
+			
+<div data-role="page" id="wrap1" data-wrapper="true">
+		
+	
+		<!-- ////////////// embedded menu panel /////////////  -->
+		<div data-role="panel" data-id="menu" data-hash="history" data-panel="menu">				  		 	 
+		
+			<div data-role="page" id="starthere" data-show="first">
+				<div data-role="header" data-position="fixed" data-theme="a">			
+					<h1>Multiview</h1>
+				</div>
+				<div data-role="content">
+						<p>Welcome to the Demo!</p>
+						
+						<ul data-role="listview" data-inset="true" data-theme="d" data-divider-theme="a">	
+							<li data-role="list-divider">Setup</li>
+							<li><a href="#setup" data-target="main">Plugin Setup</a></li>
+						</ul>
+						
+						<ul data-role="listview" data-inset="true" data-theme="d" data-divider-theme="a">	
+							<li data-role="list-divider">More info on:</li>
+							<li><a href="#useCases" data-target="menu" data-context="#useCaseHeadliner" data-context-panel="main">Layouts</a></li>
+							<li><a href="#modes" data-target="menu" data-context="#modesHeadliner" data-context-panel="main">Screen Modes</a></li>
+							<li><a href="#features" data-target="menu" data-context="#featuresHeadliner" data-context-panel="main">Features</a></li>							
+							<li><a href="#demos"  data-target="menu" data-context="#demosHeadliner" data-context-panel="main">Demos</a></li>							
+						</ul>
+						
+						<ul data-role="listview" data-inset="true" data-theme="d" data-divider-theme="a">	
+							<li data-role="list-divider">Script</li>
+							<li><a href="#changeLog" data-target="menu" data-context="#scriptHeadliner" data-context-panel="main">JQM changes</a></li>
+						</ul>
+						
+				</div>
+			</div>
+			
+			<div data-role="page" id="useCases" >
+				<div data-role="header" data-position="fixed" data-theme="a">			
+					<h1>Use Cases</h1>
+				</div>
+				<div data-role="content">
+						<p>multiview allow you to do the following:</p>																		
+						
+						<ul data-role="listview" data-inset="true" data-theme="d" data-divider-theme="a">	
+							<li data-role="list-divider">Layouts:</li>
+							<li><a href="#use1" data-target="main"><h3>popover panels</h3><p>popups with nested pages</p></a></li>
+							<li><a href="#use2" data-target="main" ><h3>fullwidth panel ("multipage")</h3><p>single panel, nested pages = true multipage</p></a></li>
+							<li><a href="#use3" data-target="main" ><h3>menu/main panel ("splitview")</h3><p>splitscreen panels with nested pages</p></a></li>							
+							<li><a href="#use4" data-target="main"><h3>mix it up</h3><p>mix all of the above with JQM pages</p></a></li>																					
+						</ul>
+						
+				</div>
+			</div>
+			
+			<div data-role="page" id="modes" >
+				<div data-role="header" data-position="fixed" data-theme="a">			
+					<h1>Screen Modes</h1>
+				</div>
+				<div data-role="content">
+						<p>The plugin creates three screen modes</p>																		
+						
+						<ul data-role="listview" data-inset="true" data-theme="d" data-divider-theme="a">	
+							<li data-role="list-divider">Screen Modes:</li>
+							<li><a href="#screen1" data-target="main"><h3>fullscreen mode</h3><p>smartphones make all panels fullscreen</p></a></li>
+							<li><a href="#screen2" data-target="main" ><h3>popover mode</h3><p>toggle menu if below threshold width</p></a></li>
+							<li><a href="#screen3" data-target="main" ><h3>splitview mode</h3><p>splitscreen layouts</p></a></li>														
+						</ul>																		
+				</div>
+			</div>
+			
+			<div data-role="page" id="features" >
+				<div data-role="header" data-position="fixed" data-theme="a">			
+					<h1>Features</h1>
+				</div>
+				<div data-role="content">
+						<p>Pick one to learn more or check them out in the demo</p>																		
+						
+						<ul data-role="listview" data-inset="true" data-theme="d" data-divider-theme="a">	
+							<li data-role="list-divider">Feature List</li>
+							<li><a href="#feat_adaptiveLayout" data-target="main" >Adaptive Layout</a></li>
+							<li><a href="#feat_globalToolbars" data-target="main" >Global Toolbars</a></li>
+							<li><a href="#feat_fixedTopBot" data-target="main" >Fixed Elements Top/Bottom</a></li>
+							<li><a href="#feat_context" data-target="main" >Context Page Loading</a></li>
+							<li><a href="#feat_deeplink" data-target="main" >Deeplinking</a></li>						
+							<li><a href="#feat_external" data-target="main" >Load external pages into Panels</a></li>
+							<li><a href="#feat_history" data-target="main" >Panel History</a></li>						
+							<li><a href="#feat_autoshow" data-target="main" >Autoshow Popovers</a></li>
+							<li><a href="#feat_switchable" data-target="main" >Toggle Menus</a></li>						
+						</ul>
+				</div>
+			</div>	
+			
+			<div data-role="page" id="demos" >
+				<div data-role="header" data-position="fixed" data-theme="a">			
+					<h1>Demos</h1>
+				</div>
+				<div data-role="content">
+						<p>Links to all layout and feature demo pages</p>																		
+						
+						<ul data-role="listview" data-inset="true" data-theme="d" data-divider-theme="a">	
+							<li data-role="list-divider">Demos Layouts:</li>
+							<li><a href="demos_popover.html" rel="external">Popover Panels</a></li>
+							<li><a href="demos_fullwidth.html" rel="external">Fullwidth Panels</a></li>
+							<li><a href="demos_splitview.html" rel="external">Menu/Main Panels</a></li>														
+							<li><a href="demos_combo.html"rel="external">Combo</a></li>														
+						</ul>
+
+						<ul data-role="listview" data-inset="true" data-theme="d" data-divider-theme="a">	
+							<li data-role="list-divider">Demos Header/Footer:</li>
+							<li><a rel="external" href="demos_globalHeader_globalFooter.html">Global Header/Global Footer</a></li>
+							<li><a rel="external" href="demos_localHeader_globalFooter.html">Local Header/Global Footer</a></li>
+							<li><a rel="external" href="demos_globalHeader_localFooter.html">Global Header/Local Footer</a></li>
+							<li><a rel="external" href="demos_localHeader_localFooter.html">Local Header/Local Footer</a></li>							
+							<li data-role="list-divider">Demos Fixed Elements:</li>
+							<li><a rel="external" href="demos_fixTop.html">Element Fixed-Top</a></li>
+							<li><a rel="external" href="demos_fixBottom.html">Element Fixed-Bottom</a></li>
+							<li data-role="list-divider">Deeplinks</li>
+							<li><a rel="external" href="demos_deeplink.html#one">Deeplink 1</a></li>
+							<li><a rel="external" href="demos_deeplink.html#two">Deeplink 2</a></li>
+							<li><a rel="external" href="demos_deeplink.html#three">Deeplink 3</a></li>							
+							<li><a rel="external" href="demos_deeplink.html#four">Deeplink 4</a></li>
+							<li data-role="list-divider">Additional Features:</li>
+							<li><a rel="external" href="demos_context.html">Context Loading</a></li>							
+							<li><a rel="external" href="demos_external.html">External Pages</a></li>
+							<li><a rel="external" href="demos_history.html">History/Crumbs</a></li>
+							<li><a rel="external" href="demos_autoshow.html">Autoshow</a></li>
+							<li><a rel="external" href="demos_toggleMenu.html">Toggle Menu</a></li>
+		
+							
+				
+						</ul>
+
+				</div>
+			</div>
+																	
+			<div data-role="page" id="changeLog" >
+				<div data-role="header" data-position="fixed" data-theme="a">			
+					<h1>JQM changes</h1>
+				</div>
+				<div data-role="content">
+						<p>the following changes have been made to JQM to make the plugin work</p>																		
+						
+						<ul data-role="listview" data-inset="true" data-theme="d" data-divider-theme="a">		
+							<li data-role="list-divider">Core Utilities:</li>
+							<li><a href="#core" data-target="main">core utilities</a></li>
+							<li><a href="#transitionPage" data-target="main">scrollTop</a></li>
+							<li><a href="#transitionHandler" data-target="main">removeActiveClasses</a></li>
+							<li><a href="#changePage" data-target="main">panels-changePage</a></li>
+							<li><a href="#changeHash" data-target="main">panels-hashChange</a></li>
+							<li><a href="#pushState" data-target="main">pushState</a></li>
+							<li><a href="#fixedToolbars" data-target="main">fixedToolbars</a></li>
+							<li><a href="#initContainer" data-target="main">init Loader</a></li>
+							<li><a href="#initDeeplinks" data-target="main">init deeplinks</a></li>
+						</ul>
+				</div>
+			</div>
+			
+			
+		</div><!-- end panel -->
+		
+		<!-- ////////////// embedded main panel ///////////////  -->		
+		<div data-role="panel" data-id="main" data-panel="main" data-hash="history">		
+			
+			<div data-role="page" id="mainInit" data-show="first">
+				<div data-role="header" data-position="fixed" data-theme="a">			
+					<h1>Main Section</h1>
+				</div>
+				<div data-role="content">
+					<p class="middleClass">Load some content here... </p>																		
+				</div>
+			</div>
+			
+			<!-- setup pages -->
+			<div data-role="page" id="setup">
+				<div data-role="header" data-position="fixed" data-theme="a">			
+					<h1>Setup</h1>
+				</div>
+				<div data-role="content">
+					
+					<h3>Setup</h3>
+					<p>Create a normal JQM page and add the trigger element <code>data-wrapper="true"</code> to the page. This will fire the plugin when the page loads. 
+					If your app has several independent JQM pages (no multipage), make sure to include the plugin script, css plus the modified JQM file on every page!</p>
+					
+					<p>The page above will be your <code>wrapper-page</code>. Header and Footer in this page will your global header/footer.</p>
+					
+					<p>Any popover panels you want to add will go after the content section of this page. If you want to create a multipage or splitscreen page, remove
+					the content section and just put panels inside the wrapper. See the demos for details</p>
+					
+					<h3>Panel</h3>
+					<p>Panels need to be <code>div</code> tags. To specify a panel you need to add the following attributes:</p> 
+
+						<ul class="blank">
+							<li><code>data-role="panel"</code> - indicating this is a panel</li>
+							<li><code>data-id="your_panel_name"</code> - a unique name to differentiate panels</li>
+							<li><code>data-panel="type"</code> - can bei either <code>popover, menu, main, fullwidth</code></li>
+							<li><code>data-hash="history/crumbs"</code> (optional) - whether the panel should have an active history alongside JQM and browser</li>
+							<li><code>data-autoshow="once"</code> (optional) - whether to show the panel the first time this page is loaded to the DOM</li>
+						</ul>						
+					
+					<p>Panels itself can contain any number of nested JQM pages. All headers/footers in these pages will be local (can be fixed, too). Make sure to 
+					include a <code>data-show="first"</code> attribute to the default page for each panel. Otherwise the panel will be black when it's opened or a page loads.</p>
+					
+					<h3>Panel Navigation</h3>
+					<p>The plugin tweaks JQM navigation. The main differences are:</p>
+						<ul class="blank">
+							<li><code>$.mobile.pageContainer</code> - allows page container to be changed to either <code>body</code> or <code>panels</code></li>
+							<li><code>data-target="panel-id"</code> - needs to be attached to every panel-link. Omitting this will break the layout as JQM will take over</li>
+							<li><code>pageContainer: $(panel-id)</code> - needs to be included, when calling panel transitions programmatically</li>														
+						</ul>
+					
+					
+				</div>
+			</div>
+			
+			<!-- layout pages -->
+			<div data-role="page" id="useCaseHeadliner" >
+				<div data-role="header" data-position="fixed" data-theme="a">			
+					<h1>Layouts</h1>
+				</div>
+				<div data-role="content">
+					<p>Use the plugin to create the following layouts:</p>	
+				
+					<fieldset class="ui-grid-d">
+						<div class="ui-block-a">
+							<h3>Popover Panels</h3>
+							<img src="pop.png" alt="popLayout" />
+							<p>For plain popover panels in regular JQM pages, just insert the panels after the content section. The popovers can
+							contain any number of JQM pages, which you can navigate in between.</p>
+							<a data-role="button" data-target="main" href="#use1" data-inline="true">More info</a>
+						</div>
+						<div class="ui-block-b">
+							<h3>Fullwidth Panels</h3>
+							<img src="full.png" alt="fwLayout" />
+							<p>To create a loadable multipage, just replace the wrapper page's content section with a fullwidth panel using <strong>data-panel="fullwidth"</strong>
+							and put your nested "multipage" pages inside. JQM will always load the wrapper page thereby also pulling in all of the pages
+							nested in the fullwidth panel.</p>
+							<a data-role="button" data-target="main" href="#use2" data-inline="true">More info</a>
+						</div>	   
+						<div class="ui-block-c">
+							<h3>Splitview Panels</h3>
+							<img src="split.png" alt="splitLayout" />
+							<p>To create a two column layout, just replace the wrapper page with two panels, one with <strong>data-panel="main"</strong>, 
+							the other with <strong>data-panel="menu"</strong>. Put all your nested pages inside either panel. These pages will also be loaded 
+							alongside the wrapper page.
+							<a data-role="button" data-target="main" href="#use3" data-inline="true">More info</a>
+						</div>
+						<div class="ui-block-d">
+							<h3>Combinations</h3>
+							<img src="combo.png" alt="combo" />
+							<p>You can mix background panels (main/menu/fullwidth) and popover panels as you want. So you could have a main/menu layout with several 
+							popovers or regular JQM pages with popovers. Large apps with several independent JQM and plugin pages are also possible, so there
+							should be no limit in what to create.</p>
+							<a data-role="button" data-target="main" href="#use4" data-inline="true">More info</a>
+						</div>	 						
+					</fieldset>
+				</div>
+			</div>	
+			
+			<div data-role="page" id="use1">
+				<div data-role="header" data-position="fixed" data-theme="a">			
+					<h1>Popover Panels</h1>
+				</div>
+				<div data-role="content">
+						<p>Popover panels can be used on normal JQM pages and panel pages alike. The basics of the popover are set by the <code>.ui-popover</code> class, while 
+						size and position of the popover can be set individually (demo uses <code>.ui-popover1, .ui-popver2</code></p>
+	
+						<img src="pop2.png" alt="popLayout" />
+	
+						<p>A few things to be beware of when setting up a popover:</p>							
+							<ul class="blank">
+								<li>popovers need to be behave like fixed headers or footers in order to "stay on screen" = be repositioned when scrolling.</li>
+								<li>therefore assign either <code>.ui-element-fixed-top</code> or <code>.ui-element-fixed-bottom</code> to the popover</li>
+								<li>this will make the popover behave like fixed header/footer and be repositioned when scrolling stops</li>
+								<li>you can add a class of <code>.ui-triangle-top</code> or <code>.ui-triangle-bottom</code> for small indicator triangles</li>
+								<li>to place a popover exactly center screen, just add a class of <code>.ui-popover-center</code></li>
+								<li>specifying <code>data-autoshow="once"</code> on the panel will show the it once when the page is added to the DOM (login window)</li>
+								<li>specifying <code>data-hash="history"</code> will add this panel to the plugin history enableing back/fwd button on browser/mobile</li>
+								<li>specifying <code>data-hash="crumbs"</code> will also add back button on every page (currently both history/crumbs are avtive!)</li>
+							</ul>																			
+						
+						
+						<p>Some rules for popovers:</p>
+							<ul class="blank">
+								<li>Only one popover can be open at a time! If you had 5 popovers open, which one do you show on a smartphone as page in view?</li>
+								<li>Whenever a popover closes, it's history is reset. As long as it is open, it's history always supercedes all other panels and JQM</li>
+							</ul>
+						
+						
+						<a href="demos_popover.html" data-role="button" data-inline="true">Popover Demo</a>						
+				</div>
+			</div>	
+			
+			<div data-role="page" id="use2">
+				<div data-role="header" data-position="fixed" data-theme="a">			
+					<h1>Multipage Layouts</h1>
+				</div>
+				<div data-role="content">
+						<p>If you use a fullwidth background panel, you can set up your loadable multipage layout. Just drop all nested pages inside the fullwidth panel and 
+						don't forget to link using <code>data-target="your_panel_id"</code>. Since the panel is inside a single wrapper page, this will be loaded by JQM 
+						along with all nested pages. As a bonus, specifying header or footer outside of the panel makes them global across all pages. Dropping them inside
+						on nested pages makes them local.</p>
+	
+						<img src="full2.png" alt="popLayout" />
+	
+						<p>A few things to be beware of when setting up a fullwidth panel:</p>								
+							<ul class="blank">
+								<li>global header/footer are <strong>outside</strong> of the panel, local header/footers are <strong>inside</strong> nested pages</li>								
+								<li>specifying <code>data-hash="history"</code> will add this panel to the plugin history enableing back/fwd button on browser/mobile</li>
+								<li>specifying <code>data-hash="crumbs"</code> will also add back button on every page (currently both history/crumbs are avtive!)</li>
+							</ul>																			
+						
+						<a href="demos_fullwidth.html" data-role="button" data-inline="true">Fullwidth Panel Demo</a>
+						
+				</div>
+			</div>	
+			
+			<div data-role="page" id="use3">
+				<div data-role="header" data-position="fixed" data-theme="a">			
+					<h1>Splitview Layouts</h1>
+				</div>
+				<div data-role="content">
+						<p>To setup a splitview layout, just replace the content section with two panels, main and menu. Like in a fullwidth setup, any header/footer dropped <strong>inside</strong>
+						the wrapper page but <strong>outside</strong> of the panels will be your global header/footer across all nested pages, while headers/footers inside nested
+						pages will be local.</p>
+	
+						<img src="split2.png" alt="popLayout" />
+	
+						<p>A few things to be beware of when setting up a main/menu panel:	</p>						
+							<ul class="blank">
+								<li>global header/footer are <strong>outside</strong> of the panels, local header/footers are <strong>inside</strong> nested pages</li>	
+								<li>menu width and min-width are settable options <code>menuWidth</code> and <code>menuMinWidth</code></li>
+								<li>below a settable threshold width, the menu will change to a popover with a toggle button. This is called <strong>popover-mode</strong> vs. <strong>splitview-mode</strong></li>
+								<li>by specifying the option <code>switchable: true</code>, the menu can also be toggled in splitview-mode</li>
+								<li>the switchable also provides changeable <code>switchableIcon</code> and <code>switchableHideOnLoad</code> options to further modify the button</li>								
+								<li>by default the menu button will be placed on the main panel header. If there is a button present (back-btn...) it will be merged into a controlgroup</li>
+								<li>if you want the menu button to be placed somewhere else, assign <code>.ui-menu-button-flex</code> to the designated element. The menu button will be dropped there.</li>
+								<li>specifying <code>data-hash="history"</code> will add this panel to the plugin history enableing back/fwd button on browser/mobile</li>
+								<li>specifying <code>data-hash="crumbs"</code> will also add back button on every page (currently both history/crumbs are avtive!)</li>
+							</ul>																			
+						
+
+						<p>Some rules for menu/main panels:</p>
+							<ul class="blank">
+								<li>Panel CSS mimics the body-CSS (position: static, dimensions matching screen). Don't mess with it...</li>
+								<li>As panels are static, nested pages by default are 100% screen width. This plugin tweaks the page width according to screen-mode. 
+									So don't overwrite page-CSS thinking panel-CSS is enough. In Menu/Main setups it's not...</li>
+							</ul>
+							
+						
+						<a href="demo_splitview.html" data-role="button" data-inline="true">Menu/Main Panel Demo</a>				
+				</div>
+			</div>	
+
+			<div data-role="page" id="use4">
+				<div data-role="header" data-position="fixed" data-theme="a">			
+					<h1>Mixed Layouts</h1>
+				</div>
+				<div data-role="content">
+						<p>You can mix background panels with popovers as you like, so a menu/main layout with one or more popovers is no problem at all. You can also mix splitview pages
+						together with regular JQM pages to create larger web apps. The plugin always works across the DOM, so you can add a lot of complexity to apps with little effort.</p>
+	
+						<img src="combo2.png" alt="comboLayout" />
+	
+						<p>A few things to be beware of when setting up a main/menu panel:	</p>						
+							<ul class="blank">
+								<li>if you do apps across multiple pages, make sure the plugin is on every page, so whereever you start, the plugin also initiates.</li>									
+							</ul>																			
+						
+
+							<a href="demos_combo.html" data-role="button" data-inline="true">Combo Panel Demo</a>							
+				</div>
+			</div>	
+			
+			<!-- screen mode pages -->
+			<div data-role="page" id="modesHeadliner" >
+				<div data-role="header" data-position="fixed" data-theme="a">			
+					<h1>Screen Modes</h1>
+				</div>
+				<div data-role="content">
+					<p>The plugin offers three layout modes, which are running automatically:</p>	
+				
+					<fieldset class="ui-grid-d">
+						<div class="ui-block-a">
+							<h3>Fullscreen Mode</h3>
+							<img src="fullscreen.png" alt="fullscreen-mode" />
+							<p>Fullscreen mode fires below a threshold width (settable option). In Fullscreen mode all panels become fullscreen pages, so if
+							you opened a popover, it will open like regular JQM page with "back-button".</p>
+							<a data-role="button" data-target="main" href="#screen1" data-inline="true">More info</a>
+						</div>
+						<div class="ui-block-b">
+							<h3>Popover Mode</h3>
+							<img src="popover.png" alt="popover-mode" />
+							<p>Another threshold switches between popover and splitview mode. In Popover mode, menu panels will change into popovers, so 
+							the screen is reserved for the main content.</p>
+							<a data-role="button" data-target="main" href="#screen2" data-inline="true">More info</a>
+						</div>	   
+						<div class="ui-block-c">
+							<h3>Splitview Mode</h3>
+							<img src="splitview.png" alt="splitview-mode" />
+							<p>In splitview mode, main and menu sit side by side. Per default an orientationchange will switch the layout from splitview to
+							popover mode.</p>
+							<a data-role="button" data-target="main" href="#screen3" data-inline="true">More info</a>
+						</div>											
+					</fieldset>
+				</div>
+			</div>
+			
+			<div data-role="page" id="screen1" >
+				<div data-role="header" data-position="fixed" data-theme="a">			
+					<h1>Fullscreen mode</h1>
+				</div>
+				<div data-role="content">
+						<p>Currently fullscreen mode fires if screen width is less than <code>320px</code>. Below this threshold, all popovers loose class <code>.ui-popover</code>, which
+						drops all formatting (borders,etc.). New class <code>ui-fullscreen</code> overwrites all dimensions to 100% and positions the popover absolute (vs. static) in other screen modes.
+						</p>
+						
+						<fieldset class="ui-grid-a">
+							<div class="ui-block-a"><img src="fullscreen_mode.png" alt="demo_fullsceen" /></div>
+							<div class="ui-block-b">
+								<p>A few things to be beware in fullscreen mode:</p>							
+									<ul class="blank">
+										<li>think of popover panel pages as regular pages in fullscreen mode</li>
+										<li>adding class <code>.iconposSwitcher-a</code> or <code>.iconposSwitcher-div</code> to buttons or controlgroups drops the button text in fullscreen mode. Saves space.</li>
+										<li>when popovers are openend their regular "close" button now becomes a "back" button</li>
+										<li>fullscreen mode also fires when available screen height is smaller than the height of any popover panel on the page. Think of your smartphone in landscape mode</li>
+										<li>to check out fullscreen mode, just go to any demo, shrink the screen and reload the page</li>
+									</ul>	
+									<a data-role="button" href="#demos" data-target="menu" data-inline="true">Load Demo Section</a>
+								
+							
+							</div>	   
+						</fieldset>
+																							
+				</div>
+			</div>	
+			
+			<div data-role="page" id="screen2" >
+				<div data-role="header" data-position="fixed" data-theme="a">			
+					<h1>Popover mode</h1>
+				</div>
+				<div data-role="content">
+						<p>Popover mode fires above <code>320px</code> and below <code>768px</code> or in portrait mode. If you are using a menu/main layout the menu will be hidden and changed into a regular
+						popover, which can be toggled using a menu toggle button.
+						</p>
+						
+						<img src="popover_mode.png" alt="demo_popover" />
+	
+						<p>A few things to be beware in popover mode:</p>							
+								<ul class="blank">
+									<li>By default the popover toggle button is in the header top left. If there is already a button, both will be merged into a controlgroup</li>
+									<li>You can relocate the menu toggle button by assigning class <code>.ui-menu-button-flex</code> to the element that should hold the button (think of a listview filter with editable options in the menu</li>
+									<li>On small screen sizes the popover menu will turn into a fullscreen page, just like regular popover panels in fullscreen-mode</li>
+								</ul>	
+								<a data-role="button" href="#demos" data-target="menu" data-inline="true">Load Demo Section</a>
+																				
+					</div>
+			</div>	
+			
+			
+			<div data-role="page" id="screen3">
+				<div data-role="header" data-position="fixed" data-theme="a">			
+					<h1>Splitview mode</h1>
+				</div>
+				<div data-role="content">
+						<p>In Landscape mode or above screen width of <code>768px</code>, splitview mode fires enabling menu und main panels to sit side by side.</p>
+						
+						<img src="splitview_mode.png" alt="demo_splitview" />
+	
+						<p>A few things to be beware in splitview mode:	</p>						
+								<ul class="blank">
+									<li>You can hide/show the menu if you specify the option <code>switchable:true</code> when calling the plugin. This also adds the menu toggle button in splitview mode</li>
+									<li>The menu width variies between 25% and 250px in the default settings. This requires the width and margin-left of the main panel and nested pages to be modified on resize, which is currently turned off</li>
+								</ul>	
+								<a data-role="button" href="#demos" data-target="menu" data-inline="true">Load Demo Section</a>
+																				
+					</div>
+			</div>
+			
+			<!-- features pages -->
+			<div data-role="page" id="featuresHeadliner" >
+				<div data-role="header" data-position="fixed" data-theme="a">			
+					<h1>Features Modes</h1>
+				</div>
+				<div data-role="content">
+						<p class="middleClass">Please select a feature from the menu!</p>																		
+				</div>
+			</div>	
+			
+			
+			<div data-role="page" id="feat_adaptiveLayout" >
+				<div data-role="header" data-position="fixed" data-theme="a">			
+					<h1>Adaptive Layouts</h1>
+				</div>
+				<div data-role="content">
+						<p>The plugin adapts uses different modes to change the layout depending on "available space". Especially if multiple panels are used, this requires 
+						some contraints to be able to have a clean navigation across different size devices.</p>
+						
+						<img src="triple.png" alt="adaptive layout" />
+						
+						<p>To see how this works, load any of the layout demos, resize the screen and refresh, change orientation or load the page on a mobile device.</p>
+											
+						<ul class="blank">
+							<li>TODO:</li>
+							<li>supersize-mode (<code>above ????px width</code>) for webTV with increased button padding, no vertical scrolling etc)</li>
+							<li>make all thresholds option-able</li>
+							<li>fine tuning</li>
+						</ul>
+						
+						<fieldset class="ui-grid-d">
+							<div class="ui-block-a"><a href="demos_popover.html" data-inline="true" data-role="button">Popover panel layout</a></div>
+							<div class="ui-block-b"><a href="demos_fullwidth.html" data-inline="true" data-role="button">Fullwidth panel layout</a></div>	   
+							<div class="ui-block-c"><a href="demos_splitview.html" data-inline="true" data-role="button">Splitview panel layout</a></div>
+							<div class="ui-block-d"><a href="demos_combo.html" data-inline="true" data-role="button">Combo panel layout</a></div>   
+						</fieldset>
+						
+				</div>
+			</div>
+			
+			<div data-role="page" id="feat_globalToolbars" >
+				<div data-role="header" data-position="fixed" data-theme="a">			
+					<h1>Global Toolbars</h1>
+				</div>
+				<div data-role="content">
+						<p>Since the plugin sits inside a regular JQM wrapper page and only the content is changing, the plugin offers global header and footer by default. Both
+						can be ommitted or replaced with local header/footers sitting inside each page. </p>							
+						
+						<p>Use any of the below demo pages to check out the different header/footer options</p>
+											
+						<ul class="blank">
+							<li>TODO:</li>
+							<li>still flickering</li>
+							<li>still jumping up on first load, if content/page is smaller than available height</li>
+						</ul>
+						
+						<fieldset class="ui-grid-d">
+							<div class="ui-block-a"><a href="demos_globalHeader_globalFooter.html" data-inline="true" data-role="button">Global Header/Footer</a></div>
+							<div class="ui-block-b"><a href="demos_globalHeader_localFooter.html" data-inline="true" data-role="button">Global Header/Local Footer</a></div>	   
+							<div class="ui-block-c"><a href="demos_localHeader_localFooter.html" data-inline="true" data-role="button">Local Header/Footer</a></div>
+							<div class="ui-block-d"><a href="demos_localHeader_globalFooter.html" data-inline="true" data-role="button">Local Header/Global Footer</a></div>   
+						</fieldset>						
+				</div>
+			</div>
+			
+			<div data-role="page" id="feat_fixedTopBot" >
+				<div data-role="header" data-position="fixed" data-theme="a">			
+					<h1>Fixed Elements Top/Bottom</h1>
+				</div>
+				<div data-role="content">
+				
+					<fieldset class="ui-grid-b">
+						<div class="ui-block-a">
+								<img src="fixed.png" alt="fixed elements" />
+						</div>
+						<div class="ui-block-b">
+							<p>Fixed Elements share the behavior of fixed headers/footers. They are necessary to allow popover panels to also be repositioned after scrolling down a page.
+							Otherwise they would be stuck where originally positioned. To "fix" any element just add a class of <code>ui-element-fixed-top</code> or <code>.ui-element-fixed-bottom</code> 
+							to this element. This will fix them to the top or bottom of the screen. To position use <strong>margin, and left/right</strong> only, because <strong>top/bottom</strong> values are needed for positioning
+							of the element itself. 
+							</p>
+						</div>
+					</fieldset>
+					
+					<p>Use any of the below demo pages to check out how fixed elements reposition when scrolling</p>
+											
+						<ul class="blank">
+							<li>TODO:</li>
+							<li>fine-tuning</li>
+							<li>allow scrolltops, which are currently disabled, when loading an external page into a popover-panel (causes fixed bottom panel to jump up)</li>
+						</ul>
+						
+						<fieldset class="ui-grid-d">
+							<div class="ui-block-a"><a href="demos_fixTop.html" data-inline="true" data-role="button">Global Header/Global Footer</a></div>
+							<div class="ui-block-b"><a href="demos_fixBottom.html" data-inline="true" data-role="button">Global Header/Local Footer</a></div>	   
+							<div class="ui-block-c"></div>
+							<div class="ui-block-d"></div>   
+						</fieldset>	
+					
+				</div>
+			</div>
+			
+			<div data-role="page" id="feat_context" >
+				<div data-role="header" data-position="fixed" data-theme="a">			
+					<h1>Context Page Loading</h1>
+				</div>
+				<div data-role="content">
+						<p>Context loading allows to load a page in one panel and fire another transition in another panel. To use the context-loader simply 
+						add two more attributes to a link. <code>data-context="pageID"</code> is denotes the context page to be loaded and <code>data-context-panel="panelID"</code> indicates
+						into which panel this page should go.</p>																														
+					
+					<p>Check the below demo page to see how context loading works.</p>
+											
+						<ul class="blank">
+							<li>TODO:</li>
+							<li>only works from menu to main panel, all other transitions have a messed up event orders, thereby partially blanking a page</li>							
+						</ul>
+						
+						<a href="demos_context.html" data-inline="true" data-role="button">Context Loading</a>
+						
+				</div>
+			</div>
+			
+			<div data-role="page" id="feat_deeplink">
+				<div data-role="header" data-position="fixed" data-theme="a">			
+					<h1>Deeplinking</h1>
+				</div>
+				<div data-role="content">
+						<p>Deeplinking is possible, as every page you visit inside the wrapper page has it's own <code>id</code>, which will update the URL. only works for pages that are on board when the wrapper loads. External pages will be added to the respective panel, but just from a deeplink, there
+							is no info on which panel the page should be loaded into, whereas existing pages can be searched in the DOM.</p>	
+
+						<p>Check the below deeplinks to see how it works. The last links will try to load a page, which is not on board demos_deeplink.html, when the page loads.</p>
+											
+						<ul class="blank">
+							<li>TODO:</li>
+							<li>create option wrapper-sitemap referencing all pages that could be loaded into a panel and this panel's name</li>
+							<li>adapt deeplink to scan sitemap if page isn't found and only then load the inital page setup</li>
+						</ul>
+						
+						<fieldset class="ui-grid-d">
+							<div class="ui-block-a"><a href="demos_deeplink.html#one" data-inline="true" data-role="button">Deep One</a></div>
+							<div class="ui-block-b"><a href="demos_deeplink.html#two" data-inline="true" data-role="button">Deep Two</a></div>	   
+							<div class="ui-block-c"><a href="demos_deeplink.html#three" data-inline="true" data-role="button">Deep Three</a></div>	   
+							<div class="ui-block-d"><a href="demos_deeplink.html#four.html" data-inline="true" data-role="button">Deep Four</a></div>	   
+						</fieldset>	
+				</div>
+			</div>
+			
+			<div data-role="page" id="feat_external" >
+				<div data-role="header" data-position="fixed" data-theme="a">			
+					<h1>Load external pages into Panels</h1>
+				</div>
+				<div data-role="content">
+						<p>Loading external pages into any panel is tricky, because a lot of stuff changes in JQM, which potentially breaks the plugin. Currently loading
+						pages into a panel more or less works. Panel history and deeplinking need finetuning.</p>
+
+						<p>Click the link below to load an empty combo layout which adds all pages on click.</p>
+											
+						<ul class="blank">
+							<li>TODO:</li>
+							<li>URL breaking sometimes, panel history still messy, deeplinking not working</li>							
+						</ul>
+						
+						<a href="demos_external.html" data-inline="true" data-role="button">External Page</a>
+						
+				</div>
+			</div>
+			
+			<div data-role="page" id="feat_history">
+				<div data-role="header" data-position="fixed" data-theme="a">			
+					<h1>Panel History</h1>
+				</div>
+				<div data-role="content">
+						<p>The plugin comes with it's own history routine which can be acitvated for each panel by assinging either <code>data-hash="history"</code> or <code>
+						data-hash="crumbs"</code>. Currently both are firing together and register every panel transition, so clicking crumbs back-buttons or the browser back button
+						allows to navigate back through the multiview page. To make this work, every panel gets a history stack which is set at the initially displayed page. On every transition
+						the stack is increased by a single entry (page ID). Menu and main panel always increase together, with the passive increase getting an entry named "yield". When the user
+						clicks a back button the plugin checks all panels if a) a popover is open (always goes down first, as they close and reset when the user leaves them) and b) which panel has the highest stack. 
+						This way popover are returned back to base, after that, main/menu/fullwidth panel and once all panels are back at base level, JQM takes over again.</p>																		
+						
+						<p>Click the link below to see this in action</p>
+											
+						<ul class="blank">
+							<li>TODO:</li>
+							<li>still terrible, context not in sync, external page loading messes up everything</li>							
+							<li>needs work</li>
+							<li>need to separate hash and history to make them separate options to use</li>
+						</ul>
+						
+						<a href="demos_history.html" data-inline="true" data-role="button">Panel History</a>
+				</div>
+			</div>			
+			
+			<div data-role="page" id="feat_autoshow" >
+				<div data-role="header" data-position="fixed" data-theme="a">			
+					<h1>Autoshow Popovers</h1>
+				</div>
+				<div data-role="content">
+						<p>Popovers can be shown by specifying <code>data-autoshow="once"</code> on the panel. This attribute triggers a panel toggle when the page loaded and 
+						is removed afterwards.</p>	
+
+						<p>Click the link below to see this in action</p>
+						
+						<a href="demos_autoshow.html" data-inline="true" data-role="button">Autoshow</a>
+				</div>
+			</div>
+			
+			<div data-role="page" id="feat_switchable" >
+				<div data-role="header" data-position="fixed" data-theme="a">			
+					<h1>Toggle Menus</h1>
+				</div>
+				<div data-role="content">
+						<p>To hide/show a menu in splitview mode (same as in popover mode), the option: <code>switchable: true</code> has to be added to the plugin call. Additional options
+						also include, which icon to use for the menu toggle button <code>switchableIcon:'icon'</code> and whether to show the menu panel when the page is loaded <code>switchableHideOnLoad:true</code>.</p>	
+
+						<p>Click the link below to see this in action</p>
+						
+						<a href="demos_switchable.html" data-inline="true" data-role="button">Toggle Menu</a>																	
+				</div>
+			</div>			
+			
+			<!-- demo pages -->
+			<div data-role="page" id="demosHeadliner" >
+				<div data-role="header" data-position="fixed" data-theme="a">			
+					<h1>Demos</h1>
+				</div>
+				<div data-role="content">
+						<p class="middleClass">Click any of the buttons to load a new page with the respective DEMO into the DOM.</p>																		
+				</div>
+			</div>
+			
+			<!-- scripting pages -->
+			<div data-role="page" id="scriptHeadliner" >
+				<div data-role="header" data-position="fixed" data-theme="a">			
+					<h1>Script</h1>
+				</div>
+				<div data-role="content">
+						<p class="middleClass">Some changes have been made to JQM to make the plugin work. Most of this could probably be relocated 
+						to inside the plugin. The plugin itself also has some sections of duplicate code, where JQM stuff wasn't accessible from outside.</p>																		
+				</div>
+			</div>
+			
+			<div data-role="page" id="core" >
+				<div data-role="header" data-position="fixed" data-theme="a">			
+					<h1>Core Utilities</h1>
+				</div>
+				<div data-role="content">
+						<p></p>																		
+						
+						<fieldset class="ui-grid-a">
+							<div class="ui-block-a">
+								<h3>JQM 1.0</h3>
+<!-- <pre>
+convertUrlToDataUrl: function( absUrl ) {
+    var u = path.parseUrl( absUrl );
+        if ( path.isEmbeddedPage( u ) ) {...
+</pre> -->								
+							</div>
+							<div class="ui-block-b">
+								<h3>JQM 1.0.multiview</h3>
+<!-- <pre>
+convertUrlToDataUrl: function( absUrl ) {
+    var u = path.parseUrl( absUrl );
+	    if ( path.isEmbeddedPage( u ) || $( u.hash ).closest('div:jqmData(role="panel")').length == 1 ) {			
+</pre> -->				
+								<p>need to add a check for wrapper or panels, otherwise it's not possible to load nested pages in externally loaded wrapper pages. this makes the navigation work</p>
+							</div>	   							
+						</fieldset>	
+
+				</div>
+			</div>
+			
+			<div data-role="page" id="transitionPage" >
+				<div data-role="header" data-position="fixed" data-theme="a">			
+					<h1>Transitionpage - scrollTop</h1>
+				</div>
+				<div data-role="content">
+						<p></p>																		
+						
+						<fieldset class="ui-grid-a">
+							<div class="ui-block-a">
+								<h3>JQM 1.0</h3>
+<!-- <pre>
+screenHeight = getScreenHeight();
+// Scroll to top, hide addr bar
+window.scrollTo( 0, $.mobile.defaultHomeScroll );
+</pre> -->								
+							</div>
+							<div class="ui-block-b">
+								<h3>JQM 1.0.multiview</h3>
+<!-- <pre>
+screenHeight = getScreenHeight(),
+// add closest panel
+$closestPanel = toPage.closest(':jqmData(role="panel")').jqmData('panel');
+
+if ( !$('html').is('.ui-fullscreen-mode ') && $closestPanel != 'popover' ) {			
+    // Scroll to top, hide addr bar					
+    window.scrollTo( 0, $.mobile.defaultHomeScroll );
+    }
+</pre> -->				
+								<p>Block scrollTop if not in fullscreen mode and page transition is inside a popover, otherwise popover panel jump up. This should be removed if possible.</p>
+							</div>	   							
+						</fieldset>	
+						
+						<fieldset class="ui-grid-a">
+							<div class="ui-block-a">
+								<h3>JQM 1.0</h3>
+<!-- <pre>
+//trigger show/hide events
+if( fromPage ) {
+    if( !touchOverflow ){
+        fromPage.height( "" );
+        }
+    fromPage.data( "page" )._trigger( "hide", null, { nextPage: toPage } );
+    }
+</pre> -->								
+							</div>
+							<div class="ui-block-b">
+								<h3>JQM 1.0.multiview</h3>
+<!-- <pre>
+//trigger show/hide events
+if( fromPage ) {
+    if( !touchOverflow ){
+        fromPage.height( "" );
+        }
+    if ( !$(fromPage).jqmData('internal-page') && !(fromPage).jqmData('data-dom-cache') == true ) {
+	    fromPage.data( "page" )._trigger( "hide", null, { nextPage: toPage } );	
+        }
+    }
+</pre> -->				
+								<p>if fromPage is an internal page it's a panel transition, so the pagehide event has to be blocked to avoid dropping the wrapper page. This 
+								also catches external panel pages, which have been loaded into the DOM and should be removed when navigation away from them unless data-dom-cache is set. 
+								</p>
+							</div>	   							
+						</fieldset>	
+
+				</div>
+			</div>
+			<div data-role="page" id="transitionHandler" >
+				<div data-role="header" data-position="fixed" data-theme="a">			
+					<h1>Transitionhandler (css3 and default)</h1>
+				</div>
+				<div data-role="content">
+						<p></p>																		
+						
+						<fieldset class="ui-grid-a">
+							<div class="ui-block-a">
+								<h3>JQM 1.0</h3>
+<!-- <pre>
+//default non-animation transition handler
+$.mobile.noneTransitionHandler = function( name, reverse, $toPage, $fromPage ) {
+    if ( $fromPage ) {
+        $fromPage.removeClass( $.mobile.activePageClass );
+        }
+...
+if ( $from && $from[ 0 ] !== $to[ 0 ] ) {
+    $from.removeClass( $.mobile.activePageClass );
+    }
+</pre> -->								
+							</div>
+							<div class="ui-block-b">
+								<h3>JQM 1.0.multiview</h3>
+<!-- <pre>
+//default non-animation transition handler
+$.mobile.noneTransitionHandler = function( name, reverse, $toPage, $fromPage ) {
+    if ( $fromPage ) {
+	    ( $toPage.parents('.ui-page-active').length == 1  && $fromPage.parents('.ui-page-active').length == 1 ) ?
+		    $fromPage.removeClass( $.mobile.activePageClass ) : $fromPage.closest(':jqmData(wrapper="true")').andSelf().removeClass('ui-page-active');
+            }
+...
+if ( $from && $from[ 0 ] !== $to[ 0 ] ) {
+    // checking for active parent (an active page inside a panel has an active-page parent = wrapper page
+	   ( $to.parents('.ui-page-active').length == 1  && $from.parents('.ui-page-active').length == 1 ) ?
+	        $from.removeClass( $.mobile.activePageClass ) : $from.closest(':jqmData(wrapper="true")').andSelf().removeClass('ui-page-active');					
+       }
+
+</pre> -->				
+								<p>Not perfect yet: determine when to drop only the active page class and when to drop the active page class and the wrapper page class. This is tricky...</p>
+							</div>	   							
+						</fieldset>	
+
+				</div>
+			</div>
+			<div data-role="page" id="changePage" >
+				<div data-role="header" data-position="fixed" data-theme="a">			
+					<h1>changePage</h1>
+				</div>
+				<div data-role="content">
+						<p></p>																		
+						
+						<fieldset class="ui-grid-a">
+							<div class="ui-block-a">
+								<h3>JQM 1.0</h3>
+<!-- <pre>
+$.mobile.changePage(
+    url,{
+		type:		type && type.length && type.toLowerCase() || "get",
+		data:		$this.serialize(),
+		transition:	$this.jqmData( "transition" ),
+		direction:	$this.jqmData( "direction" ),
+		reloadPage:	true
+		}
+...
+$.mobile.changePage( href, { transition: transition, reverse: reverse, role: role } );
+event.preventDefault();
+</pre> -->								
+							</div>
+							<div class="ui-block-b">
+								<h3>JQM 1.0.multiview</h3>
+<!-- <pre>
+ $.mobile.changePage(
+     url,{
+		type: type && type.length && type.toLowerCase() || "get",
+		data: $this.serialize(),
+		transition: $this.jqmData("transition"),
+		direction: $this.jqmData("direction"),
+		reloadPage: true,
+		pageContainer:$.mobile.pageContainer
+		}
+...
+var $targetPanel=$link.jqmData('target');
+if (!$targetPanel) {
+    $.mobile.pageContainer = $('body');
+	$.mobile.changePage( href, { transition: transition, reverse: reverse, role: role , pageContainer: $.mobile.pageContainer } );
+	event.preventDefault();
+	}	
+
+</pre> -->				
+								<p>Add page container as option, set to body on JQM transitions, check for targetPanel specified (data-target=)
+								and re-route to plugin in case a target panel is set.</p>
+							</div>	   							
+						</fieldset>	
+
+				</div>
+			</div>
+			<div data-role="page" id="changeHash" >
+				<div data-role="header" data-position="fixed" data-theme="a">			
+					<h1>handleHashChange</h1>
+				</div>
+				<div data-role="content">
+						<p></p>																		
+						
+						<fieldset class="ui-grid-a">
+							<div class="ui-block-a">
+								<h3>JQM 1.0</h3>
+<!-- <pre>
+//transition is false if it's the first page, undefined otherwise (and may be overridden by default)
+transition = $.mobile.urlHistory.stack.length === 0 ? "none" : undefined,
+
+// default options for the changPage calls made after examining the current state
+// of the page and the hash
+changePageOptions = {
+		transition: transition,
+		changeHash: false,
+		fromHashChange: true
+		};
+...
+$.mobile.changePage( to, changePageOptions );
+    } else {
+    //there's no hash, go to the first page in the dom
+	$.mobile.changePage( $.mobile.firstPage, changePageOptions );
+	}
+</pre> -->								
+							</div>
+							<div class="ui-block-b">
+								<h3>JQM 1.0.multiview</h3>
+<!-- <pre>
+$panels = $('div:jqmData(wrapper="true").ui-page-active div:jqmData(hash="history")'),
+n = $panels.length,	
+
+//transition is false if it's the first page, undefined otherwise (and may be overridden by default)
+transition = ( $.mobile.urlHistory.stack.length === 0 || n == 0 ) ? "none" : undefined,
+
+// default options for the changPage calls made after examining the current state
+// of the page and the hash
+changePageOptions = {
+		transition: transition,
+		changeHash: false,
+		fromHashChange: true,
+		pageContainer: $.mobile.pageContainer,
+		};
+....
+if( !n || n>0 && urlHistory.stack.length > 1 
+    // this is still a mess...
+    || ( $('html').data('panel-history') == 'base' && ( to == $.mobile.urlHistory.stack[$.mobile.urlHistory.stack.length-1].url) ) ) {	
+	    if ( $('html').data('panel-history') == 'base' && ( to == $.mobile.urlHistory.stack[$.mobile.urlHistory.stack.length-1].url) ) {
+			// reset, set option								
+			$('html').data('panel-history','');
+			changePageOptions = {
+				transition: 'slide'
+				}
+			}							
+			$.mobile.changePage( to, changePageOptions );							
+		}
+	} else {
+	    if( !n || n>0 && urlHistory.stack.length > 1 ){
+		    $.mobile.changePage( $.mobile.firstPage, changePageOptions );
+		    }
+		}
+</pre> -->				
+								<p>Needs work: Re-route to panel history routine if panels on the page with data-hash="history" set. If wrapper page is external-page and panel-history is active, I cannot leave the wrapper and go back to the page visited before going to the wrapper, unless it's done like this</p>
+							</div>	   							
+						</fieldset>	
+
+				</div>
+			</div>
+			<div data-role="page" id="pushState" >
+				<div data-role="header" data-position="fixed" data-theme="a">			
+					<h1>pushState</h1>
+				</div>
+				<div data-role="content">
+						<p></p>																		
+						
+						<fieldset class="ui-grid-a">
+							<div class="ui-block-a">
+								<h3>JQM 1.0</h3>
+<!-- <pre>
+// make the hash abolute with the current href
+href = $.mobile.path.makeUrlAbsolute( hash, resolutionUrl );
+</pre> -->								
+							</div>
+							<div class="ui-block-b">
+								<h3>JQM 1.0.multiview</h3>
+<!-- <pre>
+// check for flag set in multiview
+var flag = $('html').data('pushStateFlag'),
+// check if #hash belongs to an external wrapper page
+ext = $('#'+$('html').data('pushStateFlag') ).closest('div:jqmData(wrapper="true"):jqmData(external-page="true")').length;
+
+href = ( isPath && flag ) ? $.mobile.path.makeUrlAbsolute( '#'+flag, resolutionUrl ) : ( ext ? location.href : $.mobile.path.makeUrlAbsolute( hash, resolutionUrl ) );
+...
+$('html').removeData("pushStateFlag");
+</pre> -->				
+								<p>(a) if the wrapper is first in the DOM, need to add #id to exisiting URL, (b) if wrapper is loaded as external page, need to overwrite initial URL with new page URL. 
+								remove pushStateFlag, which is only set on panel transitions, this ensures pushStateFlag is emptied every time a new page is added to the DOM, so on the next panel transition, 
+								it can be reset (or overwritten)</p>
+							</div>	   							
+						</fieldset>	
+
+				</div>
+			</div>
+			<div data-role="page" id="fixedToolbars" >
+				<div data-role="header" data-position="fixed" data-theme="a">			
+					<h1>fixed Toolbars</h1>
+				</div>
+				<div data-role="content">
+						<p></p>																		
+						
+						<fieldset class="ui-grid-a">
+							<div class="ui-block-a">
+								<h3>JQM 1.0</h3>
+<!-- <pre>
+toolbarSelector = ".ui-header-fixed:first, .ui-footer-fixed:not(.ui-footer-duplicate):last",
+...
+function setTop( el ) {
+    ...
+    thisTop = getOffsetTop( el[ 0 ] ), 
+    // el.offset().top returns the wrong value on iPad iOS 3.2.1, call our workaround instead.
+    thisCSStop = el.css( "top" ) == "auto" ? 0 : parseFloat(el.css( "top" )),
+    ...
+    if ( el.is( ".ui-header-fixed" ) ) {
+	    ...
+		} else {
+            relval = fromTop + screenHeight - thisHeight - (thisTop - thisCSStop );
+            return el.css( "top", useRelative ? relval : fromTop + screenHeight - thisHeight );
+		    }
+    }
+...
+var $ap = page ? $( page ) : 
+    ( $.mobile.activePage ? $.mobile.activePage 
+        : $( ".ui-page-active" ) );
+...
+return $ap.children( toolbarSelector ).each(function() {
+    ...
+    thisTop = getOffsetTop( el[ 0 ] ),
+	...
+	alreadyVisible = ( el.is( ".ui-header-fixed" ) && fromTop <= thisTop + thisHeight ) ||
+	     ( el.is( ".ui-footer-fixed" ) && thisTop <= fromTop + screenHeight );
+...
+var $ap = $.mobile.activePage ? $.mobile.activePage : $( ".ui-page-active" );
+	return $ap.children( toolbarSelector ).each(function() {
+	...
+if ( thisCSStop < 0 || ( el.is( ".ui-header-fixed" ) && thisCSStop !== 0 ) ) {
+    ...
+    el.removeClass( classes ).css( "top", 0 );
+</pre> -->								
+							</div>
+							<div class="ui-block-b">
+								<h3>JQM 1.0.multiview</h3>
+<!-- <pre>
+toolbarSelector = ".ui-header-fixed, .ui-element-fixed-top, 
+    .ui-element-fixed-bottom, .ui-footer-fixed:not(.ui-footer-duplicate):last",
+...
+function setTop( el ) {
+    ...
+	// keep thisTop at 0 after changePage
+    thisTop = el.jqmData("panel") == "popover" ? 0 : getOffsetTop( el[ 0 ] ), 
+    // el.offset().top returns the wrong value on iPad iOS 3.2.1, call our workaround instead.			
+    // need to add this check for popovers to avoid thisCSStop stacking up, when function is bubbling
+    thisCSStop =  (el.css( "top" ) == "auto" 
+	    || el.jqmData("panel") == "popover") ? 0 : parseFloat(el.css( "top" )),
+	...
+	if ( el.is( ".ui-header-fixed" ) || el.is ( ".ui-element-fixed-top" ) ) {	
+        ...
+        } else if ( el.is( ".ui-footer-fixed" ) ) {				
+            relval = fromTop + screenHeight - thisHeight - (thisTop - thisCSStop );										
+            } else {
+                $spacer = el.siblings('.ui-footer').outerHeight()+15;
+                relval = fromTop + screenHeight - thisHeight - (thisTop - thisCSStop )-$spacer;
+                }
+    return el.css( "top", useRelative ? relval : fromTop + screenHeight - thisHeight );
+	}
+...	
+var $ap = $('body').find('div:jqmData(wrapper="true")').length 
+    ? $('body div:jqmData(wrapper="true").ui-page-active') : 
+        page ? $( page ) : ( $.mobile.activePage ? $.mobile.activePage : 
+            $( ".ui-page-active" ) );
+...
+return $ap.find( toolbarSelector ).each(function() {
+   ...
+   thisTop = el.jqmData("panel") == "popover" ? 0 : getOffsetTop( el[ 0 ] ), 
+   ...
+   alreadyVisible = (( el.is( ".ui-header-fixed" ) 
+       || el.is( ".ui-element-fixed-top" ) ) && fromTop <= thisTop + thisHeight ) ||
+          ( el.is( ".ui-footer-fixed") || el.is( ".ui-element-fixed-bottom" ) ) 
+		      && thisTop <= fromTop + screenHeight );																					
+...
+var $ap = $('body').find('div:jqmData(wrapper="true")').length 
+    ? $('body div:jqmData(wrapper="true").ui-page-active') : 
+        $.mobile.activePage ? $.mobile.activePage : $( ".ui-page-active" );
+    return $ap.find( toolbarSelector ).each(function() {
+    ...
+if ( thisCSStop < 0 && ( el.not( ".ui-footer-global" ) || el.not( ".ui-element-fixed-bottom" ) ) 
+    ||  ( el.is( ".ui-header-fixed" ) || el.is( ".ui-element-fixed-top" ) 
+       || ( el.is( ".ui-footer-global" ) || ( el.is( ".ui-element-fixed-bottom" ) 
+	       || el.is( ".ui-footer-fixed" )) && immediately != true )  ) && thisCSStop !== 0 ) {
+	   ...
+	   el.removeClass( classes ).css( "top", ( ( el.is(".ui-footer-fixed") 
+	       || el.is( ".ui-footer-global" ) 
+		      || el.is( ".ui-element-fixed-bottom" ) ) && thisCSStop > 0 ) ? -9999 : 0 );								
+</pre> -->				
+								<p>This has changed quite a bit to incorporate global header/footer as well as fixed elements top and bottom</p>
+							</div>	   							
+						</fieldset>	
+
+				</div>
+			</div>
+			<div data-role="page" id="initContainer" >
+				<div data-role="header" data-position="fixed" data-theme="a">			
+					<h1>plugin init</h1>
+				</div>
+				<div data-role="content">
+						<p></p>																		
+						
+						<fieldset class="ui-grid-a">
+							<div class="ui-block-a">
+								<h3>JQM 1.0</h3>
+<!-- <pre>
+...
+.appendTo( $.mobile.pageContainer )
+...
+</pre> -->								
+							</div>
+							<div class="ui-block-b">
+								<h3>JQM 1.0.multiview</h3>
+<!-- <pre>
+...
+.appendTo( $.mobile.pageContainer == $('body') ? $.mobile.pageContainer : $('body')  )
+...
+</pre> -->				
+								<p>make sure the loader is always appended to the body and not any other page container</p>
+							</div>	   							
+						</fieldset>	
+
+				</div>
+			</div>
+						<div data-role="page" id="initDeeplinks" >
+				<div data-role="header" data-position="fixed" data-theme="a">			
+					<h1>init deeplinks</h1>
+				</div>
+				<div data-role="content">
+						<p></p>																		
+						
+						<fieldset class="ui-grid-a">
+							<div class="ui-block-a">
+								<h3>JQM 1.0</h3>
+<!-- <pre>
+// define page container
+$.mobile.pageContainer = $pages.first().parent().addClass( "ui-mobile-viewport" );
+...
+// if hashchange listening is disabled or there's no hash deeplink, change to the first page in the DOM
+if ( !$.mobile.hashListeningEnabled || !$.mobile.path.stripHash( location.hash ) ) {
+    $.mobile.changePage( $.mobile.firstPage, { transition: "none", reverse: true, changeHash: false, fromHashChange: true } );
+    }
+    // otherwise, trigger a hashchange to load a deeplink
+    else {
+        $window.trigger( "hashchange", [ true ] );
+        }
+</pre> -->								
+							</div>
+							<div class="ui-block-b">
+								<h3>JQM 1.0.multiview</h3>
+<!-- <pre>
+// define page container
+$.mobile.pageContainer = $.mobile.firstPage.find(':jqmData(role="panel")').length ?  $pages.first().parent().addClass( "ui-mobile-viewport" ) : $('body').addClass( "ui-mobile-viewport" );
+...
+// if hashchange listening is disabled or there's no hash deeplink, change to the first page in the DOM			
+if ( !$.mobile.hashListeningEnabled || !$.mobile.path.stripHash( location.hash ) ) {				
+    $.mobile.changePage( $.mobile.firstPage, { transition: "none", reverse: true, changeHash: false, pageContainer:$.mobile.pageContainer, fromHashChange: true } );
+    }
+    // otherwise, trigger a hashchange to load a deeplink
+	else {
+	    // enable deeplinking on panels
+        var $nestedPage = $('#'+$.mobile.path.stripHash( location.hash ) );
+        if ( $nestedPage.closest('div:jqmData(role="panel")') ) {
+	        // remember deeplink
+	        $('html').data("multiviewDeeplink", '#'+$.mobile.path.stripHash( location.hash ) );	
+	        // load the wrapper
+	        $.mobile.changePage( $nestedPage.closest('div:jqmData(wrapper="true")'), { transition: "none", reverse: true, changeHash: false, pageContainer:$.mobile.pageContainer, fromHashChange: true } );
+			} else {
+			    $window.trigger( "hashchange", [ true ] );
+                }
+          }
+</pre> -->				
+								<p></p>
+							</div>	   							
+						</fieldset>	
+
+				</div>
+			</div>
+						
+			
+			
+			
+			
+							
+							
+	
+
+			
+		</div><!-- end panel -->
+
+		<!-- global footer = inside wrapper, outside panel -->
+		<div data-role="footer" data-id="mainFooter" data-position="fixed">
+			<div data-role="navbar" data-grid="d">
+				<ul>	
+	
+					<li><a href="#starthere" data-target="menu" data-iconpos="top" data-icon="plus">Home</a></li>
+					<li><a href="#useCases" data-target="menu" data-iconpos="top" data-icon="plus">Layouts</a></li>
+					<li><a href="#modes" data-target="menu" data-iconpos="top" data-icon="plus">Screen Modes</a></li>
+					<li><a href="#demos" data-target="menu" data-iconpos="top" data-icon="plus">Demos</a></li>				
+					<li><a href="#features" data-target="menu" data-iconpos="top" data-icon="plus">Features</a></li>	
+					
+				</ul>
+			</div>
+		</div>	
+
+</div><!-- end wrapper page -->
+				
+				
+
+
+</body>
+
+		<script type="text/javascript" src="http://code.jquery.com/jquery-1.6.4.min.js"></script>					
+		<script type="text/javascript" src="../LOC/scripts/jquery.mobile-1.0/jquery.mobile-1.0multiview.js"></script>		
+		<script type="text/javascript" src="../LOC/scripts/plugins/jquery.easing.1.3.js"></script>
+        <script type="text/javascript" src="../LOC/scripts/plugins/jquery.mobile.scrollview.js"></script>
+		<script type="text/javascript" src="../LOC/scripts/plugins/jquery.mobile.multiview.js"></script>
+			
+</html>
+
