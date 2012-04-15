@@ -2,9 +2,12 @@
 
 /* WRAPPER */ 
 body 											{ margin: 0px; width: inherit; overflow-y: auto !important; }
-div[data-wrapper="true"] 						{ margin: 0px; padding: 0px; width: inherit; /* height: inherit; */ overflow-x: hidden !important;}
+div[data-wrapper="true"] 						{ margin: 0px; padding: 0px; width: inherit; /* height: inherit; */ }
+.blacklist div[data-wrapper="true"]  	{ overflow-x: hidden !important; }
 /* NOTE: removed height:inherit, because brakes fixed footer positioning */
-/* NOTE: need to add overflow-x:hidden !important, because otherwise on iPad there is ~20px empty space on the right hand of the screen */
+/* NOTE: need to add overflow-x:hidden !important, because otherwise on iPad there is ~20px empty space on the right hand of the screen
+   but in fullscreen and popover mode, this causes wrapper page to have scrollbars, when toolbars are pos:fix.. use html.blacklist or
+   otherwise in fullscreen-mode and popover mode   */
 
 .ui-mobile-viewport								{ height: inherit; }
 /* NOTE: not sure whether width: inherit/height:inherit works across browsers and whether it's still necessary
@@ -15,14 +18,18 @@ div[data-wrapper="true"] 						{ margin: 0px; padding: 0px; width: inherit; /* h
 /* HEADER - optional - Wrappers can contain any number of buttons, controlgroups and from elements and align nicely. */
 .ui-header 										{ height: 41px;}
 .headWrapLeft > *, .headWrapRight > * 			{ display: inline-block; margin: 0; vertical-align: top; }
-.headWrapLeft a.ui-btn, .headWrapRight  a.ui-btn 	{ top: 0px; -moz-box-shadow: none; -webkit-box-shadow: none; box-shadow: none; }
-.ui-fullscreen-mode .headWrapLeft a.ui-btn .ui-icon, .ui-fullscreen-mode  .headWrapRight  a.ui-btn .ui-icon { margin: 0px; }
+.headWrapLeft .ui-btn, .headWrapRight  .ui-btn 	{ top: 0px; -moz-box-shadow: none; -webkit-box-shadow: none; box-shadow: none; }
+.ui-fullscreen-mode .headWrapLeft .ui-btn .ui-icon, .ui-fullscreen-mode  .headWrapRight  .ui-btn .ui-icon { margin: 0px; }
 
 /* BUTTONS - optional - Increase padding for icon-only buttons - just too difficult to click them */
-.ui-btn-icon-notext								{ height: 28px; width: 28px; }
-.ui-btn-icon-notext .ui-btn-inner 				{ padding: 4px 5px 4px 5px; }	
+.ui-btn-icon-notext								{ height: 30px; width: 30px; }
+.ui-btn-icon-notext .ui-btn-inner 				{ padding: 3px 4px !important; }
+.ui-fullscreen-mode .ui-btn-icon-notext .ui-btn-inner 
+												{ padding: 4px 5px !important; }
 .ui-controlgroup-horizontal .ui-btn, .ui-controlgroup-horizontal .ui-select 
-												{ vertical-align: middle; }	
+												{ vertical-align: middle; }
+/* NOTE: adjusted in JQM 1.1.RC2, from 28px, pad: 4/5px. Also needed to add !important to override JQM - loose this again... */												
+												
 /* CONTROLGROUPS - DON'T TOUCH! */ 
 .ui-controlgroup-btn-notext    					{ padding: 0; width: 28px; height: 28.75px !important; vertical-align: middle;}
 .ui-controlgroup-btn-notext .ui-btn-inner             { height: 15px; padding: 6px 0; }
@@ -89,6 +96,7 @@ div[data-panel="popover"], .ui-popover-mode div[data-panel="menu"], .ui-popover-
 .pop_menuBox											{ margin-top: 3.25em; left: 1em; }
 .pop_midBox												{ margin-top: 3.25em; left: 5em; }
 .popover1 .popover_triangle , .popover2 .popover_triangle{ right: 0.25em;}
+.pop_menuBox .popover_triangle , .pop_midBox .popover_triangle{ left: 0.25em;}
 								
 
 .ui-popover .ui-page                         						{ bottom: 0; /* makes popover pages content expand to the full available width... on iPad */ }
@@ -102,21 +110,21 @@ div[data-panel="popover"], .ui-popover-mode div[data-panel="menu"], .ui-popover-
 .ui-popover .ui-content        								{ /* overthrow */ height: auto; /* end overthrow */ z-index: 999; bottom: 0; left: 0; overflow-x: hidden !important; overflow-y: visible;  position: absolute !important;right: 0; top: 43px;}
 
 
-
-
-
-
 /* show/hide popovers */
 .ui-footer-global							{ z-index: 1100; max-height: 48px; }
 .popover-btn								{ position: static; vertical-align: middle; /* margin: 3px 0 0 5px !important; */}
-/* Note: removed margin, because of mid/menu controlgroup, not sure if this is ok */
+/* NOTE: removed margin, because of mid/menu controlgroup, not sure if this is ok */
  
-.div[data-panel="popover"] > div[data-role="page"], .div[data-panel="menu"] > div[data-role="page"]
-											{ height: inherit; overflow-y: auto; min-height: inherit !important;}	
-.tweakMe									{ display: inline-block; }											
+/*
+.div[data-panel="popover"] > div[data-role="page"], 
+.div[data-panel="menu"] > div[data-role="page"], 
+.div[data-panel="mid"] > div[data-role="page"] { height: inherit; overflow-y: auto; min-height: inherit !important;}	
+*/
+/* NOTE: keep this? must have worked without, since I set .div... */
+/* .tweakMe									{ display: inline-block; }	*/
+/* NOTE: not sure what this was good for, not in the code */
 											
-/* fullscreen mode
------------------------------------------------------------------------------------------------------------*/											
+/* FULLSCREEN */
 .ui-panel-hidden {
 	/* this way popover panel does not stack up below */
 	display: none; 
@@ -129,10 +137,11 @@ div[data-panel="popover"], .ui-popover-mode div[data-panel="menu"], .ui-popover-
 	z-index:1005 !important; 
 	width: 100% !important; 
 	height: 100%;
-	/* Alternative to this would be leaving it away = pos:static like JQM body.viewport. However this causes the 
-	   panel to stay in the content flow = be positioned after the page content. Panel pages are pulled up using
-	   pos:abs, BUT on Android doing like this disables Select-elements, so only way is pos:abs.*/
 	position: absolute; 
+	/* NOTE: Alternative to pos:abs would be leaving it away = pos:static like JQM body.viewport. However this causes the 
+	   panel to stay in the content flow = be positioned after the page content (Page is ok). 
+	   Also it seems on Android doing pos:static disables Select-elements, so only way is pos:abs.*/
+	
 	overflow: hidden !important;	   	   	   
 	}
 

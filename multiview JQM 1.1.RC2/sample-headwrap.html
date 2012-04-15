@@ -12,8 +12,8 @@
 </head>
 <body>	
 				
- <!--     <div data-role="page" id="container" data-wrapper="true" data-scrollmode="overthrow"> -->
-<div data-role="page" id="container" data-wrapper="true" data-switchable="true" > 
+ <!--     <div data-role="page" id="container" data-wrapper="true" data-scrollmode="overthrow"  data-switchable="true"> -->
+<div data-role="page" id="container" data-wrapper="true" data-switchable="true"> 
 	
 	<div data-role="panel" data-id="menu" data-panel="menu" data-hash="history">
 			
@@ -123,6 +123,16 @@
 		
 			<div data-role="header" data-position="fixed" data-theme="a">
 				
+				<div class="headWrapLeft ui-btn-left">
+					<div data-role="controlgroup" data-type="horizontal">
+						<select data-iconpos="notext" name="filterView" data-icon="home">							
+							<option value="one">ONE</option>			
+							<option value="two" selected="selected">TWO</option>
+							<option value="three">THREE</option>
+						</select>
+						<a href="#" data-role="button">Button</a>
+					</div>
+				</div>
 				<h1>MAIN First</h1>
 				<div class="headWrapRight ui-btn-right">										
 					<div data-role="controlgroup" data-type="horizontal" class="iconposSwitcher-div">

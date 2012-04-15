@@ -2239,16 +2239,17 @@ var createHandler = function( sequential ){
 			},
 			
 			startIn = function(){	
-			
-				$to.addClass( $.mobile.activePageClass );				
-			
+				// XXX FREQUENT - shuffled around to stop white flicker as per https://forum.jquery.com/topic/jqm-rc1-1-flicker-after-transition-full-screen-mode
+				// Set to page height
+				$to.height( screenHeight + toScroll );
+								
+				scrollPage();
+
+				$to.addClass( $.mobile.activePageClass );
+
 				// Send focus to page as it is now display: block
 				$.mobile.focusPage( $to );
 
-				// Set to page height
-				$to.height( screenHeight + toScroll );
-				
-				scrollPage();
 				
 				if( !none ){
 					$to.animationComplete( doneIn );
