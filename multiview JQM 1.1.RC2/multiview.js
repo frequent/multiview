@@ -140,31 +140,35 @@
 				$('html').addClass('overthrow-mode')
 				}		
 			
+			/*
 			// store JQM stack height as fallback
 			self.options.$jqmHistoryStackAtInit = $('div:jqmData(wrapper="true")').jqmData('external-page') == true ? $.mobile.urlHistory.stack.length : 1;									
 				
 			// set active index right away to prevent error on first back transition in iOS3
 			// TODO: remove this again...
 			$.mobile.urlHistory.activeIndex = self.options.$jqmHistoryStackAtInit;
-					
-			// setup panel history stacks
-			$(document).on('pagecreate', 'div:jqmData(role="page").basePage', function() {								
+			
+			
+			// setup panel history stacks 			
+			$(document).one('pagecreate', 'div:jqmData(wrapper="true")', function() {	
+				
 				$('div:jqmData(hash="history")').each(function() {			
-				
-					hist = $(this);	
-				
+					
+					hist = $(this);					
 					// this should only fire if history is off or undefined. If you start from a multiview page, all data-hash="history" panels' stacks are initiated
 					// they stay active until the page is dropped from the DOM. If you go back, then they are re-initiated again.
 					// if the respective page is the first page in the DOM, the history simply stays active, so "going" to another page and coming back does not 
 					// trigger a history-stack re-initialization									
-					if ( hist.data("history") == "off" || typeof hist.data("history") == 'undefined' ) {											
+					if ( hist.data("history") == "off" || typeof hist.data("history") == 'undefined' ) {
+						console.log("history init for"+$(this).jqmData('id') );
 						hist.data("history", "on");					
 						hist.data("stack", []);
 						hist.data("stack").push('#'+hist.find('div:jqmData(show="first")').attr('id'));												
 						}
 					});
 				});		
-				
+			*/
+			
 			// global bindings					
 			self._popoverBindings();
 			self._mainEventBindings();	
@@ -207,10 +211,7 @@
 				.find("div:jqmData(panel='popover')").addClass("popEnhance").attr({'set':'off'}).end()
 				
 				// popover flag
-				.closest('html.ui-popover-mode').find('div:jqmData(panel="menu")').addClass("popEnhance").attr({'set':'off'}).end()
-				
-				// caching flag
-				.find("div:jqmData(role='page')").attr('data-internal-page', 'true').end()
+				.closest('html.ui-popover-mode').find('div:jqmData(panel="menu")').addClass("popEnhance").attr({'set':'off'}).end()								
 				
 				// assign data-url by hand for wrapper-pages pulled in externally
 				// TODO: not nice, creates problems, when pages are pulled in which include nested pages.
@@ -222,11 +223,21 @@
 				// activeClass first panel pages
 				.find('div:jqmData(role="panel") div:jqmData(show="first")').addClass( $.mobile.activePageClass );		
 				
-				// enhance first panel pages
-				// doesn't work chained - need to call page, otherwise fromPage.data("page") is undefined on first panel transition!
+				// doesn't work chained
+				// enhance first panel pages - need to call page, otherwise fromPage.data("page") is undefined on first panel transition!
 				page.find('div:jqmData(role="panel") div:jqmData(show="first")').each( function() {				
 					$(this).page();
-					});				
+					});
+				
+				// doesn't work chained	
+				// prevent dropping panel pages after transition						
+				page.find("div:jqmData(role='page')").attr('data-internal-page', 'true');
+				
+				// set fullscreen mode here, otherwise missing fullscreen class, which causes ui-panel-hidden to not be assigned in fullscreen mode
+				// which confuses toggle_popover buttons - this class will be reset in Gulliver
+				if ( self.framer() == "small" ) {					
+					$('html').addClass('ui-fullscreen-mode');
+					}
 				
 			// init popovers on wrapper page
 			self._setupPopovers( page );
@@ -315,7 +326,7 @@
 			// --- TODO ---
 			// 
 			
-			var self = this, $nope,								
+			var self = this, $nope, $midMen,								
 				solo = false;	
 			
 			// (1) close button
@@ -357,11 +368,13 @@
 					}
 				self.options.$blockContextScrollTop = '';
 				});
-				
-			// (4) click/tap wrapper
-			$(document).on('click tap', function(event) {	
 			
-				$nope = $('div:jqmData(panel="popover"), .ui-popover-mode div.pop_menuBox, .ui-popover-mode div.pop_midBox, .mmToggle, .toggle_popover');
+			
+			// (4) click/tap wrapper - this MUST not fire when popovers are open in fullscreen mode, otherwise clicks bleed through! 
+			$(document).on('click tap', function(event) {	
+				
+				$midMen = $('div:jqmData(panel="menu"), div:jqmData(panel="mid")'),
+				$nope = $('div:jqmData(panel="popover"), .mmToggle, .toggle_popover').add( $('.ui-fullscreen-mode').find( $midMen ) ).add( $('.ui-popover-mode').find( $midMen ) );				
 								
 				// stop if click is on popover and popover-toggle button
 				// or the menu or mid in popover mode
@@ -394,7 +407,7 @@
 			// need this in fullscreen mode to close a page on panel 1 when loading a page in panel 2
 			$(document).on('click','div:jqmData(role="panel") a', function () {								
 
-				if ( $('html').hasClass('ui-fullscreen-mode') && $(this).jqmData('panel') != $(this).closest('div:jqmData(role="panel")').jqmData('id') ){																							
+				if ( $('html').hasClass('ui-fullscreen-mode') && $(this).jqmData('panel') != $(this).closest('div:jqmData(role="panel")').jqmData('id') ){																												
 					self.hideAllPanels("#6");
 					}
 
@@ -410,7 +423,7 @@
 				
 		// hide panels
 		hideAllPanels: function(from) {
-			
+	
 			// --- PURPOSE ---		
 			// close popovers, which can either be a regular popover or a menu/mid panel in popover or fullscreen mode
 						
@@ -475,26 +488,28 @@
 							
 					// drop pages pulled into the panel from DOM										
 					$pop.find('div:jqmData(external-page="true")').remove();		
-			
+								
 					// clean up bleed-through Android clicks
-					$('.androidSucks').removeClass('ui-disabled androidSucks').removeAttr('disabled');
+					$('.androidSucks').removeClass('ui-disabled androidSucks').removeAttr('disabled');						
 					
 					} else {
 						// make sure panel is gone... not sure why status sometimes is hidden with panels visible when navigating between wrapper pages
 						$pop.css('display','none');
 					}
 				});
+				
 				// clean up pop() transition 
 				window.setTimeout( function() {	
 					// same as in showpanel. Transition depends on screen-mode. In splitview always use "Pop", in other view-mode (popover or fullscreen)
 					// depending on data-yield being set, "pop" or "slide" is used					
-					$('div:jqmData(role="panel")').removeClass('reverse out '+ ( $('div:jqmData(yieldmode="true")').length > 0 && !$('html').hasClass('ui-splitview-mode') ) ? 'slide' : 'pop');
+					$('div:jqmData(role="panel")').removeClass('reverse out '+ ( $('div:jqmData(yieldmode="true")').length > 0 && !$('html').hasClass('ui-splitview-mode') ) ? 'slide' : 'pop');					
+					
 					}, 350);					
+				
 		
 			},
 		
-		showPanel: function(e, $el) {
-			
+		showPanel: function(e, $el) {				
 			// --- PURPOSE ---		
 			// 1. show a popover or switchable panel
 						
@@ -511,14 +526,14 @@
 				$popPanel = $('div:jqmData(id="'+$correspond+'")'),
 				$wrap = $popPanel.closest('div:jqmData(wrapper="true")');
 			
-			if ( $popPanel.is(":visible") ) {																			
-
+			if ( $popPanel.is(":visible") ) {
+				
 				if ( $popPanel.hasClass('switchable') && $wrap.jqmData('switchable') ) {
 					
 					// hide switchable 
 					$popPanel.css('display','none').addClass("switched-hide");						
 					// update panelWidth()
-					self.panelWidth();
+					self.panelWidth("showPanel1");
 					
 					} else {						
 						// regular panel routine
@@ -533,7 +548,7 @@
 						// show switchable 
 						$popPanel.css('display','block').removeClass("switched-hide");	
 						// update layout
-						self.panelWidth();
+						self.panelWidth("showpanel2");
 						
 						} else {								
 							
@@ -544,11 +559,9 @@
 							// center popover
 							if ( $popPanel.hasClass('ui-popover-center') ){							
 								$popPanel.css("left", (($(window).width() - $popPanel.outerWidth()) / 2) + $(window).scrollLeft() + "px");
-								}
-						
+								}													
 							
-							// reposition popover before showing - based on jQuery Mobile fixedtoolbar polyfill - Author @scottjehl THANKS!
-							
+							// reposition popover before showing - based on jQuery Mobile fixedtoolbar polyfill - Author @scottjehl THANKS!							
 							$popPanel.jqmData("fixed") == "top" ? 
 								$popPanel.css( "top", $( window ).scrollTop() + "px" ) :
 									$popPanel.css( "bottom", $wrap.outerHeight() - $( window ).scrollTop() - $.mobile.getScreenHeight() + "px" );														
@@ -582,11 +595,12 @@
 								// "fix" for Android bleeding through clicks... requires to disable background page buttons and 
 								// inputs/selects while navigating overlay pages, otherwise click goes through to background page
 								// http://code.google.com/p/android/issues/detail?id=6721								
-								$('.ui-page').not( $popPanel.find('div:jqmData(role="page")') )
-									.find(".ui-header").first().find(".ui-btn, input, select, textarea").addClass('ui-disabled androidSucks').attr('disabled','disabled')
+								$('.ui-page').not( $popPanel.find('div:jqmData(role="page")') ).each( function() {									
+									$(this).find(".ui-header").first().find(".ui-btn, input, select, textarea").addClass('ui-disabled androidSucks').attr('disabled','disabled')									
+									});
 								
-								// and since Android never minds and disables everything... 
-								$popPanel.find('.androidSucks').removeClass('ui-disabled androidSucks').removeAttr('disabled');										
+								// and since Android never minds and also disables the page that should be enabled
+								$popPanel.find('.androidSucks').removeClass('ui-disabled androidSucks').removeAttr('disabled');																		
 																						
 								// get active or data-show first page on the panel
 								var activePage = $popPanel.find('.ui-page-active'),
@@ -626,9 +640,10 @@
 				
 				$dropZone = onPage.find('div:jqmData(role="header")') || 
 							onPage.closest('div:jqmData(wrapper="true").ui-page-active').children('div:jqmData(role="header")'),				
-				
-				$backUp = $crumPanel.data("stack").length;		
-				
+			    $backUp = 0;	
+			// $backUp = $crumPanel.data("stack").length;		
+		
+			/*
 			// set button href - go back through the respective stack until first
 			// entry not yield or onPage = current page is found
 			for (i = $backUp-1; i>=0; i--) {					
@@ -638,6 +653,11 @@
 					break;
 					}					
 				}	
+			*/
+			// TODO: fill - should get $.mobile.urlHistory.getActive() -1, question is how to find the previous page
+			// if it's transition in same panel, no problem, but on cross panel transition, fromPage NEEDs to be the 
+			// current page on the panel the transition is running on! Then it should work.
+			$prePage = "#container";
 			
 			// if panel stack is > 1 it has a history, add button, unless it's the first page of panel
 			if ( $backUp > 0 && onPage.jqmData("show") != "first")  {										
@@ -719,7 +739,7 @@
 									icon: $mnIc
 									});
 						*/			
-						$mnBt = $('<a data-iconpos="'+$mnIp+'" data-inline="true" data-icon="'+$mnIc+'" data-role="button" href="#" data-panel="'+$mnId+'" data-theme="'+$mnTh+'" class="ui-btn-up-'+$mnTh+' ui-btn ui-btn-icon-'+$mnIp+' ui-shadow popover-btn iconposSwitcher-a toggle_popover mmToggle menuToggle"><span class="ui-btn-inner"><span class="ui-btn-text">'+$mnTx+'</span><span class="ui-icon ui-icon-'+$mnIc+' ui-icon-shadow"></span></span></a>');						
+						$mnBt = $('<a data-iconpos="'+$mnIp+'" data-icon="'+$mnIc+'" data-role="button" href="#" data-panel="'+$mnId+'" data-theme="'+$mnTh+'" class="ui-btn-up-'+$mnTh+' ui-btn ui-btn-icon-'+$mnIp+' ui-shadow  iconposSwitcher-a toggle_popover mmToggle menuToggle"><span class="ui-btn-inner"><span class="ui-btn-text">'+$mnTx+'</span><span class="ui-icon ui-icon-'+$mnIc+' ui-icon-shadow">&nbsp;</span></span></a>');						
 					}
 					
 				// mid
@@ -738,7 +758,7 @@
 									icon: $mdIc
 									});
 						*/
-						$mdBt = $('<a data-iconpos="'+$mdIp+'" data-inline="true" data-icon="'+$mdIc+'" data-role="button" href="#" data-panel="'+$mdId+'" data-theme="'+$mdTh+'" class="ui-btn-up-'+$mdTh+' ui-btn ui-btn-icon-'+$mdIp+' ui-shadow popover-btn iconposSwitcher-a toggle_popover mmToggle midToggle"><span class="ui-btn-inner"><span class="ui-btn-text">'+$mdTx+'</span><span class="ui-icon ui-icon-'+$mdIc+' ui-icon-shadow"></span></span></a>');						
+						$mdBt = $('<a data-iconpos="'+$mdIp+'" data-icon="'+$mdIc+'" data-role="button" href="#" data-panel="'+$mdId+'" data-theme="'+$mdTh+'" class="ui-btn-up-'+$mdTh+' ui-btn ui-btn-icon-'+$mdIp+' ui-shadow  iconposSwitcher-a toggle_popover mmToggle midToggle"><span class="ui-btn-inner"><span class="ui-btn-text">'+$mdTx+'</span><span class="ui-icon ui-icon-'+$mdIc+' ui-icon-shadow">&nbsp;</span></span></a>');						
 					}
 					
 				$buttons = $mnBt.add( $mdBt );
@@ -879,7 +899,7 @@
 		
 /* -------------------------------------- SCREEN MODE HANDLER -------------------------------------- */
 	
-		popover: function () {
+		popover: function (e) {
 			
 			// --- PURPOSE ---		
 			// 1. set up popover mode
@@ -902,13 +922,14 @@
 				$popover = $wrap.find('div:jqmData(panel="popover")'),
 				$allPanels = $('div:jqmData(panel="popover"), div:jqmData(panel="menu"), div:jqmData(panel="mid")'),
 				$popClasses = 'ui-popover pop_menuBox ui-panel-active ui-triangle-top',
-				$yield = $('div:jqmData(yieldmode="true")');
 				// removed ui-fixed-element-faux-top/bottom	
+				$yield = $('div:jqmData(yieldmode="true")');
 				
 				$('html').addClass('ui-multiview-active ui-popover-mode').removeClass('ui-splitview-mode');			
-				
+								
+			// race condition	
 			if( !$('html').hasClass('ui-fullscreen-mode') && $yield.length == 0 ) {
-			
+				
 				$menu.addClass( $popClasses )					
 						.removeClass('ui-panel-left pop_fullscreen')
 						.attr({'data-fixed':'top'})
@@ -933,20 +954,22 @@
 				$popover.removeClass('pop_fullscreen')
 						.addClass('ui-popover');
 				
-				} else {					
+				} else {						
 					// fullscreen mode - will also be assigned by Gulliver. Not sure this is needed!
-					$allPanels.addClass('pop_fullscreen').removeClass('ui-popover');										
+					$allPanels.addClass('pop_fullscreen ui-panel-hidden').removeClass('ui-popover ui-panel-active');
 					}
 					
 			
 			// popover button			
-			self.popoverBtn("plain");	
-
-			// adjust width		
-			self.panelWidth();				
+			self.popoverBtn("plain");				
+			
+			// adjust width, if or-change, pass along for blocker in panelWidth			
+			e == "orientationchange" ? self.panelWidth("orientationchange") : self.panelWidth("popover");
+			
+			
 			},
 				
-		splitView: function () {			
+		splitView: function (e) {			
 			
 			// --- PURPOSE ---		
 			// 1. set up splitview - this mode is now handling 1,2,3 panels. If there is a single panel specified (should be main), 
@@ -1030,9 +1053,9 @@
 					// update header button controlgroup
 					self.setBtns("update")
 					}
-					
-			// adjust width		
-			self.panelWidth();			
+								
+			// adjust width, if or-change, pass along for blocker in panelWidth			
+			e == "orientationchange" ? self.panelWidth("orientationchange") : self.panelWidth("splitview");			
 			},						
 								
 		splitScreen: function( event ) {	
@@ -1053,35 +1076,35 @@
 			// fiddle in yield-mode
 			
 			var self = this,
-				$window=$(window);						
+				$window = $(window);						
 			
-			if ( $('div:jqmData(wrapper="true")').find('div:jqmData(panel="menu"), div:jqmData(panel="main")').length == 0 ) {				
+			if ( $('div:jqmData(wrapper="true")').find('div:jqmData(panel="menu"), div:jqmData(panel="main"), div:jqmData(panel="mid")').length == 0 ) {				
 				return;
 				}
-				
-			if(event) {				
+			// event can be "init" or [or-change object]	
+			if ( event ) {				
 				// portrait
 				if (window.orientation == 0 || window.orientation == 180 ){
 					if($window.width() > self.options.$upperThresh)  {						
-						self.splitView();
+						self.splitView( event);
 						} else {						
-							self.popover();
+							self.popover( event);
 							}					 
 					}
 					// landscape
 					else if (window.orientation == 90 || window.orientation == -90 ) {
 					if($window.width() > self.options.$upperThresh) {							
-						self.splitView();						
+						self.splitView( event);						
 						} else {
-							self.popover();
+							self.popover( event);
 							}
 						// click, resize, init events
 						// TODO, block trash-events "from Triggers etc."
 						} else if ($window.width() < self.options.$upperThresh){								
-							self.popover();
+							self.popover( event );
 							}
 							else if ($window.width() > self.options.$upperThresh) {	
-								self.splitView();
+								self.splitView( event );
 								}		
 				}
 					
@@ -1178,9 +1201,9 @@
 						$firstPage = $(this).find('div:jqmData(show="first")').not('.ui-splitview-mode div:jqmData(panel="menu") div:jqmData(role="page"), .ui-splitview-mode div:jqmData(panel="mid") div:jqmData(role="page")');
 						
 					//TODO: do I need to page() again?
-					$firstPage.page();
+					// $firstPage.page();
 					$firstPage.find('div:jqmData(role="header") h1').before($backButton);					
-					$(this).find('div:jqmData(show="first")').page();
+					// $(this).find('div:jqmData(show="first")').page();
 					$firstPage.find('.back_popover').buttonMarkup();											
 					}
 				});		
@@ -1210,7 +1233,8 @@
 			// --- TODO ---
 			// - check if JQM 1.1 scrollTop&fade allows main panel to be pos:static, thereby avoiding having to set width/margin-left on all main pages
 			//   I needed to set pos:static anyway, check to see if transitions still work... 
-			// - check if call on showing popovers is necessary			
+			// - check if call on showing popovers is necessary	
+			// - check that does not run multiple times in one instance
 							
 			var self = this,
 				$main = $('div:jqmData(panel="main")'), 
@@ -1226,10 +1250,22 @@
 				$menuElems = $menuPages.find('.ui-header, .ui-footer'),
 				
 				$wrapWidth, 
+				// actual screen resize takes place before (Androdi) or after (ioS) orientation change event...
+				// the following is not nice at all, but needed for Android. On orientationchange, the function will be called
+				// twice, $andCnt will block the first call and let the 2nd call through. This should give the 
+				// correct size parameter on Android and hopefully iOS aswell. 
+				$andCnt,
+				
 				// modifiy this depending on yield-mode and priority
 				$mainWidth,
 				$menuWidth = 0, 
-				$midWidth = 0;
+				$midWidth = 0;		
+			
+			if ( fromWhere == "orientationchange" && ( $andCnt == "off" || typeof $andCnt == "undefined" ) ) {							
+				$andCnt = "on";				
+				// end here on first call
+				return;
+				}
 			
 			// This timeout is for Firefox, because we need to make sure panelHeight has run
 			// before panelWidth fires. panelHeight makes sure global-header/footer + active 
@@ -1238,9 +1274,9 @@
 			// the width is off by 17px (space the scrollbar needs), because panelWidth runs while
 			//  the scrollbars are still visible.
 			window.setTimeout( function() {	
-			
+				
 				$wrapWidth = $('div:jqmData(wrapper="true").ui-page-active').innerWidth();
-										
+											
 				if (self.framer() != 'small' && $('html').hasClass('ui-splitview-mode') ) {
 								
 					// width = 0, if there is no menu/mid panel or they are hidden (switchable mode)
@@ -1255,13 +1291,16 @@
 						
 						$menuPages.add( $midPages ).css({'width':''});										
 						}
-														
+					
 				// should be the same across all view modes - set main panel/pages/toolbars				
 				$main.css({'margin-left': $menuWidth+$midWidth, 'width':$wrapWidth-$menuWidth-$midWidth });
 				$mainPages.css({'margin-left':$menuWidth+$midWidth, 'width':$wrapWidth-$menuWidth-$midWidth });
-				$mainElems.css({'width':$wrapWidth-$menuWidth-$midWidth, 'left':'auto'});	
+				$mainElems.css({'width':$wrapWidth-$menuWidth-$midWidth, 'left':'auto'});									
 				
 				},10);
+				
+				// reset $andCnt
+				$andCnt = "off";
 			}, 
 
 		panelHeight: function () {
@@ -1282,6 +1321,8 @@
 			// 2. orientationchange
 			// 3. updatelayout???
 			// 4. backgroundPageHeight after altering height of background-page
+			// 5. panelTrans
+			// 6. panelHash
 			
 			// --- UPDATES ---
 			// JQM 1.1 RC2 		rewrite, set "Regular" and "Overthrow" modes
@@ -1349,9 +1390,9 @@
 				} else {
 					// this is for popover-mode and fullscreen-mode, which should not use overthrow, because there is only one panel visible 
 					// in the back at all times = use normal scrolling
-			
+					
 					//get heighest height of active nested page													
-					$panels.find('.ui-page-active').each(function() {						
+					$panels.find('.ui-page-active').each(function() {												
 						if ( $(this).outerHeight() > $setHeight ) {				
 							$setHeight = $(this).outerHeight();							
 							}					
@@ -1479,7 +1520,7 @@
 			},
 						
 		clearActiveClasses: function ( trigger, useBruteForce, toPage, fromPage, link ) {										
-			
+			/*
 			// --- PURPOSE ---		
 			// 1. clear button classes on panels after and buttons after transitions
 						
@@ -1516,7 +1557,8 @@
 					window.setTimeout(function() {						
 					$('div:jqmData(panel="main"), div:jqmData(panel="menu"), div:jqmData(panel="mid")').find(".ui-page-active .ui-btn").removeClass( $.mobile.activeBtnClass );
 					},500 );
-				}			
+				}
+			*/
 			},
 					
 		clickRouter: function( e, data, source) {																
@@ -1536,13 +1578,12 @@
 			
 			// --- TODO ---
 			//
-			
+	
 			var self = this, link, $link;
 					
 			// make sure only one event passes
 			if ( $('html').data('clickInProgress') == false ) {								
-				$('html').data({'clickInProgress':true })
-
+				$('html').data({'clickInProgress':true })				
 				// this returns crap, if I programmatically trigger a click on another link element
 				// instead of the actual clicked element, the previously clicked element is returned.				
 				// $( e.target ).closest('a')				
@@ -1557,7 +1598,7 @@
 				$link = $( link );
 							
 				if ( link.length === 1 && $(link).jqmData("panel") ) {											
-					// store the click event/link element 						
+					// store the click event/link element 					
 					self.options.$stageEvent = $link;					
 					}
 					
@@ -1572,7 +1613,7 @@
 		
 /* -------------------------------------- PANEL HISTORY HANDLER -------------------------------------- */			
 		browserReset: function () {
-				
+			/*	
 			var self = this, distance;
 			
 			// since transitions inside panels also register entries in the window history, 
@@ -1580,10 +1621,11 @@
 			distance = self.options.$windowHistoryManualCounter;
 			// need to if this, otherwise iPad keeps reloading the page... 
 			if ( distance > 0 ) window.history.go(-self.options.$windowHistoryManualCounter);			
+			*/
 			},
 	
 		historyDump: function( panel ) {
-			
+			/*
 			var self = this,
 				$panels = panel;			
 							
@@ -1608,13 +1650,15 @@
 				// history.replaceState('null',rem.title,rem.url  );																
 				// }		
 				
-
+			*/
 			},
 		
 		// panel navigation and panel hash routines
 		// adding entries to panel history stacks
 		stackUp: function (source, event, data) {
-		//	console.log("=====  panel UP, source= "+source+" =====");
+			
+			/*
+			//	console.log("=====  panel UP, source= "+source+" =====");
 													
 				var self = this;														
 				
@@ -1698,11 +1742,13 @@
 					// console.log("lastStand= "+$('html').data("lastStand"));
 					//  console.log("hashJoker= "+self.options.$hashJoker);
 					//  console.log("contextBlockNextHashChange= "+self.options.$contextBlockNextHashChange);
-					
+					*/
 			}, 
 			
 		// reduce panel history stacks
 		stackDown: function ( source, event, data ) {
+			
+			/*
 			// console.log("=====  panel DOWN, source= "+source+" =====DICKHEAD" );						 
 			
 			var self = this,
@@ -1775,11 +1821,11 @@
 				// console.log("lastStand= "+$('html').data("lastStand"));
 				//	  console.log("hashJoker= "+self.options.$hashJoker);
 				//	  console.log("contextBlockNextHashChange= "+self.options.$contextBlockNextHashChange);		
-			
+			*/
 		},
-		
-		unwindHistory: function() {
 			
+		unwindHistory: function() {
+			/*
 			// make sure $.mobile.urlHistory stays at initial level
 			var self = this,
 				i  = $.mobile.urlHistory.stack.length;	
@@ -1788,12 +1834,12 @@
 				i = i-1;
 				$.mobile.urlHistory.stack.pop();	
 				}		
-			
+			*/
 		},
 		
 		// determines which panels to add entries to
 		_mmHandler: function (howMany, longest, longestLen) {
-					
+			/*		
 			// (b-1), single highest panel can now only be a main panel
 			if (howMany == 1) {
 				var gotoPage = longest[0][longestLen-2].toString();
@@ -1828,8 +1874,7 @@
 											
 				return gotoPage;			
 			}
-			
-			
+						
 			// (b-3) working selector for more 3 panels with highest stack
 			if (howMany == 3) {
 				var $last = [];
@@ -1843,7 +1888,7 @@
 				return gotoPage;
 				
 				}
-			
+				*/
 			},
 			
 /* -------------------------------------- PANEL NAVIGATION -------------------------------------- */			
@@ -1889,33 +1934,35 @@
 			},
 	
 		// panel transition handler - data is post-modified
-		panelTrans: function (e, data) {							
-					
+		panelTrans: function (e, data) {																	
+				
 			var	self = this,
 				$link = self.options.$stageEvent,		
 				
-				// target - ok
 				$targetPanelID = $( $link ).jqmData('panel'),					
 				$targetPanel = $link ? $('div:jqmData(id="'+$targetPanelID+'")') : data.options.pageContainer,
-				$targetPanelActivePage = $targetPanel.find( '.ui-page-active' ) || $targetPanel.find('div:jqmData(show="first")'),
-				// current 
-				$currPanel = $link ? $link.closest('div:jqmData(role="panel")') : data.options.fromPage.parents('div:jqmData(role="panel")'),
-				$currPanelID = $currPanel.jqmData('id'),
-				// activePage will be fromPage
-				$currPanelActivePage = $currPanel.find( '.ui-page-active' ) || $currPanel.find('div:jqmData(show="first")');
+				$targetPanelActivePage = $targetPanel.find( '.ui-page-active' ) || $targetPanel.find('div:jqmData(show="first")');
+				
+				
+				// current - BEWARE: this needs to be the page that is being transitoned out on the targetPanel! Not the page in view on the currentPanel
+				// $currPanel = $link ? $link.closest('div:jqmData(role="panel")') : data.options.fromPage.parents('div:jqmData(role="panel")'),
+				// $currPanelID = $currPanel.jqmData('id'),				
+				// $currPanelActivePage = $currPanel.find( '.ui-page-active' ) || $currPanel.find('div:jqmData(show="first")');				
 									
 				// make sure fromPage.data("page") does not return undefind
-				$currPanelActivePage.page();
+				// $currPanelActivePage.page();
 				
 				// change options
 				// data.options.fromPage = $('div:jqmData(wrapper="true")');
-				data.options.fromPage = $currPanelActivePage;	
-
+				// data.options.fromPage = $currPanelActivePage;	
+				data.options.fromPage = $targetPanelActivePage;
+				
 				data.options.pageContainer = $targetPanel;
 				data.options.changeHash = $targetPanel.jqmData('hash') == 'history' ? true : false;										
 								
 				// set scrollTop blocker to keep popover panels visible when loading a new page into the DOM									
-				if ( ( $targetPanel.jqmData("panel") || $currPanel.jqmData("panel") ) == "popover" ) {					
+				// removed || $currPanel.jqmData("panel") 
+				if ( $targetPanel.jqmData("panel") == "popover" ) {					
 					self.options.$panelTransBlockScrollTop = true;
 					}
 					
@@ -1941,9 +1988,6 @@
 
 				// assign fake attributes needed to add panel history entries
 				fakeEvent.target = $targetPanel;																	
-				
-				// console.log( "vor stackup")
-				// console.log( data )
 				
 				// block stack adding if it was a crumbs based (reverse) transition				
 				// if ( self.options.$crumbsBlockStackUp == false) {				
@@ -1971,11 +2015,11 @@
 				// self.options.$hashJoker = 0;				
 				
 				// keep it false! 												
-				// self.options.$ignoreMyOwnNextHashChange = false;									
+				// self.options.$ignoreMyOwnNextHashChange = false;																	
 				
 				//make sure wrapper page stays activePage		
 				$.mobile.activePage = $('div:jqmData(wrapper="true")');
-								
+				
 				// reset page container to prevent regular JQM loading pages into a container
 				// pageContainer will be re-set on next panel-transition to correct panel,
 				// but if a regular JQM transition fires pageContainer would be stuck at the 
@@ -1990,7 +2034,7 @@
 		// panel hashchange handler
 		panelHash: function( e, data ) {
 				
-				// console.log("panelHash fired");				
+				//console.log("panelHash fired");				
 				
 				// remove panelHash again
 				var self = this;														
@@ -2072,7 +2116,7 @@
 				// will contain 3 arrays [array1, array2, array3] and each array will contain two entries
 				
 				// if there are panels with active history, check them
-				
+			/*	
 				if (n) {					
 					$panels.each(function(){					
 						var data = $(this).data("stack");										
@@ -2127,7 +2171,7 @@
 				// console.log("vorher");
 				// console.log( data );
 				
-				
+			*/	
 				var fromPage = $( gotoPage ).closest('div:jqmData(role="panel")').find('.ui-page-active');
 				// enhance first page - should be done on init of wrapper page, otherwise on iPad this enhancement is too late on the first panel transition
 				// fromPage.page();
@@ -2136,9 +2180,12 @@
 				data.options.changeHash = true;
 				data.options.transition = "slide";				
 				data.options.reverse = true;
-				data.toPage = gotoPage;								
+				// data.toPage = gotoPage;	
 				
-				// console.log("nachher");
+				console.log( $.mobile.urlHistory.stack );
+				data.toPage = "#container";
+				
+				
 											
 				// as we have now made a transition, we need to block the next one coming from behind
 				// same as in changePage handler															
@@ -2224,14 +2271,15 @@
 			var self = this;						
 
 			// history stack management with crumbs buttons active
-            $(document).on('click', 'a.ui-crumbs', function (e) {				
+            $(document).on('click', 'a.ui-crumbs', function (e) {	
+				console.log("click crumbs");
 				// console.log("crumbs click");
 				// self.options.$allowCrumbsHashToPass = true; 				
 				});	
 	
 			// toggle popover
-			$(document).on('click','a.toggle_popover', function(e) {				
-				self.showPanel(e, $(this));
+			$(document).on('click','a.toggle_popover', function(e) {															
+				self.showPanel(e, $(this) );
 				});
 						
 			// panel context loading listener
@@ -2243,7 +2291,7 @@
 				if ( $(e.target).attr('href') == "#" || $(e.target).attr('href') == "") {					
 					return;
 					}
-								
+				
 				// as self.findclosestLink returns wrong element, only way to pass link is this... sucks
 				self.clickRouter( e, data, "click");								
 				});
@@ -2254,8 +2302,7 @@
 				// to pass event data to options and retrieve them in panelTrans, because by
 				// the time click fires, panelTrans has already run.
 				// vclick however fires way before panelTrans, so this is used to store
-				// click related information
-				
+				// click related information				
 				// same as above
 				if ( $(e.target).attr('href') == "#" || $(e.target).attr('href') == "") {
 					return;
@@ -2318,6 +2365,16 @@
 			$(document).on("blur","div:jqmData(wrapper='true') input", function () {			
 				$(".ui-header-fixed, .ui-element-fixed-top" ).css("top","0 !important");
 				});	
+							
+			// prevent dropping panel pages from DOM after panel transitions
+			$(document).on("pagebeforehide", function(e, data) {		
+				// internal pages always stay inside the DOM, externally loaded pages will be removed unless 
+				// !(fromPage).jqmData('data-dom-cache') == true 						
+				// e.preventDefault();					
+				// e.stopPropagation();				
+				console.log("detected");
+				self.panelHeight()					
+				});
 	
 			// consolidate unique elements across DOM and reset panel historys on inactive panels									
 			$(document).on('pagebeforehide', 'div:jqmData(role="page").basePage', function(e, data) {
@@ -2420,7 +2477,7 @@
 						page.data("counter", 0+inc);						
 						} else {
 							// wrapper already is in the DOM, just update the layout	
-							self.panelWidth();						
+							self.panelWidth("pagebeforeshow");						
 							}
 					// the crumbs part	
 					// as it's a wrapper page we don't need crumble buttons on it, so stop here
@@ -2438,8 +2495,8 @@
 
 			// fire splitviewCheck on orientationchange (and resize)
 			$(window).on('orientationchange', function(event){					
-				self.splitScreen(event);					
-				self.panelWidth();
+				self.splitScreen(event);									
+				self.panelWidth("orientationchange") 
 				self.panelHeight();
 				self.gulliver();
 				});																						
@@ -2892,3 +2949,4 @@ var trigger = $(document).on('pagecreate', 'div:jqmData(wrapper="true")',functio
 		
 	}		
 })( this );
+
