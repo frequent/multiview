@@ -246,7 +246,7 @@
 				
 			// fire display mode set and page "make-up"
 			self.gulliver();
-			self.panelWidth();						
+			// self.panelWidth();						
 			self.panelHeight();	
 				
 			},
@@ -510,7 +510,7 @@
 				$correspond = $el.jqmData("panel"),
 				$popPanel = $('div:jqmData(id="'+$correspond+'")'),
 				$wrap = $popPanel.closest('div:jqmData(wrapper="true")');
-								
+			
 			if ( $popPanel.is(":visible") ) {																			
 
 				if ( $popPanel.hasClass('switchable') && $wrap.jqmData('switchable') ) {
@@ -933,14 +933,17 @@
 				$popover.removeClass('pop_fullscreen')
 						.addClass('ui-popover');
 				
-				} else {
+				} else {					
 					// fullscreen mode - will also be assigned by Gulliver. Not sure this is needed!
 					$allPanels.addClass('pop_fullscreen').removeClass('ui-popover');										
 					}
 					
 			
 			// popover button			
-			$yield.length == 0 ? self.popoverBtn("plain") : self.popoverBtn("yield");			
+			self.popoverBtn("plain");	
+
+			// adjust width		
+			self.panelWidth();				
 			},
 				
 		splitView: function () {			
@@ -1209,54 +1212,56 @@
 			//   I needed to set pos:static anyway, check to see if transitions still work... 
 			// - check if call on showing popovers is necessary			
 							
-			var self = this; 
+			var self = this,
+				$main = $('div:jqmData(panel="main")'), 
+				$mainPages = $main.find("div:jqmData(role='page')"), 
+				$mainElems = $mainPages.find('.ui-header, .ui-footer'),
+			
+				$mid = $('div:jqmData(panel="mid")'), 
+				$midPages = $mid.find("div:jqmData(role='page')"), 
+				$midElems = $midPages.find('.ui-header, .ui-footer'),
+			
+				$menu = $('div:jqmData(panel="menu"):not("ui-popover")'), 
+				$menuPages = $menu.find("div:jqmData(role='page')"), 
+				$menuElems = $menuPages.find('.ui-header, .ui-footer'),
+				
+				$wrapWidth, 
+				// modifiy this depending on yield-mode and priority
+				$mainWidth,
+				$menuWidth = 0, 
+				$midWidth = 0;
+			
+			// This timeout is for Firefox, because we need to make sure panelHeight has run
+			// before panelWidth fires. panelHeight makes sure global-header/footer + active 
+			// panels > screenHeight = hiding scrollbars. In Firefox, panelWidth
+			// calculates element width BEFORE panelHeight hides scrollbars, so without the timeout
+			// the width is off by 17px (space the scrollbar needs), because panelWidth runs while
+			//  the scrollbars are still visible.
+			window.setTimeout( function() {	
+			
+				$wrapWidth = $('div:jqmData(wrapper="true").ui-page-active').innerWidth();
 										
-			if (self.framer() != 'small' && $('html').hasClass('ui-splitview-mode') ) {
-				
-				var $main = $('div:jqmData(panel="main")'), 
-					$mainPages = $main.find("div:jqmData(role='page')"), 
-					$mainElems = $mainPages.find('.ui-header, .ui-footer'),
-				
-					$mid = $('div:jqmData(panel="mid")'), 
-					$midPages = $mid.find("div:jqmData(role='page')"), 
-					$midElems = $midPages.find('.ui-header, .ui-footer'),
-				
-					$menu = $('div:jqmData(panel="menu"):not("ui-popover")'), 
-					$menuPages = $menu.find("div:jqmData(role='page')"), 
-					$menuElems = $menuPages.find('.ui-header, .ui-footer'),
-					
-					$wrapWidth, $menuWidth, $midWidth;
-							
-				// This timeout is for Firefox, because we need to make sure panelHeight has run
-				// before panelWidth fires. panelHeight makes sure global-header/footer + active 
-				// panels > screenHeight = hiding scrollbars. In Firefox, panelWidth
-				// calculates element width BEFORE panelHeight hides scrollbars, so without the timeout
-				// the width is off by 17px (space the scrollbar needs), because panelWidth runs while
-				//  the scrollbars are still visible.
-				window.setTimeout( function() {	
-																			
-					$wrapWidth = $('div:jqmData(wrapper="true").ui-page-active').innerWidth();
-					
+				if (self.framer() != 'small' && $('html').hasClass('ui-splitview-mode') ) {
+								
 					// width = 0, if there is no menu/mid panel or they are hidden (switchable mode)
 					$menuWidth = !$menu || !$menu.is(":visible") ? 0 : parseFloat($menu.outerWidth() );
-					$midWidth = !$mid || !$mid.is(":visible") ? 0 : parseFloat($mid.outerWidth() );									
+					$midWidth = !$mid || !$mid.is(":visible") ? 0 : parseFloat($mid.outerWidth() );	
 					
-					// set menu pages/toolbars
-					$menuPages.add( $menuElems ).css({ 'width' : $menuWidth });
-					// set mid pages/toolbars
+					// set
+					$menuPages.add( $menuElems ).css({ 'width' : $menuWidth });					
 					$midPages.add( $midElems ).css({ 'margin-left' : $menuWidth, 'width' : $midWidth });
-										
-					// set main panel/pages/toolbars
-					$main.css({'margin-left': $menuWidth+$midWidth, 'width':$wrapWidth-$menuWidth-$midWidth });
-					$mainPages.css({'margin-left':$menuWidth+$midWidth, 'width':$wrapWidth-$menuWidth-$midWidth });
-					$mainElems.css({'width':$wrapWidth-$menuWidth-$midWidth, 'left':'auto'});	
+					
+					} else if ( $('html').hasClass('ui-popover-mode') || $('html').hasClass('ui-fullscreen-mode')  ) {
+						
+						$menuPages.add( $midPages ).css({'width':''});										
+						}
+														
+				// should be the same across all view modes - set main panel/pages/toolbars				
+				$main.css({'margin-left': $menuWidth+$midWidth, 'width':$wrapWidth-$menuWidth-$midWidth });
+				$mainPages.css({'margin-left':$menuWidth+$midWidth, 'width':$wrapWidth-$menuWidth-$midWidth });
+				$mainElems.css({'width':$wrapWidth-$menuWidth-$midWidth, 'left':'auto'});	
 				
 				},10);
-					
-				} else if ( $('html').hasClass('ui-popover-mode') ) {
-					$('div:jqmData(panel="menu") div:jqmData(role="page")').css({'width':''});					
-					}
-			
 			}, 
 
 		panelHeight: function () {
@@ -1368,7 +1373,7 @@
 			
 			// --- PURPOSE ---		
 			// 1. In fullscreen mode (smartphones), the plugin opens popovers as fullscreen "pages". When you open a popover there 
-			//    is an active  background page (e.g. length 2000px) and the active page inside the popover (e.g. length 400px).  
+			//    is an active background page (e.g. length 2000px) and the active page inside the popover (e.g. length 400px).  
 			//    This function takes the height of the popover page (400px) and sets it to all active background pages (change 2000px to 400px)
 			//    while the panel and page are visible. This way fullscreen-mode can use hardware scrolling and there is no 
 			// 	  need to use overthrow. The function is set when the popover panel shows and cleared when it hides.
@@ -1388,13 +1393,12 @@
 				allActive = $('.ui-page').not( page ), 
 				maxHeight;						
 			
-			// only tweak page height if a popover panel is opened - this can also be the MENU in popover mode!!!
-			if ( $('div:jqmData(panel="popover") .ui-page-active, div:jqmData(panel="menu").pop_fullscreen .ui-page-active').length > 0 && mode == "set" ) {				
+			// only tweak page height if a popover panel is opened - this can also be the MENU oder MID in popover mode!!!
+			if ( $('div:jqmData(panel="popover") .ui-page-active, div:jqmData(panel="menu").pop_fullscreen .ui-page-active, div:jqmData(panel="mid").pop_fullscreen .ui-page-active').length > 0 && mode == "set" ) {				
 			
-					maxHeight = page.outerHeight();					
-					
+					maxHeight = page.outerHeight();										
 					allActive.addClass("shrunk")
-								.css({	'height': maxHeight-1, 'overflow': 'hidden' });										
+								.css({	'height': maxHeight-1, 'overflow': 'hidden' })								
 				}	
 			
 			// always try to clear
@@ -1425,9 +1429,9 @@
 			// --- TODO ---
 			// "supersize"? for TV? 
 				
-			var self = $(this);
-				// layout mode - need to use $(window), because $this fails in IE7+8...
+			var self = this;
 				
+				// layout mode - need to use $(window), because $this fails in IE7+8...										
 				if ($.mobile.media("screen and (max-width:320px)")||($.mobile.browser.ie && $(window).width() < self.options.$lowerThresh )) {
 					var framed = "small";
 					} else if ($.mobile.media("screen and (min-width:768px)")||($.mobile.browser.ie && $(window).width() >= self.options.$upperThresh )) {
@@ -1624,7 +1628,7 @@
 				
 					// TODO: this stinks, makes ext1.html into #ext1, which will cause all kind of problems when retrieving and loading a page from it :-)
 					$targetPage = obj.hash != "" ? obj.hash : typeof data.toPage.attr('id') != undefined ? '#'+data.toPage.attr('id') : obj.filename.replace(".html","")
-						
+					
 				// if target panel has data-hash="history", add entry to panel stack			
 				if ( $targetPanel.jqmData('hash') == 'history' ) {
 					// if main or menu is the target both need to be increased. 
@@ -1636,12 +1640,14 @@
 					if ( $targetPanelType == 'menu' ) {		
 						// console.log("menu transition");
 						$('div:jqmData(panel="main")').data("stack").push("yield");
+						
 						$('div:jqmData(panel="menu")').data("stack").push($targetPage);						
 						} else if ($targetPanelType == 'main') {																								
 							// console.log("main transition");
 							$('div:jqmData(panel="menu")').data("stack").push("yield");
+							
 							$('div:jqmData(panel="main")').data("stack").push($targetPage);
-							} else { 		
+							} else {
 								// console.log("popover transition");
 								$targetPanel.data("stack").push($targetPage);	
 								}
@@ -2221,13 +2227,7 @@
             $(document).on('click', 'a.ui-crumbs', function (e) {				
 				// console.log("crumbs click");
 				// self.options.$allowCrumbsHashToPass = true; 				
-				});
-	
-			$(document).on('updatelayout', function(e) {
-				console.log("updateLayout triggered");
-				// make sure panel height is set correctly
-				// self.panelHeight()
-				})
+				});	
 	
 			// toggle popover
 			$(document).on('click','a.toggle_popover', function(e) {				

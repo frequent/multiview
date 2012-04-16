@@ -48,12 +48,15 @@ div[data-wrapper="true"] 						{ margin: 0px; padding: 0px; width: inherit; /* h
 .ui-panel-left .ui-page, .ui-panel-mid .ui-page  	{ min-width: inherit; /* z-index:1050;*/ }
 .ui-panel-mid .ui-fixed-hidden					{ margin-left: 0px !important; /* need this because if pos:abs, margin left displaces middle header */ }
 .ui-panel-right .ui-page 						{ right: 0; }
-.blacklist .ui-panel .ui-header					{ position: absolute; }
-.blacklist .ui-panel-mid .ui-header				{ margin-left: 0 !important; }
 
+.blacklist .ui-footer-global						{ position: absolute; width: 100%; bottom: 0; }
+/* NOTE: without the above the global footer always jumps up to the top of the screen, because it's pos:rel, bottom: auto by default. Don't understand why
+         or if I overwrote some styles in this CSS. Works now, but not sure everywhere. */
+.blacklist .ui-panel .ui-header					{ position: absolute; width: 100%; }		 
+.blacklist .ui-panel-mid .ui-header				{ margin-left: 0 !important; }
  /* NOTE: the last two rules are needed to make sure panels set up right, especially mid panel, which neither left:0 nor right:0 at pos:rel can put in
     the right position, so on blacklist browsers, I'm switching to pos:absolute, which should be ok, because parent page is also pos:absolute, not
-	sure if this works all the way ...*/
+	sure if this works all the way ... also need to add width: 100%, otherwise header just collapses. */
 
 .ui-splitview-mode .ui-panel-right .ui-page, .ui-splitview-mode .ui-panel-mid .ui-page
 												{ -moz-box-shadow: 0 0 12px rgba(0,0,0,.6); -webkit-box-shadow: 0 0 12px rgba(0,0,0,.6); box-shadow: 0 0 12px rgba(0,0,0,.6); }
