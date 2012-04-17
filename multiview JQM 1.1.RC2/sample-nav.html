@@ -3,7 +3,7 @@
 
 <head>
 		<meta charset="utf-8">	
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 		<title>Multiview Sample</title>
 
 		<link rel="stylesheet" type="text/css" href="jquery.mobile-1.1.0-rc.2.css" />
@@ -60,7 +60,7 @@
 			</div>
 
 			<div data-role="page" id="menu_second">
-				<div data-role="header" data-theme="a" >
+				<div data-role="header" data-theme="a" data-position="fixed" >
 					<h1>Second Page Menu</h1>
 				</div>
 				<div data-role="content" class="blue">
@@ -111,10 +111,10 @@
 			</div>
 
 			<div data-role="page" id="mid_second">
-				<div data-role="header" data-theme="a" >
+				<div data-role="header" data-theme="a" data-position="fixed" >
 					<h1>Second Page Mid</h1>
 				</div>
-				<div data-role="content" class="blue">
+				<div data-role="content" >
 					<div>Lorem Ipsum</div>
 				</div>
 			</div>				
@@ -298,8 +298,17 @@
 
 
 	<script type="text/javascript" src="jquery-1.7.1.min.js"></script>
+	<script type="text/javascript">
+		$( window.document ).on("mobileinit", function(e) {
+			// would be possible to catch panel deeplink - right now inside JQM
+			})
+			
+		$(window).on("pagecontainercreate", function( e ) {
+			// would be possible to catch panel deeplink - right now inside JQM				
+			})	
+		</script>
 	<!-- <script type="text/javascript" src="jquery.mobile-1.0.1multiview.js"></script> -->	
-	<script type="text/javascript" src="jquery.mobile-1.1.0.rc2.js"></script>
+	<script type="text/javascript" src="jquery.mobile-1.1.0.rc2multiview.js"></script>
 	<script type="text/javascript" src="multiview.js"></script>		
 
 

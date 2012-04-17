@@ -95,7 +95,17 @@
 			// 768px - 			= "large"	splitview-mode 
 			
 			// Android multi-click-prevent
-			$blockMultiClick: false				
+			$blockMultiClick: false,
+			
+			// deeplink - block multi-init
+			$blockMultiInitDeeplinks: false,
+
+			// Or-Change resize fix
+			// actual screen resize takes place before (Androdi) or after (ioS) orientation change event...
+			// the following is not nice at all, but needed for Android. On orientationchange, the function will be called
+			// twice, $orFix will block the first call and let the 2nd call through. This should give the 
+			// correct size parameter on Android and hopefully iOS aswell. 
+			// $orFix:''
 						
 		},
 
@@ -910,9 +920,9 @@
 			// --- UPDATES ---
 			// JQM 1.1 RC2: added third panel support, yield mode						
 			
-			// --- TODO ---
-			// - consider moving screen-mode class assigning into Gulliver, but beware of race condition!
+			// --- TODO ---			
 			// - data-yield-to="none" to allow users to specifiy, which panel to start from. Also need to add toggle buttons to all panels in this case!
+			// beware of panelWidth if feeding other events like "resize" into here. panelWidth() call needs to be adjusted
 			
 			var self = this,				
 				$wrap = $('div:jqmData(wrapper="true").ui-page-active'),
@@ -963,8 +973,13 @@
 			// popover button			
 			self.popoverBtn("plain");				
 			
-			// adjust width, if or-change, pass along for blocker in panelWidth			
-			e == "orientationchange" ? self.panelWidth("orientationchange") : self.panelWidth("popover");
+			// adjust width depending on where this function was called from
+			// since e can be either orientationchange-event or "init", I'm checking for "init"
+			if ( e == "init" ) {
+				self.panelWidth("popover")
+				} else {					
+					self.panelWidth("orientationchange");
+					}
 			
 			
 			},
@@ -986,7 +1001,7 @@
 			//              
 			
 			// --- TODO ---
-			//
+			// beware of panelWidth if feeding other events like "resize" into here. panelWidth() call needs to be adjusted
 				
 			var self = this,
 				$wrap = $('div:jqmData(wrapper="true").ui-page-active'),
@@ -1053,9 +1068,13 @@
 					// update header button controlgroup
 					self.setBtns("update")
 					}
-								
-			// adjust width, if or-change, pass along for blocker in panelWidth			
-			e == "orientationchange" ? self.panelWidth("orientationchange") : self.panelWidth("splitview");			
+					
+			// as in popover(), e can be either orientationchange event or "init"
+			if ( e == "init" ) { 				
+				self.panelWidth("splitview")
+				} else {					 
+					 self.panelWidth("orientationchange"); 
+					}
 			},						
 								
 		splitScreen: function( event ) {	
@@ -1249,24 +1268,13 @@
 				$menuPages = $menu.find("div:jqmData(role='page')"), 
 				$menuElems = $menuPages.find('.ui-header, .ui-footer'),
 				
-				$wrapWidth, 
-				// actual screen resize takes place before (Androdi) or after (ioS) orientation change event...
-				// the following is not nice at all, but needed for Android. On orientationchange, the function will be called
-				// twice, $andCnt will block the first call and let the 2nd call through. This should give the 
-				// correct size parameter on Android and hopefully iOS aswell. 
-				$andCnt,
+				$wrapWidth, 				
 				
 				// modifiy this depending on yield-mode and priority
 				$mainWidth,
 				$menuWidth = 0, 
 				$midWidth = 0;		
-			
-			if ( fromWhere == "orientationchange" && ( $andCnt == "off" || typeof $andCnt == "undefined" ) ) {							
-				$andCnt = "on";				
-				// end here on first call
-				return;
-				}
-			
+						
 			// This timeout is for Firefox, because we need to make sure panelHeight has run
 			// before panelWidth fires. panelHeight makes sure global-header/footer + active 
 			// panels > screenHeight = hiding scrollbars. In Firefox, panelWidth
@@ -1275,8 +1283,16 @@
 			//  the scrollbars are still visible.
 			window.setTimeout( function() {	
 				
+				/*
+				if ( fromWhere == "orientationchange" && ( self.options.$orFix == "off" || typeof self.options.$orFix == "undefined" ) ) {							
+					self.options.$orFix = "on";										
+					// end here on first call
+					return;
+					}
+				*/
+				
 				$wrapWidth = $('div:jqmData(wrapper="true").ui-page-active').innerWidth();
-											
+										
 				if (self.framer() != 'small' && $('html').hasClass('ui-splitview-mode') ) {
 								
 					// width = 0, if there is no menu/mid panel or they are hidden (switchable mode)
@@ -1286,21 +1302,28 @@
 					// set
 					$menuPages.add( $menuElems ).css({ 'width' : $menuWidth });					
 					$midPages.add( $midElems ).css({ 'margin-left' : $menuWidth, 'width' : $midWidth });
+															
+					// should be the same across all view modes - set main panel/pages/toolbars	
+					// but as Android does not give the correct width on orientationchange, this needs to go here
+					// and must be set again for fullscreen mode
+					$main.add( $mainPages ).css({'margin-left': $menuWidth+$midWidth, 'width':$wrapWidth-$menuWidth-$midWidth });
+					// $mainPages.css({'margin-left': $menuWidth+$midWidth, 'width':$wrapWidth-$menuWidth-$midWidth });
+					$mainElems.css({'width':$wrapWidth-$menuWidth-$midWidth, 'left':'auto'});	
 					
 					} else if ( $('html').hasClass('ui-popover-mode') || $('html').hasClass('ui-fullscreen-mode')  ) {
 						
-						$menuPages.add( $midPages ).css({'width':''});										
+						$main.add( $mainPages ).css({'margin-left': 0, 'width':"100%" })
+						$mainElems.css({ 'width':'100%', 'left':'auto' })
+						
+						// this is the same as hiding panels on orientationchange
+						$menuPages.add( $midPages ).css({'width':''});									
 						}
-					
-				// should be the same across all view modes - set main panel/pages/toolbars				
-				$main.css({'margin-left': $menuWidth+$midWidth, 'width':$wrapWidth-$menuWidth-$midWidth });
-				$mainPages.css({'margin-left':$menuWidth+$midWidth, 'width':$wrapWidth-$menuWidth-$midWidth });
-				$mainElems.css({'width':$wrapWidth-$menuWidth-$midWidth, 'left':'auto'});									
+												
 				
 				},10);
 				
-				// reset $andCnt
-				$andCnt = "off";
+				// reset $orFix
+				// self.options.$orFix = "off";
 			}, 
 
 		panelHeight: function () {
@@ -1340,7 +1363,7 @@
 				$contents = $activeWrapper.find('.ui-panel:not(.ui-popover) .ui-page .ui-content'),								
 				
 				$overthrow = $activeWrapper.jqmData("scrollmode") == "overthrow",								
-				$cond = $overthrow && ( !$('html').hasClass('ui-popover-mode') && !$('html').hasClass('ui-fullscreen-mode') ),
+				$cond = $overthrow.length > 0 && ( !$('html').hasClass('ui-popover-mode') && !$('html').hasClass('ui-fullscreen-mode') ),
 				$marPad = $cond ? ["margin-top", "margin-bottom"] : ["padding-top", "padding-bottom"],
 				
 				$glbH = $activeWrapper.find('.ui-header-global:eq(0)'),
@@ -1348,7 +1371,7 @@
 				
 				$setHeight = 0,
 				$locH, $locF, $dims, $localHeight;
-			
+				
 			// set content padding/margin for nestes pages - JQM updatePagePadding is only for wrapper page!
 			// This is tricky, because in overthrow-mode, margin needs to be set instead of padding to not hide 
 			// the content behind the toolbars. Not sure if this works on iOS
@@ -1372,35 +1395,36 @@
 			
 			// set panel/page/wrapper page height 			
 			if ( $cond ) {								
-				// this is for splitview-mode = fix screen to allow overthrow-based scrolling of multiple background panels
 				
+				// this is for splitview-mode = fix screen to allow overthrow-based scrolling of multiple background panels				
 				$setHeight = $.mobile.getScreenHeight() - $glbH.outerHeight() - $glbF.outerHeight(); 
-												
+				
 				// set panel and wrapper
 				$panels.add( $panels.find('.ui-page') ).css({'height': $setHeight });					
 				$activeWrapper.css({'overflow':'hidden' });
-
+					
+		
+				} else {					
+					// this is for splitview mode without overthrow, as well as popover-mode and fullscreen-mode, 
+					// which should not use overthrow, because there is only one panel visible in the back at 
+					// all times = use normal scrolling
+					
+					//get heighest height of active nested page													
+					$panels.find('.ui-page').each(function() {												
+						if ( $(this).outerHeight() > $setHeight ) {				
+							$setHeight = $(this).outerHeight();								
+							}					
+						});					
+										
+					// set panel-height and wrapper-page height
+					$('div:jqmData(panel="main"), div:jqmData(panel="mid"), div:jqmData(panel="menu")').css({'height': $setHeight});						
+					}
+									
 				// set content height
 				$contents.each(function() {
 					$localHeight = $(this).siblings('.ui-header:eq(0)').outerHeight() + $(this).siblings('.ui-footer:eq(0)').outerHeight();
 					$(this).css({ 'height':$setHeight-$localHeight }).addClass("overthrow");						
-					});
-					
-		
-				} else {
-					// this is for popover-mode and fullscreen-mode, which should not use overthrow, because there is only one panel visible 
-					// in the back at all times = use normal scrolling
-					
-					//get heighest height of active nested page													
-					$panels.find('.ui-page-active').each(function() {												
-						if ( $(this).outerHeight() > $setHeight ) {				
-							$setHeight = $(this).outerHeight();							
-							}					
-						});
-					
-					// set panel-height and wrapper-page height
-					$('div:jqmData(panel="main"), div:jqmData(panel="mid"), div:jqmData(panel="menu")').css({'height': $setHeight});						
-					}
+					});	
 																							
 				// overwrite menu height again, otherwise popover panels expand depending on content 			
 				if ( $('html').hasClass('ui-popover-mode') ) { 					
@@ -2224,13 +2248,12 @@
 			// load deeplinked pages						
 			var self = this,
 				// grab deeplink from HTML tag
-				$deepPage = $( $('html').data("multiviewDeeplink") ),
+				$deepPage = $( $('html').data("deep") ),
 				$deepPanel = $deepPage.closest('div:jqmData(role="panel")'),
 				$deepPanelID = $deepPage.closest('div:jqmData(role="panel")').jqmData('id'),
 				$deepFrom = $deepPanel.find('div:jqmData(show="first")'),
 				$triggerButton;
-							
-							
+													
 			// if the deeplink page is on a popover
 			if ( $deepPanel.jqmData("panel") == "popover" ) {	
 				$triggerButton = $('div:jqmData(wrapper="true")').find('.toggle_popover:jqmData(panel="'+$deepPanelID+'")');																												
@@ -2258,9 +2281,43 @@
 				// load deeplink page
 				$.mobile.changePage($deepPage, {fromPage:$deepFrom, transition:"slide", reverse:true, changeHash:false, pageContainer:$deepPanel});				
 				
+			// fix pageHeight
+			self.panelHeight()
 			
 			// tidy up HTML deeplink
-			$('html').removeData("multiviewDeeplink");
+			$('html').removeData("deep");
+			
+			},
+			
+		panelPageLoader: function( e, data, source ) {
+						
+			var self = this,
+				$link = self.options.$stageEvent,		
+				$targetPanelID = $( $link ).jqmData('panel'),					
+				$targetPanel = $link ? $('div:jqmData(id="'+$targetPanelID+'")') : data.options.pageContainer;
+							
+			// modify changePage options on panel transitions, either through link data-panel or changePage pageContainer option
+			if ( $targetPanel != $.mobile.pageContainer && typeof data.toPage === "string" ) {								
+		
+				// this used to be inside panelTrans and panelHash, but on iOS this is too late to override any default
+				// activeIndex JQM assigns. Also setting this in _setup function for the initial page
+				// this is necessary, because otherwise on iOS3, active is undefinded when retrieving the panel-transition
+				
+				// maintain active history entry, should always be stack@init-1									
+				// console.log( "init="+self.options.$jqmHistoryStackAtInit+" active="+$.mobile.urlHistory.activeIndex)
+				// $.mobile.urlHistory.activeIndex = self.options.$jqmHistoryStackAtInit;
+				// console.log( "init="+self.options.$jqmHistoryStackAtInit+" active="+$.mobile.urlHistory.activeIndex)					
+				
+				if ( data.options.fromHashChange == true ) {										
+					// reroute to panelHash
+					self.panelHash( e, data );							
+					} else {						
+						// reroute to panelTrans							
+						self.panelTrans( e, data );
+						}
+	
+				
+				}
 			
 			},
 		
@@ -2310,41 +2367,22 @@
 					
 				// as above... sucks
 				self.clickRouter( e, data, "vclick" );
+				});				
+			
+			/*	
+			$(document).on("pageinit", function() {				
+				// block multiple pageinit calls
+				if ( self.options.$blockMultiInitDeeplinks == false ) {
+					self.options.$blockMultiInitDeeplinks = true;
+					
+					}
 				});
+			*/
 			
 			// panel transition handler 
 			$(document).on( "pagebeforechange", function( e, data ) {													
-								
-				var	$link = self.options.$stageEvent,		
-					$targetPanelID = $( $link ).jqmData('panel'),					
-					$targetPanel = $link ? $('div:jqmData(id="'+$targetPanelID+'")') : data.options.pageContainer;
 				
-				// console.log("pagebeforechange, checking for panel");
-				// modify changePage options on panel transitions, either through link data-panel or changePage pageContainer option
-				if ( $targetPanel != $.mobile.pageContainer && typeof data.toPage === "string" ) {								
-			
-					// this used to be inside panelTrans and panelHash, but on iOS this is too late to override any default
-					// activeIndex JQM assigns. Also setting this in _setup function for the initial page
-					// this is necessary, because otherwise on iOS3, active is undefinded when retrieving the panel-transition
-					// maintain active history entry, should always be stack@init-1									
-					// console.log( "init="+self.options.$jqmHistoryStackAtInit+" active="+$.mobile.urlHistory.activeIndex)
-					$.mobile.urlHistory.activeIndex = self.options.$jqmHistoryStackAtInit;
-					// console.log( "init="+self.options.$jqmHistoryStackAtInit+" active="+$.mobile.urlHistory.activeIndex)
-								
-					// stop if coming from a hashChange event
-					if ( data.options.fromHashChange == true ) {				
-						//console.log("pagebeforechange-HASH");
-						// reroute to panelHash
-						self.panelHash( e, data );	
-						//return;
-						} else {
-						//console.log("pagebeforechange-TRANS");
-							// reroute to panelTrans							
-							self.panelTrans( e, data );
-							}
-		
-					
-					}
+				self.panelPageLoader( e, data, "pbc" )
 				});			
 			
 			// panel backwards transition listener
@@ -2371,9 +2409,7 @@
 				// internal pages always stay inside the DOM, externally loaded pages will be removed unless 
 				// !(fromPage).jqmData('data-dom-cache') == true 						
 				// e.preventDefault();					
-				// e.stopPropagation();				
-				console.log("detected");
-				self.panelHeight()					
+				// e.stopPropagation();											
 				});
 	
 			// consolidate unique elements across DOM and reset panel historys on inactive panels									
@@ -2440,7 +2476,8 @@
 						}
 					
 					// if it's a deeplink page, fire panelDeeplink
-					if ( $('html').data("multiviewDeeplink") && page.find( $('html').data("multiviewDeeplink")+"" ).length >= 1  ) {																								
+					// TODO: add check for sitemap here?
+					if ( $('html').data("deep") && page.find( $('html').data("deep")+"" ).length >= 1  ) {																														
 						self.panelDeepLink();
 						}
 					
@@ -2483,19 +2520,22 @@
 					// as it's a wrapper page we don't need crumble buttons on it, so stop here
 					event.preventDefault();					
 					} else if ( page.closest('div:jqmData(role="panel")').jqmData('hash') && page.jqmData("show") != "first" ){	
-
-						// fires crumble every time a page is created
-						// by checking for a closest panel, we ensure it's not fired on a regular JQM page!	
-						// need to delay this, otherwise this runs before the history stacks are updated, 10ms seems enough						
-						window.setTimeout(function() {								
-							self.crumble(event, data, page );	
-							}, 50);
+							
+							// set panelHeight
+							self.panelHeight();	
+						
+							// fires crumble every time a page is created
+							// by checking for a closest panel, we ensure it's not fired on a regular JQM page!	
+							// need to delay this, otherwise this runs before the history stacks are updated, 10ms seems enough						
+							window.setTimeout(function() {								
+								self.crumble(event, data, page );	
+								}, 50);
 						} 
 				});
 
 			// fire splitviewCheck on orientationchange (and resize)
 			$(window).on('orientationchange', function(event){					
-				self.splitScreen(event);									
+				self.splitScreen(event);					
 				self.panelWidth("orientationchange") 
 				self.panelHeight();
 				self.gulliver();

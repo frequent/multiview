@@ -2209,6 +2209,14 @@ var createHandler = function( sequential ){
 				}, 150 );
 			},
 			cleanFrom = function(){
+				// XXX FREQUENT - check to clear wrapper page
+				if ( $to.parents('.ui-page-active').length == 0  && $from.parents('.ui-page-active').length == 0 ) {
+					$from.closest(':jqmData(wrapper="true")').removeClass( $.mobile.activePageClass );	
+					} 	
+				// XXX FREQUENT - prevent dropping active class
+				if ( $to.closest('div:jqmData(role="panel")').jqmData('id') != $from.closest('div:jqmData(role="panel")').jqmData('id') ) {
+				
+					}
 				$from
 					.removeClass( $.mobile.activePageClass + " out in reverse " + name )
 					.height( "" );
@@ -2590,14 +2598,15 @@ $.mobile.transitionFallbacks = {};
 				return urlHistory.stack[ urlHistory.activeIndex + 1 ];
 			},
 
-			// addNew is used whenever a new page is added			
-			addNew: function( url, transition, title, pageUrl, role ) {
+			// addNew is used whenever a new page is added
+			// XXX FREQUENT: added container
+			addNew: function( url, transition, title, pageUrl, role, pageContainer ) {
 				//if there's forward history, wipe it
 				if( urlHistory.getNext() ) {
 					urlHistory.clearForward();
 				}
-				
-				urlHistory.stack.push( {url : url, transition: transition, title: title, pageUrl: pageUrl, role: role } );
+				// XXX FREQUENT: storing pageContainer in url-history
+				urlHistory.stack.push( {url : url, transition: transition, title: title, pageUrl: pageUrl, role: role, pageContainer: pageContainer } );
 
 				urlHistory.activeIndex = urlHistory.stack.length - 1;
 			},
@@ -2806,10 +2815,16 @@ $.mobile.transitionFallbacks = {};
 			promise = th( transition, reverse, toPage, fromPage );
 
 		promise.done(function() {
-
-			//trigger show/hide events
-			if( fromPage ) {
-				fromPage.data( "page" )._trigger( "hide", null, { nextPage: toPage } );
+						
+			if( fromPage ) {				
+				//trigger show/hide events
+				// XXX FREQUENT: if fromPage is an internal page it's a panel transition, so the
+				// hide event has to be blocked to avoid dropping the wrapper page. This 
+				// also catches external panel pages, which have been loaded into the DOM and
+				// should be removed when navigation away from them unless data-dom-cache is set. 				
+				if ( $(fromPage).jqmData('internal-page') != true && (fromPage).jqmData('data-dom-cache') != true ) {					
+					fromPage.data( "page" )._trigger( "hide", null, { nextPage: toPage } );
+					}
 			}
 
 			//trigger pageshow, define prevPage as either fromPage or empty jQuery obj
@@ -3374,9 +3389,10 @@ $.mobile.transitionFallbacks = {};
 			|| ( ( historyDir && !activeIsInitialPage ) ? active.transition : undefined )
 			|| ( isDialog ? $.mobile.defaultDialogTransition : $.mobile.defaultPageTransition );
 
-		//add page to history stack if it's not back or forward		
+		//add page to history stack if it's not back or forward
+		// XXX FREQUENT: added page container
 		if( !historyDir ) {
-			urlHistory.addNew( url, settings.transition, pageTitle, pageUrl, settings.role );
+			urlHistory.addNew( url, settings.transition, pageTitle, pageUrl, settings.role, settings.pageContainer );
 		}
 
 		//set page title
@@ -7502,11 +7518,14 @@ $( document ).bind( "pagecreate create", function( e ){
 			hideRenderingClass();
 
 			// if hashchange listening is disabled or there's no hash deeplink, change to the first page in the DOM
-			if ( !$.mobile.hashListeningEnabled || !$.mobile.path.stripHash( location.hash ) ) {
+			// XXX FREQUENT - deeplink panel pages
+			// also load the first page, if it's there is a hash-deeplink to a panel page              
+			if ( !$.mobile.hashListeningEnabled || !$.mobile.path.stripHash( location.hash ) || $( window.location.hash ).closest('div:jqmData(role="panel")').length > 0 ) {				
+				$('html').data("deep", window.location.hash);
 				$.mobile.changePage( $.mobile.firstPage, { transition: "none", reverse: true, changeHash: false, fromHashChange: true } );
 			}
 			// otherwise, trigger a hashchange to load a deeplink
-			else {
+			else {				
 				$window.trigger( "hashchange", [ true ] );
 			}
 		}
