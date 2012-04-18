@@ -3,79 +3,65 @@
 
 <head>
 		<meta charset="utf-8">	
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 		<title>Multiview Sample</title>
 
 		<link rel="stylesheet" type="text/css" href="jquery.mobile-1.1.0-rc.2.css" />
         <link rel="stylesheet" type="text/css" href="multiview.css" />
-		
 </head>
 <body>	
 				
- <!--     <div data-role="page" id="container" data-wrapper="true" data-scrollmode="overthrow"> -->
-<div data-role="page" id="container" data-wrapper="true" data-switchable="true" > 
+  <!--  <div data-role="page" id="container" data-wrapper="true">-->
+<div data-role="page" id="container" data-wrapper="true" data-scrollmode="overthrow"> 
 	
 	<div data-role="panel" data-id="menu" data-panel="menu" data-hash="history">
 			
 			<div data-role="page" id="menu_first" data-show="first">
 		
-				<div data-role="header" data-position="fixed" data-theme="a">					
-					<h1>MENU First</h1>
+				<div data-role="header" data-position="fixed" data-theme="a">
+					<h1>First Page Menu</h1>
 				</div>
 				<div data-role="content" class="red">
-					<p>page 2 this panel</p>
-					<a href="#menu_second" data-panel="menu" data-role="button">page2 Menu</a>
-					<p>page 2 mid panel</p>
-					<a href="#mid_second" data-panel="mid" data-role="button">page2 Mid</a>
+					<p>Menu Lorem Ipsum</p>
 					<ul data-role="listview">
-						<li>A</li>
-						<li>B</li>
-						<li>A</li>
-						<li>B</li>
-						<li>A</li>
-						<li>B</li>
-						<li>A</li>
-						<li>B</li>
-						<li>A</li>
-						<li>B</li>
-						<li>A</li>
-						<li>B</li>
-						<li>A</li>
-						<li>B</li>
-						<li>A</li>
-						<li>C</li>
-						<li>A</li>
-						<li>B</li>
-						<li>A</li>
-						<li>B</li>
-						<li>A</li>
-						<li>B</li>
-						<li>A</li>
-						<li>B</li>
-						<li>A</li>
-						<li>D</li>
-						
-					</ul>
+			<li>A</li>
+			<li>B</li>
+			<li>A</li>
+			<li>B</li>
+			<li>A</li>
+			<li>B</li>
+			<li>A</li>
+			<li>B</li>
+			<li>A</li>
+			<li>B</li>
+			<li>A</li>
+			<li>B</li>
+			<li>A</li>
+			<li>B</li>
+			<li>A</li>
+			<li>C</li>
+			<li>A</li>
+			<li>B</li>
+			<li>A</li>
+			<li>B</li>
+			<li>A</li>
+			<li>B</li>
+			<li>A</li>
+			<li>B</li>
+			<li>A</li>
+			<li>D</li>
+			
+		</ul>
 				</div>	
 			</div>
 
 			<div data-role="page" id="menu_second">
-				<div data-role="header" data-theme="a" data-position="fixed" >
+				<div data-role="header" data-theme="a" >
 					<h1>Second Page Menu</h1>
 				</div>
 				<div data-role="content" class="blue">
 					<div>Lorem Ipsum</div>
-					<a href="#menu_third" data-panel="menu" data-role="button">Third page</a>
 				</div>
-			</div>	
-			<div data-role="page" id="menu_third">
-				<div data-role="header" data-theme="a" data-position="fixed" >
-					<h1>Third Page Menu</h1>
-				</div>
-				<div data-role="content" class="blue">
-					<div>Lorem Ipsum</div>
-				</div>
-			</div>	
+			</div>				
 	</div>
 
 	<div data-role="panel" data-id="mid" data-panel="mid" data-hash="history">
@@ -83,7 +69,7 @@
 			<div data-role="page" id="mid_first" data-show="first">
 		
 				<div data-role="header" data-position="fixed" data-theme="a">
-					<h1>MID First</h1>
+					<h1>First Page Mid</h1>
 				</div>
 				<div data-role="content" class="red">
 					<p>Mid Lorem Ipsum</p>
@@ -120,10 +106,10 @@
 			</div>
 
 			<div data-role="page" id="mid_second">
-				<div data-role="header" data-theme="a" data-position="fixed" >
+				<div data-role="header" data-theme="a" >
 					<h1>Second Page Mid</h1>
 				</div>
-				<div data-role="content" >
+				<div data-role="content" class="blue">
 					<div>Lorem Ipsum</div>
 				</div>
 			</div>				
@@ -134,8 +120,7 @@
 		<div data-role="page" id="main_first" data-show="first">
 		
 			<div data-role="header" data-position="fixed" data-theme="a">
-				
-				<h1>MAIN First</h1>
+				<h1>First Page Main</h1>
 				<div class="headWrapRight ui-btn-right">										
 					<div data-role="controlgroup" data-type="horizontal" class="iconposSwitcher-div">
 						<a href="#" data-transition="pop" data-role="button" data-panel="pop_two" data-icon="info" data-iconpos="left" class="iconposSwitcher-a toggle_popover">pop1</a>							
@@ -192,8 +177,8 @@
 				<h1>Second Page Main</h1>				
 				<div class="headWrapRight ui-btn-right">										
 					<div data-role="controlgroup" data-type="horizontal" class="iconposSwitcher-div">
-						<a href="#" data-transition="pop" data-role="button" data-panel="pop_one" data-icon="info" data-iconpos="left" class="iconposSwitcher-a toggle_popover">pop1</a>							
-						<a href="#" data-transition="pop" data-role="button" data-panel="pop_two" data-icon="gear" data-iconpos="left" class="iconposSwitcher-a toggle_popover">pop2</a>														
+						<a href="#" data-transition="pop" data-role="button" data-panel="pop_two" data-icon="info" data-iconpos="left" class="iconposSwitcher-a toggle_popover">pop1</a>							
+						<a href="#" data-transition="pop" data-role="button" data-panel="pop_one" data-icon="gear" data-iconpos="left" class="iconposSwitcher-a toggle_popover">pop2</a>														
 					</div>				
 				</div>
 			</div>
@@ -203,86 +188,7 @@
 		</div>
 	</div>
 	
-	<div data-role="panel" data-id="pop_one" data-panel="popover" data-fixed="top" data-hash="history" data-triangle="top" class="popover2">
-		
-		<div data-role="page" id="pop_one_first" data-show="first">
-		
-			<div data-role="header" data-position="fixed" data-theme="a">
-				<h1>POP 1 First</h1>
-			</div>
-			<div data-role="content">
-				<p>POP 1 Lorem Ipsum</p>
-				<ul data-role="listview">
-					<li>POP</li>
-					<li>1</li>
-					<li>POP</li>
-					<li>1</li>
-					<li>POP</li>
-					<li>1</li>
-					<li>POP</li>
-					<li>1</li>
-					<li>POP</li>
-					<li>1</li>
-					<li>POP</li>
-					<li>1</li>
-					<li>POP</li>
-					<li>1</li>
-					<li>POP</li>
-					<li>1</li>
-				</ul>
-			</div>					
-		</div>
-		
-		<div data-role="page" id="pop_one_second">
-			<div data-role="header" data-theme="a" data-position="fixed">
-				<h1>POP 1 Second</h1>								
-			</div>
-			<div data-role="content" class="brown">				
-				<div>Lorem Ipsum</div>
-			</div>
-		</div>
 	
-	</div>
-	
-	<div data-role="panel" data-id="pop_two" data-panel="popover" data-fixed="top" data-hash="history" data-triangle="top" class="popover1">
-	
-		<div data-role="page" id="pop_two_first" data-show="first">
-		
-			<div data-role="header" data-position="fixed" data-theme="a">
-				<h1>POP 2 First</h1>
-			</div>
-			<div data-role="content">
-				<p>POP 2 Lorem Ipsum</p>
-				<ul data-role="listview">
-					<li>POP</li>
-					<li>2</li>
-					<li>POP</li>
-					<li>2</li>
-					<li>POP</li>
-					<li>2</li>
-					<li>POP</li>
-					<li>2</li>
-					<li>POP</li>
-					<li>2</li>
-					<li>POP</li>
-					<li>2</li>
-					<li>POP</li>
-					<li>2</li>
-					<li>POP</li>
-					<li>2</li>
-				</ul>
-			</div>					
-		</div>
-		
-		<div data-role="page" id="pop_two_second">
-			<div data-role="header" data-theme="a" data-position="fixed">
-				<h1>POP 2 Second</h1>								
-			</div>
-			<div data-role="content" class="brown">				
-				<div>Lorem Ipsum</div>
-			</div>
-		</div>
-	</div>
 
 	
 	
@@ -307,17 +213,8 @@
 
 
 	<script type="text/javascript" src="jquery-1.7.1.min.js"></script>
-	<script type="text/javascript">
-		$( window.document ).on("mobileinit", function(e) {
-			// would be possible to catch panel deeplink - right now inside JQM
-			})
-			
-		$(window).on("pagecontainercreate", function( e ) {
-			// would be possible to catch panel deeplink - right now inside JQM				
-			})	
-		</script>
 	<!-- <script type="text/javascript" src="jquery.mobile-1.0.1multiview.js"></script> -->	
-	<script type="text/javascript" src="jquery.mobile-1.1.0.rc2multiview.js"></script>
+	<script type="text/javascript" src="jquery.mobile-1.1.0.rc2.js"></script>
 	<script type="text/javascript" src="multiview.js"></script>		
 
 

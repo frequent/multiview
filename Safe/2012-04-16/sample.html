@@ -23,10 +23,7 @@
 					<h1>MENU First</h1>
 				</div>
 				<div data-role="content" class="red">
-					<p>page 2 this panel</p>
-					<a href="#menu_second" data-panel="menu" data-role="button">page2 Menu</a>
-					<p>page 2 mid panel</p>
-					<a href="#mid_second" data-panel="mid" data-role="button">page2 Mid</a>
+					<p>Menu Lorem Ipsum</p>
 					<ul data-role="listview">
 						<li>A</li>
 						<li>B</li>
@@ -60,22 +57,13 @@
 			</div>
 
 			<div data-role="page" id="menu_second">
-				<div data-role="header" data-theme="a" data-position="fixed" >
+				<div data-role="header" data-theme="a" >
 					<h1>Second Page Menu</h1>
 				</div>
 				<div data-role="content" class="blue">
 					<div>Lorem Ipsum</div>
-					<a href="#menu_third" data-panel="menu" data-role="button">Third page</a>
 				</div>
-			</div>	
-			<div data-role="page" id="menu_third">
-				<div data-role="header" data-theme="a" data-position="fixed" >
-					<h1>Third Page Menu</h1>
-				</div>
-				<div data-role="content" class="blue">
-					<div>Lorem Ipsum</div>
-				</div>
-			</div>	
+			</div>				
 	</div>
 
 	<div data-role="panel" data-id="mid" data-panel="mid" data-hash="history">
@@ -120,10 +108,10 @@
 			</div>
 
 			<div data-role="page" id="mid_second">
-				<div data-role="header" data-theme="a" data-position="fixed" >
+				<div data-role="header" data-theme="a" >
 					<h1>Second Page Mid</h1>
 				</div>
-				<div data-role="content" >
+				<div data-role="content" class="blue">
 					<div>Lorem Ipsum</div>
 				</div>
 			</div>				
@@ -307,17 +295,8 @@
 
 
 	<script type="text/javascript" src="jquery-1.7.1.min.js"></script>
-	<script type="text/javascript">
-		$( window.document ).on("mobileinit", function(e) {
-			// would be possible to catch panel deeplink - right now inside JQM
-			})
-			
-		$(window).on("pagecontainercreate", function( e ) {
-			// would be possible to catch panel deeplink - right now inside JQM				
-			})	
-		</script>
 	<!-- <script type="text/javascript" src="jquery.mobile-1.0.1multiview.js"></script> -->	
-	<script type="text/javascript" src="jquery.mobile-1.1.0.rc2multiview.js"></script>
+	<script type="text/javascript" src="jquery.mobile-1.1.0.rc2.js"></script>
 	<script type="text/javascript" src="multiview.js"></script>		
 
 
