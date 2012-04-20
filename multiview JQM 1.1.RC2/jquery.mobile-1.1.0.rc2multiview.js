@@ -2185,7 +2185,13 @@ var createHandler = function( sequential ){
 	}
 	
 	return function( name, reverse, $to, $from ) {
-
+		
+		console.log("name="+name )
+		console.log("reverse= "+reverse)
+		console.log("to= "+$to.attr('id'))
+		console.log("from ="+ !$from  ? "kein from" : $from.attr('id') )
+		
+	
 		var deferred = new $.Deferred(),
 			reverseClass = reverse ? " reverse" : "",
 			active	= $.mobile.urlHistory.getActive(),
@@ -2209,14 +2215,13 @@ var createHandler = function( sequential ){
 				}, 150 );
 			},
 			cleanFrom = function(){
-				// XXX FREQUENT - check to clear wrapper page
+				// XXX FREQUENT - this should cover all cases of intra- and inter-panel transitons!				
 				if ( $to.parents('.ui-page-active').length == 0  && $from.parents('.ui-page-active').length == 0 ) {
 					$from.closest(':jqmData(wrapper="true")').removeClass( $.mobile.activePageClass );	
-					} 	
-				// XXX FREQUENT - prevent dropping active class
-				if ( $to.closest('div:jqmData(role="panel")').jqmData('id') != $from.closest('div:jqmData(role="panel")').jqmData('id') ) {
-				
-					}
+					return;
+					} 									
+				console.log( "removing "+$from.attr('id') );	
+					
 				$from
 					.removeClass( $.mobile.activePageClass + " out in reverse " + name )
 					.height( "" );
@@ -2252,7 +2257,7 @@ var createHandler = function( sequential ){
 				$to.height( screenHeight + toScroll );
 								
 				scrollPage();
-
+				
 				$to.addClass( $.mobile.activePageClass );
 
 				// Send focus to page as it is now display: block

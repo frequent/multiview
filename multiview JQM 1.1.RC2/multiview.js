@@ -45,8 +45,11 @@
 			// TODO: not implemented
 			externalSiteMap: [ ["#id", "url", "panel"] ],
 								
-			// DEPRECIATED: mimic JQM $ignoreNextHashChange
+			// mimic JQM $ignoreNextHashChange
 			// $ignoreMyOwnNextHashChange : false,
+			
+			// block multiple pagebeforechange firings
+			// $blockMultiPbc: 0,
 			
 			// DEPRECIATED: block hashChange firing panelTransitions
 			// $ignoreNextPageBeforeChange: false,
@@ -1950,8 +1953,11 @@
 		// panel transition handler - data is post-modified
 		panelTrans: function (e, data) {																	
 			console.log("paneltrans fired");
-			var	self = this,
-				$link = self.options.$stageEvent,		
+			var	self = this;
+			
+			console.log( self.options.$stageEvent );
+			
+			var	$link = self.options.$stageEvent,		
 				
 				$targetPanelID = $( $link ).jqmData('panel'),					
 				$targetPanel = $link ? $('div:jqmData(id="'+$targetPanelID+'")') : data.options.pageContainer,
@@ -1969,6 +1975,7 @@
 				// change options
 				// data.options.fromPage = $('div:jqmData(wrapper="true")');
 				// data.options.fromPage = $currPanelActivePage;	
+				
 				data.options.fromPage = $targetPanelActivePage;
 				
 				data.options.pageContainer = $targetPanel;
@@ -2043,6 +2050,8 @@
 				// allow next pagebeforecreate to pass again
 				// self.options.$infinity = ''; 			
 		
+				// unblock pagebeforechanger blocker
+				// self.options.$blockMultiPbc = 0;
 		},
 		
 		// panel hashchange handler
@@ -2052,7 +2061,7 @@
 				var self = this;														
 				
 				// stop Android for 500ms
-				// window.setTimeout(function () { self.options.$blockMultiClick = false; }, 500);	
+				window.setTimeout(function () { self.options.$blockMultiClick = false; }, 500);	
 				
 				// check for history-panels
 				// $panels = $('div:jqmData(wrapper="true").ui-page-active div:jqmData(hash="history")'),
@@ -2084,6 +2093,15 @@
 				//	console.log("block 1");
 				//	return;
 				//	}
+				
+				// not sure this is really helpful. At least it stops hashchanges from bubbling around the console on backwards transitions.
+				/*
+				if ( self.options.$ignoreMyOwnNextHashChange == false   ) {
+					console.log("block 1");
+					self.options.$ignoreMyOwnNextHashChange = true;												
+					return;
+					}
+				*/
 				/*				
 				if ( self.options.$ignoreMyOwnNextHashChange == false  && self.options.$hashJoker == 0 && self.options.$allowCrumbsHashToPass != true ) {
 					console.log("block 1");
@@ -2191,89 +2209,74 @@
 				// console.log( data );
 				
 			*/		
-							
-				// crumbs handler!
-				// TODO: actually this should grab the href from the crumbs button. Need to override JQM trying to go the the first page in history! 
-				// TODO: iPad does not fire hashChange on crumbs click...
-				
-				// NEED to check for the 2nd > 1st transiton, if in History wrapper page is called, find panel that is not on data-show=first,
-				// this will be the transition
-				
-				// a) ui-crumbs 	=> PANEL and ID ok 
-				// b) history => 2 	=> PANEL and ID ok
-				// c) history = 1	=> check all panels, if one is not on first
-				
-				
-					 
-					
-				
-				console.log( $.mobile.urlHistory.stack );
-				console.log( $.mobile.urlHistory.stack.length );
-				console.log( $.mobile.urlHistory.getPrev() );
 				
 				var $prev, $prevID, $prevPage;
 				
-				// if history
-				// get active not length!!!
-				if ( $.mobile.urlHistory.stack.length >= 2 ) {				
-										
-					// if crumbs = crumbs
-					if ( self.options.$crumbsPanel != "" ) {
+				// reroute				
+				if ( $.mobile.urlHistory.stack.length > 2 ) {				
 					
-						console.log("two");
-						$prevPanel = $('div:jqmData(id="'+self.options.$crumbsPanel+'")');
-						$prevPage = $('div#'+self.options.$crumbsID );						
-					
-						// reset
-						self.options.$crumbsID = ""
-						self.options.$crumbsPanel = ""
-					
-						// else history entry
-						} else {
-							console.log("three");
-							$prevPage = $.mobile.urlHistory.getPrev()
-							$prevID = $prevPage.Url
-							$prevPanel = $prevPage.pageContainer
-											
-							}						
-					} else {
-					// else find entry not on first
-						console.log("four");
-						$prevID = $('div:jqmData(show="first")').not( ".ui-page-active" ).attr('id');
-						$prevPage = $('div:jqmData(show="first")').not( ".ui-page-active" );
-						$prevPanel = $prevPage.closest('div:jqmData(role="panel")');
+						// crumbs button or browser back button.
+						// TODO: find a way to work in JQM backwards transition OR use block regular transitons from entering here.
+						if ( self.options.$crumbsPanel != "" ) {
+							console.log("crumbs set, history>2");
+							
+							$prevPanel = $('div:jqmData(id="'+self.options.$crumbsPanel+'")');
+							$prevPage = $('div#'+self.options.$crumbsID );										
 						
-						}
-			
+							} else {
+								console.log("ONLY history>2");
+								$prevPage = $.mobile.urlHistory.getPrev()
+								$prevID = $prevPage.Url
+								$prevPanel = $prevPage.pageContainer										
+								}
+							
+					} else {
+						// as above, backwars transitions are either crumbs button or browser back
+						if ( self.options.$crumbsPanel != "" ) {
+							console.log("crumbs set, history <=2");
+						
+							$prevPanel = $('div:jqmData(id="'+self.options.$crumbsPanel+'")');
+							$prevPage = $('div#'+self.options.$crumbsID );						
+														
+						} else {
+							console.log("ONLY history <= 2");
+							// else find entry not on first
+							console.log("four");
+							$prevID = $('div:jqmData(show="first")').not( ".ui-page-active" ).attr('id');
+							// if history is 2 or 1, this must be the last panel page not on it's inital page (data-show="first")
+							$prevPage = $('div:jqmData(show="first")').not( ".ui-page-active" );
+							$prevPanel = $prevPage.closest('div:jqmData(role="panel")');
+							
+							}
+					
+					}
+				
+				$prevPanelActivePage = $prevPanel.find('.ui-page-active');
+				
+				// reset
+				self.options.$crumbsID = "";
+				self.options.$crumbsPanel = "";
+				
+				// set
 				data.options.pageContainer = $prevPanel; 
 				data.options.toPage = $prevPage;
+				data.options.fromPage = $prevPanelActivePage;
 				
-				console.log("nu isses");
-				console.log( $prevPanel )
-				console.log( $prevPage )
+				// although I'm declaring toPage here, JQM still receives the wrapper page in the createHandler function 
+				// and adds active class to the wrapper				
+				// on backwards transitions, this means the toPage never gets activeClass, so I'm setting it here by hand.					
+				$prevPage.addClass( $.mobile.activePageClass );
+	
+				// clean up
+				$prevPanelActivePage.removeClass('.ui-page-active');
 				
 				
-				
-				// TODO: add regular history handler, where the pageContainer is retrieved from JQM history OR from page we are trying to go to (closest panel)
-				
-				// console.log( $.mobile.urlHistory );
-				// console.log( $.mobile.urlHistory.stack );
-				// console.log( $.mobile.urlHistory.activeIndex );	
-				
-				// add active class to toPage before transition starts ALSO: JQM does not assign
-				// $prevPage.addClass('ui-page-active');
-				
-				// var fromPage = $( gotoPage ).closest('div:jqmData(role="panel")').find('.ui-page-active');
 				// enhance first page - should be done on init of wrapper page, otherwise on iPad this enhancement is too late on the first panel transition
 				// fromPage.page();
-				// data.options.pageContainer = $( gotoPage ).closest('div:jqmData(role="panel")');
-				// data.options.fromPage = fromPage;
+
 				data.options.changeHash = true;
 				data.options.transition = "slide";				
-				data.options.reverse = true;
-				// data.toPage = gotoPage;	
-								
-				// data.toPage = "#container";
+				data.options.reverse = true;				
 																	
 				// as we have now made a transition, we need to block the next one coming from behind
 				// same as in changePage handler															
@@ -2308,7 +2311,9 @@
 				// window.setTimeout(function () { 
 					self.options.$blockMultiClick = false; 
 					// }, 500);	
-				
+					
+				// unblock pagebeforechanger blocker
+				// self.options.$blockMultiPbc = 0;
 		},
 		
 		panelDeepLink: function () {
@@ -2439,73 +2444,79 @@
 			*/
 			// panel transition handler 
 			$(document).on( "pagebeforechange", function( e, data ) {													
-				console.log("Pb4c");
-				console.log( e ) 
-				console.log( data )
-				
-				// console.log( $.mobile.urlHistory )
-				// console.log( $.mobile.urlHistory.stack )
-				//console.log( $.mobile.urlHistory.getActive() )
-				
-				// this fires after vclick, so click events can be stores on vclick using function clickRouter and
-				// retrieved here to override the pagebeforechange event in case a button was clicked. This
-				// allows to differentiate between programmatic panel-changePage calls (no stageEvent) and clicked
-				// links. Depending on which, the links data-panel or the calls pageContainer option is used.
-				// TODO: a nicer way, it could save some code
 			
-			if ( data.options.fromHashChange == true ) {
-			console.log("haschange shit");
+				console.log("pbc coming through!");	
 				
-			
-				} else {
+				// since pbc is firing multiple times
+				// if ( self.options.$blockMultiPbc == 0 ) {
+					// self.options.$blockMultiPbc = 1;
+					// console.log("pbc passed");
+					// this fires after vclick, so click events can be stores on vclick using function clickRouter and
+					// retrieved here to override the pagebeforechange event in case a button was clicked. This
+					// allows to differentiate between programmatic panel-changePage calls (no stageEvent) and clicked
+					// links. Depending on which, the links data-panel or the calls pageContainer option is used.
+					// TODO: a nicer way, it could save some code
+				
+					/*
+					if ( data.options.fromHashChange == true ) {
+						console.log("hashchange get target panel ");
 						
-				var $link = self.options.$stageEvent,
-					$targetPanelID = $( $link ).jqmData('panel'),
-					$targetPanel = $link ? $('div:jqmData(id="'+$targetPanelID+'")') : data.options.pageContainer;
+					
+						} else {
+						console.log("paneltransition get target panel ");		
+						var $link = self.options.$stageEvent,
+							$targetPanelID = $( $link ).jqmData('panel'),
+							$targetPanel = $link ? $('div:jqmData(id="'+$targetPanelID+'")') : data.options.pageContainer;
 															
-					console.log( $link );
-					}
+							console.log( $link );
+							console.log( data.options.pageContainer );
+															
+							}
 					
-					
-			// modify changePage options on panel transitions, either through link data-panel or changePage pageContainer option
-			if ( $targetPanel != $.mobile.pageContainer && typeof data.toPage === "string" ) {								
-		
-				// this used to be inside panelTrans and panelHash, but on iOS this is too late to override any default
-				// activeIndex JQM assigns. Also setting this in _setup function for the initial page
-				// this is necessary, because otherwise on iOS3, active is undefinded when retrieving the panel-transition
-				
-				// maintain active history entry, should always be stack@init-1									
-				// console.log( "init="+self.options.$jqmHistoryStackAtInit+" active="+$.mobile.urlHistory.activeIndex)
-				// $.mobile.urlHistory.activeIndex = self.options.$jqmHistoryStackAtInit;
-				// console.log( "init="+self.options.$jqmHistoryStackAtInit+" active="+$.mobile.urlHistory.activeIndex)					
-				
-				if ( data.options.fromHashChange == true ) {										
-					// reroute to panelHash					
-					self.panelHash( e, data );							
-					} else {										
-						// reroute to panelTrans							
-						self.panelTrans( e, data );
-						}					
-				}
-				
-				});			
+					console.log( $targetPanel );
+					*/
 			
+					// $targetPanel != $.mobile.pageContainer && 
+					// modify changePage options on panel transitions, either through link data-panel or changePage pageContainer option
+					if ( typeof data.toPage === "string" ) {								
+				
+						// this used to be inside panelTrans and panelHash, but on iOS this is too late to override any default
+						// activeIndex JQM assigns. Also setting this in _setup function for the initial page
+						// this is necessary, because otherwise on iOS3, active is undefinded when retrieving the panel-transition
+						
+						// maintain active history entry, should always be stack@init-1									
+						// console.log( "init="+self.options.$jqmHistoryStackAtInit+" active="+$.mobile.urlHistory.activeIndex)
+						// $.mobile.urlHistory.activeIndex = self.options.$jqmHistoryStackAtInit;
+						// console.log( "init="+self.options.$jqmHistoryStackAtInit+" active="+$.mobile.urlHistory.activeIndex)					
+						
+						if ( data.options.fromHashChange == true ) {										
+							// reroute to panelHash									
+							self.panelHash( e, data );							
+							} else {																		
+								// reroute to panelTrans							
+								self.panelTrans( e, data );
+								}					
+						}
+					// }
+				});			
+			/*
 			// panel backwards transition listener
 			$(window).on('hashchange', function(e) {		
-					console.log( e );
-			
+					console.log( "hashchange, do I still need this? " );
+					self.options.$blockMultiPbc = 0;
 			
 				if ( self.options.$blockMultiClick == false ) {										
 					self.options.$blockMultiClick = true;
 					console.log("hashchange detected");
 					// same as button click handler - only set options here, panelHash will be fired from pagebeforechange!
-					//self.options.$ignoreMyOwnNextHashChange = false;
+					// self.options.$ignoreMyOwnNextHashChange = false;
 					// self.options.$crumbsBlockStackUp = true;
 				
 					// self.panelHash( e, location.hash, location.pathname+""+location.hash );												
 					}
-				});					
-			
+				
+			});					
+			*/
 							
 			// make sure header is at css:top 0 when closing keyboard in iOS
 			$(document).on("blur","div:jqmData(wrapper='true') input", function () {			
