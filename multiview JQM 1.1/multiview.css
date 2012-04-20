@@ -1,0 +1,204 @@
+/** jQuery Mobile Framework : multiview plugin **/
+
+/* WRAPPER */ 
+body 											{ margin: 0px; width: inherit; overflow-y: auto !important; }
+div[data-wrapper="true"] 						{ margin: 0px; padding: 0px; width: inherit; /* height: inherit; */ }
+.blacklist div[data-wrapper="true"]  	{ overflow-x: hidden !important; }
+/* NOTE: removed height:inherit, because brakes fixed footer positioning */
+/* NOTE: need to add overflow-x:hidden !important, because otherwise on iPad there is ~20px empty space on the right hand of the screen
+   but in fullscreen and popover mode, this causes wrapper page to have scrollbars, when toolbars are pos:fix.. use html.blacklist or
+   otherwise in fullscreen-mode and popover mode   */
+
+.ui-mobile-viewport								{ height: inherit; }
+/* NOTE: not sure whether width: inherit/height:inherit works across browsers and whether it's still necessary
+ * Originally both rules were included to make sure dimensions are passed correctly, because JQM only has
+ * body>page, while the plugin needs to pass dimensions body>wrapper>panel>pages and panels had none or
+ * incorrect dimensions to pass on to nested pages.  */
+
+/* HEADER - optional - Wrappers can contain any number of buttons, controlgroups and from elements and align nicely. */
+.ui-header 										{ height: 41px;}
+.headWrapLeft > *, .headWrapRight > * 			{ display: inline-block; margin: 0; vertical-align: top; }
+.headWrapLeft .ui-btn, .headWrapRight  .ui-btn 	{ top: 0px; -moz-box-shadow: none; -webkit-box-shadow: none; box-shadow: none; }
+.ui-fullscreen-mode .headWrapLeft .ui-btn .ui-icon, .ui-fullscreen-mode  .headWrapRight  .ui-btn .ui-icon { margin: 0px; }
+
+/* BUTTONS - optional - Increase padding for icon-only buttons - just too difficult to click them */
+.ui-btn-icon-notext								{ height: 30px; width: 30px; }
+.ui-btn-icon-notext .ui-btn-inner 				{ padding: 3px 4px !important; }
+.ui-fullscreen-mode .ui-btn-icon-notext .ui-btn-inner 
+												{ padding: 4px 5px !important; }
+.ui-controlgroup-horizontal .ui-btn, .ui-controlgroup-horizontal .ui-select 
+												{ vertical-align: middle; }
+/* NOTE: adjusted in JQM 1.1.RC2, from 28px, pad: 4/5px. Also needed to add !important to override JQM - loose this again... */												
+												
+/* CONTROLGROUPS - DON'T TOUCH! */ 
+.ui-controlgroup-btn-notext    					{ padding: 0; width: 28px; height: 28.75px !important; vertical-align: middle;}
+.ui-controlgroup-btn-notext .ui-btn-inner             { height: 15px; padding: 6px 0; }
+.ui-controlgroup-btn-notext .ui-btn-inner .ui-icon       
+												{ left: 3.5px; position: relative; top: -1px; }
+.ui-controlgroup-btn-left        					{ vertical-align: middle; }												
+											
+/* PANEL DIMENSIONS */
+.ui-panel-left 									{ z-index: 55; float: left; position: static; /* relative */ }
+.ui-panel-mid									{ z-index: 50; float: left; position: static; /* relative */ }
+.ui-panel-right 									{ z-index: 45; right: 0; }
+/* NOTE: pos:rel on the panel is necessary to hide transitions. If pos:stat is used, you can see the page being pulled up on top of the main panel before sliding over 
+ * this does not work anymore with JQM 1.1, because toolbars switching between pos:fix and pos:abs, thereby messing up the layout */
+/* JQM 1.1 RC2: 	back to pos:static to avoid breaking layout in pos:fix mode - see if this works */			
+
+.ui-panel-left .ui-page, .ui-panel-mid .ui-page  	{ min-width: inherit; /* z-index:1050;*/ }
+.ui-panel-mid .ui-fixed-hidden					{ margin-left: 0px !important; /* need this because if pos:abs, margin left displaces middle header */ }
+.ui-panel-right .ui-page 						{ right: 0; }
+
+.blacklist .ui-footer-global						{ position: absolute; width: 100%; bottom: 0; }
+/* NOTE: without the above the global footer always jumps up to the top of the screen, because it's pos:rel, bottom: auto by default. Don't understand why
+         or if I overwrote some styles in this CSS. Works now, but not sure everywhere. */
+
+.blacklist .ui-panel .ui-header					{ position: absolute; width: 100%; }		 
+.blacklist .ui-panel-mid .ui-header				{ margin-left: 0 !important; }	 
+ /* NOTE: the last two rules are needed to make sure panels set up right, especially mid panel, which neither left:0 nor right:0 at pos:rel can put in
+    the right position, so on blacklist browsers, I'm switching to pos:absolute, which should be ok, because parent page is also pos:absolute, not
+	sure if this works all the way ... also need to add width: 100%, otherwise header just collapses. */
+/*  NOTE: leave it like this. Android or-change not the problem here, but in panelWidth */
+
+.ui-splitview-mode .ui-panel-right .ui-page, .ui-splitview-mode .ui-panel-mid .ui-page
+												{ -moz-box-shadow: 0 0 12px rgba(0,0,0,.6); -webkit-box-shadow: 0 0 12px rgba(0,0,0,.6); box-shadow: 0 0 12px rgba(0,0,0,.6); }
+/* NOTE: Alternative to box-shadow would be to set a border on nested pages. Panel borders are not visible and content height can be 
+   smaller than page height, so borders can only be set on the page, which always spans the whole screen. However setting a border-left: 1px, margin-right: -1px
+   shift local headers by 1px if pos:fix and on the middle panel */
+/* TODO: Handle box-shadow in popover mode with 2 out of 3 panels visible - assign ui-panel-yield and ui-panel-supercede depending on data-yield="none" or data-yield="panel_id" */
+
+
+.ui-content                      							{ overflow: visible; }
+.ui-fullscreen-mode .ui-content					{ overflow-x: hidden !important; /* padding: 15px !important;*/ }
+
+.ui-splitview-hidden { 
+	display:none; 
+}
+/*
+.menuToggle	{ 
+	position: absolute; 
+}
+*/
+
+.dataTables_filter.ui-menu-button-flex .menuToggle {
+	position: static;
+	display: inline-block;
+	float: none; 
+	margin: 2px 0.25em !important;
+}
+
+									
+											
+											
+											
+/** POPOVERS - modified from http://www.cagintranet.com/archive/create-an-ipad-like-dropdown-popover/ **/
+.ui-popover 												{ position:  absolute; z-index:1005 !important; color: black; font-weight: normal;  line-height: 1; cursor: auto; background-color: black; border: 3px solid black;  border-radius: 4px; -webkit-border-radius: 4px; -moz-border-radius: 4px; border-radius: 4px; -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); -webkit-transition: opacity 0.25s linear; -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); -moz-transition: opacity 0.25s linear; box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); transition: opacity 0.25s linear; left: auto; }
+/* NOTE: need !important on z-index, otherwise CSS3 transition change overrides to z-index 10 during transition */ 
+
+div[data-panel="popover"], .ui-popover-mode div[data-panel="menu"], .ui-popover-mode div[data-panel="mid"]							
+														{ display: none; overflow-x:visible !important; height:25em; width: 15em; top: 0; }
+/* NOTE: default popover dimensions, customize by adding own class .popover1, .popover2... and setting own dimensions, like so: */
+.popover1												{ margin-top: 3.25em; right: 5em;}
+.popover2 			                            					{ margin-top: 3.25em; right: 1em;}
+.pop_menuBox											{ margin-top: 3.25em; left: 1em; }
+.pop_midBox												{ margin-top: 3.25em; left: 5em; }
+.popover1 .popover_triangle , .popover2 .popover_triangle{ right: 0.25em;}
+.pop_menuBox .popover_triangle , .pop_midBox .popover_triangle{ left: 0.25em;}
+								
+
+.ui-popover .ui-page                         						{ bottom: 0; /* makes popover pages content expand to the full available width... on iPad */ }
+.ui-popover .ui-page-active								{ min-height: inherit !important;}
+.ui-popover-mode div.ui-popover, .ui-splitview-mode div.ui-panel
+														{ overflow-x: visible; }		
+/* NOTE: need to override this to hide menu-scrollbars in splitview mode and make popover triangles re-appear. As this is needs to be
+         'hidden' for Android select menu (only?), it should be ok on Android smartphones, as this would be fullscreen mode. */		
+
+.ui-popover .ui-header									{ bottom: auto; left: 0; position: absolute !important; right: 0; top: 0 !important; }
+.ui-popover .ui-content        								{ /* overthrow */ height: auto; /* end overthrow */ z-index: 999; bottom: 0; left: 0; overflow-x: hidden !important; overflow-y: visible;  position: absolute !important;right: 0; top: 43px;}
+
+
+/* show/hide popovers */
+.ui-footer-global							{ z-index: 1100; max-height: 48px; }
+.popover-btn								{ position: static; vertical-align: middle; /* margin: 3px 0 0 5px !important; */}
+/* NOTE: removed margin, because of mid/menu controlgroup, not sure if this is ok */
+ 
+/*
+.div[data-panel="popover"] > div[data-role="page"], 
+.div[data-panel="menu"] > div[data-role="page"], 
+.div[data-panel="mid"] > div[data-role="page"] { height: inherit; overflow-y: auto; min-height: inherit !important;}	
+*/
+/* NOTE: keep this? must have worked without, since I set .div... */
+/* .tweakMe									{ display: inline-block; }	*/
+/* NOTE: not sure what this was good for, not in the code */
+											
+/* FULLSCREEN */
+.ui-panel-hidden {
+	/* this way popover panel does not stack up below */
+	display: none; 
+}
+.pop_fullscreen { 
+	margin-top: 0px !important; 
+	top: 0px !important; 
+	left: 0px !important; 
+	right: 0px! important; 
+	z-index:1005 !important; 
+	width: 100% !important; 
+	height: 100%;
+	position: absolute; 
+	/* NOTE: Alternative to pos:abs would be leaving it away = pos:static like JQM body.viewport. However this causes the 
+	   panel to stay in the content flow = be positioned after the page content (Page is ok). 
+	   Also it seems on Android doing pos:static disables Select-elements, so only way is pos:abs.*/
+	
+	overflow: hidden !important;	   	   	   
+	}
+
+
+.ui-fullscreen-mode .ui-panel .ui-page-active {
+	z-index: 1010;
+}
+.ui-fullscreen-mode .ui-panel .ui-page-active .ui-header-fixed {
+	z-index: 1011;
+}
+.ui-fullscreen-mode .ui-footer-fixed {
+	z-index: 1025; /* must always be on top!!!*/
+}
+.ui-fullscreen-mode div.ui-mobile-viewport { 
+	overflow-y: auto; /* panels have scrollbar, because they act as viewport if panel is open! overriding body!, hides panel toolbar, question is on mobile devices, how scroll will work*/ 						 
+}
+
+.pop_fullscreen .ui-page-active { 
+	z-index: 1; /* background-color: #ffffff; necessary to expand page down to bottom on smartphones */
+	}
+.pop_fullscreen div[data-role="content"] { 
+	z-index: 999 !important; 
+	bottom: 0; 
+	left: 0; 
+	overflow-x: hidden; 
+	overflow-y: auto; /* must not be scroll!! */	
+	right: 0; 
+	top: 43px;
+	padding-bottom: 50px;
+	/* position: absolute !important; this will give two scrollbars on desktop */	
+		
+}
+/* POPOVER TRIANGLES */
+.popover_triangle											{ position: absolute;  font-size: 0px; line-height: 0%; width: 0px; border-top: 16px solid rgba(0,0,0,0); border-left: 16px solid rgba(0,0,0,0); border-right: 16px solid rgba(0,0,0,0); border-bottom: 16px solid black;  }
+.ui-triangle-top .popover_triangle							{ top: -32px;}
+.ui-triangle-bottom  .popover_triangle 						{ bottom: -34px;}
+
+/* DYNAMIC POPOVER POSITIONING */
+.ui-fixed-element-faux-top, .ui-fixed-element-faux-bottom 	{ position: absolute;}
+.ui-fixed-element-faux-top 									{ top: 0 !important; }
+.ui-fixed-element-faux-bottom								{ bottom: 0 !important; }
+
+/* OVERTHROW */
+.overthrow-enabled .overthrow 								{ overflow: auto; -webkit-overflow-scrolling: touch; }
+
+
+
+
+
+
+
+
+
