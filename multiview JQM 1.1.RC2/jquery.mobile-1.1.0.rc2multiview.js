@@ -2185,13 +2185,7 @@ var createHandler = function( sequential ){
 	}
 	
 	return function( name, reverse, $to, $from ) {
-		
-		console.log("name="+name )
-		console.log("reverse= "+reverse)
-		console.log("to= "+$to.attr('id'))
-		console.log("from ="+ !$from  ? "kein from" : $from.attr('id') )
-		
-	
+
 		var deferred = new $.Deferred(),
 			reverseClass = reverse ? " reverse" : "",
 			active	= $.mobile.urlHistory.getActive(),
@@ -2215,20 +2209,21 @@ var createHandler = function( sequential ){
 				}, 150 );
 			},
 			cleanFrom = function(){
+			
 				// XXX FREQUENT - this should cover all cases of intra- and inter-panel transitons!				
-				if ( $to.parents('.ui-page-active').length == 0  && $from.parents('.ui-page-active').length == 0 ) {
+				if ( $to.parents('.ui-page-active').length == 0  && $from.parents('.ui-page-active').length == 0 ) {					
 					$from.closest(':jqmData(wrapper="true")').removeClass( $.mobile.activePageClass );	
 					return;
-					} 									
-				console.log( "removing "+$from.attr('id') );	
+					} 														
 					
 				$from
 					.removeClass( $.mobile.activePageClass + " out in reverse " + name )
 					.height( "" );
+								
 			},
 			startOut = function(){
 				// if it's not sequential, call the doneOut transition to start the TO page animating in simultaneously
-				if( !sequential ){
+				if( !sequential ){					
 					doneOut();
 				}
 				else {
@@ -2242,9 +2237,8 @@ var createHandler = function( sequential ){
 					.addClass( name + " out" + reverseClass );
 			},
 			
-			doneOut = function() {
-
-				if ( $from && sequential ) {
+			doneOut = function() {			
+				if ( $from && sequential ) {					
 					cleanFrom();
 				}
 				
@@ -2255,7 +2249,7 @@ var createHandler = function( sequential ){
 				// XXX FREQUENT - shuffled around to stop white flicker as per https://forum.jquery.com/topic/jqm-rc1-1-flicker-after-transition-full-screen-mode
 				// Set to page height
 				$to.height( screenHeight + toScroll );
-								
+					
 				scrollPage();
 				
 				$to.addClass( $.mobile.activePageClass );
@@ -2305,7 +2299,7 @@ var createHandler = function( sequential ){
 		if ( $from && !none ) {
 			startOut();
 		}
-		else {
+		else {			
 			doneOut();
 		}
 
@@ -2797,8 +2791,7 @@ $.mobile.transitionFallbacks = {};
 
 	//function for transitioning between two existing pages
 	function transitionPages( toPage, fromPage, transition, reverse ) {
-
-		if( fromPage ) {
+		if( fromPage ) {			
 			//trigger before show/hide events
 			fromPage.data( "page" )._trigger( "beforehide", null, { nextPage: toPage } );
 		}
@@ -2930,7 +2923,7 @@ $.mobile.transitionFallbacks = {};
 	};
 
 	// Load a page into the DOM.
-	$.mobile.loadPage = function( url, options ) {
+	$.mobile.loadPage = function( url, options ) {		
 		// This function uses deferred notifications to let callers
 		// know when the page is done loading, or if an error has occurred.
 		var deferred = $.Deferred(),
@@ -2949,25 +2942,24 @@ $.mobile.transitionFallbacks = {};
 			dupCachedPage = null,
 
 			// determine the current base url
-			findBaseWithDefault = function(){
-				var closestBase = ( $.mobile.activePage && getClosestBaseUrl( $.mobile.activePage ) );
+			findBaseWithDefault = function(){				
+				var closestBase = ( $.mobile.activePage && getClosestBaseUrl( $.mobile.activePage ) );							
 				return closestBase || documentBase.hrefNoHash;
 			},
 
 			// The absolute version of the URL passed into the function. This
 			// version of the URL may contain dialog/subpage params in it.
 			absUrl = path.makeUrlAbsolute( url, findBaseWithDefault() );
-
-
+			
 		// If the caller provided data, and we're using "get" request,
 		// append the data to the URL.
-		if ( settings.data && settings.type === "get" ) {
+		if ( settings.data && settings.type === "get" ) {	
 			absUrl = path.addSearchParams( absUrl, settings.data );
 			settings.data = undefined;
 		}
 
 		// If the caller is using a "post" request, reloadPage must be true
-		if(  settings.data && settings.type === "post" ){
+		if(  settings.data && settings.type === "post" ){		
 			settings.reloadPage = true;
 		}
 
@@ -2981,18 +2973,18 @@ $.mobile.transitionFallbacks = {};
 			// path. For cross-domain pages (Phone Gap only) the entire absolute Url
 			// used to load the page.
 			dataUrl = path.convertUrlToDataUrl( absUrl );
-
+		
 		// Make sure we have a pageContainer to work with.
 		settings.pageContainer = settings.pageContainer || $.mobile.pageContainer;
 
 		// Check to see if the page already exists in the DOM.
 		page = settings.pageContainer.children( ":jqmData(url='" + dataUrl + "')" );
-
+			
 		// If we failed to find the page, check to see if the url is a
 		// reference to an embedded page. If so, it may have been dynamically
 		// injected by a developer, in which case it would be lacking a data-url
 		// attribute and in need of enhancement.
-		if ( page.length === 0 && dataUrl && !path.isPath( dataUrl ) ) {
+		if ( page.length === 0 && dataUrl && !path.isPath( dataUrl ) ) {			
 			page = settings.pageContainer.children( "#" + dataUrl )
 				.attr( "data-" + $.mobile.ns + "url", dataUrl );
 		}
@@ -3000,7 +2992,7 @@ $.mobile.transitionFallbacks = {};
 		// If we failed to find a page in the DOM, check the URL to see if it
 		// refers to the first page in the application. If it isn't a reference
 		// to the first page and refers to non-existent embedded page, error out.
-		if ( page.length === 0 ) {
+		if ( page.length === 0 ) {			
 			if ( $.mobile.firstPage && path.isFirstPageUrl( fileUrl ) ) {
 				// Check to make sure our cached-first-page is actually
 				// in the DOM. Some user deployed apps are pruning the first
@@ -3010,17 +3002,17 @@ $.mobile.transitionFallbacks = {};
 				// case. If the first-page is not in the DOM, then we let
 				// things fall through to the ajax loading code below so
 				// that it gets reloaded.
-				if ( $.mobile.firstPage.parent().length ) {
+				if ( $.mobile.firstPage.parent().length ) {					
 					page = $( $.mobile.firstPage );
 				}
-			} else if ( path.isEmbeddedPage( fileUrl )  ) {
+			} else if ( path.isEmbeddedPage( fileUrl )  ) {			
 				deferred.reject( absUrl, options );
 				return deferred.promise();
 			}
 		}
 
 		// Reset base to the default document base.
-		if ( base ) {
+		if ( base ) {		
 			base.reset();
 		}
 
@@ -3028,8 +3020,8 @@ $.mobile.transitionFallbacks = {};
 		// and the caller did not indicate that we should force a
 		// reload of the file, we are done. Otherwise, track the
 		// existing page as a duplicated.
-		if ( page.length ) {
-			if ( !settings.reloadPage ) {
+		if ( page.length ) {			
+			if ( !settings.reloadPage ) {			
 				enhancePage( page, settings.role );
 				deferred.resolve( absUrl, options, page );
 				return deferred.promise();
@@ -3234,7 +3226,7 @@ $.mobile.transitionFallbacks = {};
 	$.mobile.changePage = function( toPage, options ) {
 		// If we are in the midst of a transition, queue the current request.
 		// We'll call changePage() once we're done with the current transition to
-		// service the request.
+		// service the request.		
 		if( isPageTransitioning ) {
 			pageTransitionQueue.unshift( arguments );
 			return;
@@ -3261,8 +3253,7 @@ $.mobile.transitionFallbacks = {};
 		}
 
 		// We allow "pagebeforechange" observers to modify the toPage in the trigger
-		// data to allow for redirects. Make sure our toPage is updated.
-
+		// data to allow for redirects. Make sure our toPage is updated.		
 		toPage = triggerData.toPage;
 
 		// Set the isPageTransitioning flag to prevent any requests from
@@ -3270,19 +3261,19 @@ $.mobile.transitionFallbacks = {};
 		// or transitioning.
 
 		isPageTransitioning = true;
-
+		
 		// If the caller passed us a url, call loadPage()
-		// to make sure it is loaded into the DOM. We'll listen
+		// to make sure it is loaded into the DOM. We'll listen^
 		// to the promise object it returns so we know when
 		// it is done loading or if an error ocurred.
-		if ( typeof toPage == "string" ) {
-			$.mobile.loadPage( toPage, settings )
-				.done(function( url, options, newPage, dupCachedPage ) {
+		if ( typeof toPage == "string" ) {			
+			$.mobile.loadPage( toPage, settings )				
+				.done(function( url, options, newPage, dupCachedPage ) {										
 					isPageTransitioning = false;
 					options.duplicateCachedPage = dupCachedPage;
 					$.mobile.changePage( newPage, options );
 				})
-				.fail(function( url, options ) {
+				.fail(function( url, options ) {					
 					isPageTransitioning = false;
 
 					//clear out the active button state
@@ -3291,10 +3282,10 @@ $.mobile.transitionFallbacks = {};
 					//release transition lock so navigation is free again
 					releasePageTransitionLock();
 					settings.pageContainer.trigger( "pagechangefailed", triggerData );
-				});
+				});			
 			return;
 		}
-
+		
 		// If we are going to the first-page of the application, we need to make
 		// sure settings.dataUrl is set to the application document url. This allows
 		// us to avoid generating a document url with an id hash in the case where the
@@ -3338,7 +3329,7 @@ $.mobile.transitionFallbacks = {};
 		// If the changePage request was sent from a hashChange event, check to see if the
 		// page is already within the urlHistory stack. If so, we'll assume the user hit
 		// the forward/back button and will try to match the transition accordingly.
-		if( settings.fromHashChange ) {
+		if( settings.fromHashChange ) {			
 			urlHistory.directHashChange({
 				currentUrl:	url,
 				isBack:		function() { historyDir = -1; },
@@ -3402,7 +3393,6 @@ $.mobile.transitionFallbacks = {};
 
 		//set page title
 		document.title = urlHistory.getActive().title;
-
 		//set "toPage" as activePage
 		$.mobile.activePage = toPage;
 
@@ -3753,7 +3743,7 @@ $.mobile.transitionFallbacks = {};
 			}
 
 			//if to is defined, load it
-			if ( to ) {
+			if ( to ) {				
 				// At this point, 'to' can be one of 3 things, a cached page element from
 				// a history stack entry, an id, or site-relative/absolute URL. If 'to' is
 				// an id, we need to resolve it against the documentBase, not the location.href,
@@ -3761,7 +3751,7 @@ $.mobile.transitionFallbacks = {};
 				// that crosses from an external page/dialog to an internal page/dialog.
 				to = ( typeof to === "string" && !path.isPath( to ) ) ? ( path.makeUrlAbsolute( '#' + to, documentBase ) ) : to;
 				$.mobile.changePage( to, changePageOptions );
-			}	else {
+			}	else {				
 				//there's no hash, go to the first page in the dom
 				$.mobile.changePage( $.mobile.firstPage, changePageOptions );
 			}
@@ -3775,7 +3765,7 @@ $.mobile.transitionFallbacks = {};
 		//set page min-heights to be device specific
 		$( document ).bind( "pageshow", resetActivePageHeight );
 		$( window ).bind( "throttledresize", resetActivePageHeight );
-
+	
 	};//_registerInternalEvents callback
 
 })( jQuery );
