@@ -44,21 +44,9 @@
 			// in case the page to be loaded is NOT "on board"
 			// TODO: not implemented
 			externalSiteMap: [ ["#id", "url", "panel"] ],
-								
-			// mimic JQM $ignoreNextHashChange
-			// $ignoreMyOwnNextHashChange : false,
 			
 			// block multiple pagebeforechange firings
 			$blockMultiPbc: 0,
-				
-			// DEPRECIATED:  need this if pagination plugin is used
-			// $blockPaginationHashChange: false,			
-			
-			// DEPRECIATED:  avoid endless loops on panel transitions
-			// $infinity: '',
-													
-			// DEPRECIATED: block hashChanges originating from crumbs back-button
-			// $crumbsBlockStackUp: false,
 			
 			// allow crumbs induced backwards transitions to pass hashchange blockers
 			$allowCrumbsHashToPass:false,
@@ -1305,43 +1293,9 @@
 			// - check to see whether this can be CALLED FROM updateLayout, e.g. when opening collapsibles - need to adjust!	
 			// - simplify 
 			// - check if use of margin is iOS-proof
-				
-			var self = this,				
-				$activeWrapper = $('div:jqmData(wrapper="true").ui-page-active'),
-				$panels = $activeWrapper.find('.ui-panel:not(.ui-popover)'),
-				$pages = $activeWrapper.find('.ui-panel:not(.ui-popover) .ui-page '),								
-				
-				$overthrow = $activeWrapper.jqmData("scrollmode") == "overthrow",								
-				$cond = $overthrow.length > 0 && ( !$('html').hasClass('ui-popover-mode') && !$('html').hasClass('ui-fullscreen-mode') ),
-				$marPad = $cond ? ["margin-top", "margin-bottom"] : ["padding-top", "padding-bottom"],
-				
-				$glbH = $activeWrapper.find('.ui-header-global:eq(0)'),
-				$glbF = $activeWrapper.find('.ui-footer-global:last'),
-				
-				$setHeight = 0,
-				$locH, $locF, $dims, $localHeight;
-				
-			// set content padding/margin for nestes pages - JQM updatePagePadding is only for wrapper page!
-			// This is tricky, because in overthrow-mode, margin needs to be set instead of padding to not hide 
-			// the content behind the toolbars. Not sure if this works on iOS
-		
-			$pages.each(function() {
-				
-				$locH = $(this).siblings('.ui-header:eq(0)');
-				$locF = $(this).siblings('.ui-footer:eq(0)');				
-
-				$dims = {};
-				$dims[$marPad[0]] = $glbH.length > 0 ? $glbH.outerHeight() + $locH.outerHeight() : $locH.outerHeight(); 
-				$dims[$marPad[1]] = $glbF.length > 0 ? $glbF.outerHeight() + $locF.outerHeight() : $locF.outerHeight();
-				
-				if ( $cond ) {
-					$dims["padding-top"] = "0px";
-					$dims["padding-bottom"] = "0px";
-					}
-				
-				$(this).css($dims)					
-						
-				})
+			
+			
+			/*	
 			
 			// set panel/page/wrapper page height 			
 			if ( $cond ) {								
@@ -1349,9 +1303,12 @@
 				// this is for splitview-mode = fix screen to allow overthrow-based scrolling of multiple background panels				
 				$setHeight = $.mobile.getScreenHeight() - $glbH.outerHeight() - $glbF.outerHeight(); 
 				
-				// set panel and wrapper
-				$panels.add( $panels.find('.ui-page') ).css({'height': $setHeight });					
-				$activeWrapper.css({'overflow':'hidden' });
+				// set wrapper/panel/pages/content
+				$wrap.css({ 'overflow':'hidden'});
+				$panels.css({'height':''})
+				$pages.css({'height': $setHeight-$glbH.outerHeight() - $glbF.outerHeight() });
+				// no idea, why content needs global toolbars deducted twice?
+				$pages.find( ".ui-content" ).css({ 'height': $setHeight- $glbH.outerHeight() - $glbF.outerHeight() - $locF.outerHeight() - $locF.outerHeight()})
 					
 		
 				} else {					
@@ -1366,23 +1323,97 @@
 							}					
 						});					
 										
-					// set panel-height and wrapper-page height
-					$('div:jqmData(panel="main"), div:jqmData(panel="mid"), div:jqmData(panel="menu")').css({'height': $setHeight});						
-					}
+
 									
+				
+																							
+
+			*/						
+			var self = this,				
+				$wrap = $('div:jqmData(wrapper="true").ui-page-active'),
+				$panels = $wrap.find('.ui-panel:not(.ui-popover)'),
+				$pages = $wrap.find('.ui-panel:not(.ui-popover) .ui-page'),
+				$contents = $wrap.find('.ui-panel:not(.ui-popover) .ui-page .ui-content'),								
+				
+				$overthrow = $wrap.jqmData("scrollmode") == "overthrow",								
+				$cond = $overthrow && ( !$('html').hasClass('ui-popover-mode') && !$('html').hasClass('ui-fullscreen-mode') ),
+				$marPad = $cond ? ["margin-top", "margin-bottom"] : ["padding-top", "padding-bottom"],
+				
+				$glbH = $wrap.find('.ui-header-global:eq(0)'),
+				$glbF = $wrap.find('.ui-footer-global:last'),
+				
+				$setHeight = 0,
+				$locH, $locF, $dims, $localHeight;
+			
+			// set content padding/margin for nestes pages - JQM updatePagePadding is only for wrapper page!
+			// This is tricky, because in overthrow-mode, margin needs to be set instead of padding to not hide 
+			// the content behind the toolbars. Not sure if this works on iOS
+			
+			$contents.each(function() {
+								
+				/*
+				$dims = {};
+				
+								
+				if ( $cond ) {
+				
+					$dims["padding-top"] = "0px";
+					$dims["padding-bottom"] = "0px";
+					
+					} else {
+					
+					$locH = $(this).siblings('.ui-header:eq(0)');
+					$locF = $(this).siblings('.ui-footer:eq(0)');				
+					
+					$dims[$marPad[0]] = $glbH.length > 0 ? $glbH.outerHeight() + $locH.outerHeight() : $locH.outerHeight(); 
+					$dims[$marPad[1]] = $glbF.length > 0 ? $glbF.outerHeight() + $locF.outerHeight() : $locF.outerHeight();					
+					}
+				
+				$(this).css($dims)	
+				*/				
+				})
+			
+			
+			// set panel/page/wrapper page height 			
+			if ( $cond ) {								
+
+				// this is for splitview-mode = fix screen to allow overthrow-based scrolling of multiple background panels
+				
+				$setHeight = $.mobile.getScreenHeight() - $glbH.outerHeight() - $glbF.outerHeight(); 
+												
+				// set panel and wrapper									
+				$wrap.css({'overflow':'hidden' });							
+				
 				// set content height
-				$pages.each(function() {
+				$contents.each(function() {
 					$localHeight = $(this).siblings('.ui-header:eq(0)').outerHeight() + $(this).siblings('.ui-footer:eq(0)').outerHeight();
 					$(this).css({ 'height':$setHeight-$localHeight }).addClass("overthrow");						
 					});	
-																							
+		
+				} else {
+					// this is for popover-mode and fullscreen-mode, which should not use overthrow, because there is only one panel visible 
+					// in the back at all times = use normal scrolling
+			
+					//get heighest height of active nested page													
+					$panels.find('.ui-page-active').each(function() {						
+						if ( $(this).outerHeight() > $setHeight ) {				
+							$setHeight = $(this).outerHeight();							
+							}					
+						});
+						
+				$contents.each( function() {
+					$localHeight = $(this).siblings('.ui-header:eq(0)').outerHeight() + $(this).siblings('.ui-footer:eq(0)').outerHeight();					
+					$(this).css({ 'height':$setHeight-$localHeight });
+					})	
+					
+					// set panel-height and wrapper-page height
+					$('div:jqmData(panel="main"), div:jqmData(panel="mid"), div:jqmData(panel="menu")').css({'height': $setHeight});						
+					}								
+
 				// overwrite menu height again, otherwise popover panels expand depending on content 			
 				if ( $('html').hasClass('ui-popover-mode') ) { 					
-					$('div:jqmData(panel="menu")').add('div:jqmData(panel="mid")').css({'height':''});
+					$('div:jqmData(panel="menu")').add('div:jqmData(panel="mid")').css({'height':''});									
 					}
-					
-				// trigger updatelayout				
-				// $(document).trigger( 'updatelayout' );
 			
 			},
 		
@@ -1428,7 +1459,7 @@
 						
 			// always run panelHeight to adjust fixed toolbar positioning!
 			self.panelHeight();
-					
+				
 			},
 			
 		framer: function () {

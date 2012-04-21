@@ -68,8 +68,8 @@ div[data-wrapper="true"] 						{ margin: 0px; padding: 0px; width: inherit; /* h
 /* TODO: Handle box-shadow in popover mode with 2 out of 3 panels visible - assign ui-panel-yield and ui-panel-supercede depending on data-yield="none" or data-yield="panel_id" */
 
 
-.ui-content                      							{ overflow: visible; }
-.ui-fullscreen-mode .ui-content					{ overflow-x: hidden !important; /* padding: 15px !important;*/ }
+.ui-content                      								{ overflow: visible; z-index: 950; } 
+/* .ui-fullscreen-mode .ui-content					{ overflow-x: hidden !important;  padding: 15px !important; } */
 
 .ui-splitview-hidden { 
 	display:none; 
