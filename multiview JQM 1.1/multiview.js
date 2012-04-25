@@ -56,7 +56,7 @@
 			
 			// store click events
 			$stageEvent: '',
-			
+					
 			// block scrollTop on transitions inside a popover
 			$panelTransBlockScrollTop:'',
 			
@@ -124,7 +124,7 @@
 					
 					.data({
 						// history base
-						'backAtBase':true, 
+						'backAtBase':true,
 						// set click flag
 						'clickInProgress':false
 						});		
@@ -454,6 +454,7 @@
 						// make sure panel is gone... not sure why status sometimes is hidden with panels visible when navigating between wrapper pages
 						$pop.css('display','none');
 					}
+				
 				});
 				
 				// clean up pop() transition 
@@ -461,9 +462,11 @@
 					// same as in showpanel. Transition depends on screen-mode. In splitview always use "Pop", in other view-mode (popover or fullscreen)
 					// depending on data-yield being set, "pop" or "slide" is used					
 					$('div:jqmData(role="panel")').removeClass('reverse out '+ ( $('div:jqmData(yieldmode="true")').length > 0 && !$('html').hasClass('ui-splitview-mode') ) ? 'slide' : 'pop');					
-					
+																					
+					// reset
+					$('html').data({'clickInProgress':false })										
 					}, 350);					
-				
+
 		
 			},
 		
@@ -482,7 +485,7 @@
 			var self = this,
 				$correspond = $el.jqmData("panel"),
 				$popPanel = $('div:jqmData(id="'+$correspond+'")'),
-				$wrap = $popPanel.closest('div:jqmData(wrapper="true")');
+				$wrap = $popPanel.closest('div:jqmData(wrapper="true")');	
 			
 			if ( $popPanel.is(":visible") ) {
 				
@@ -534,7 +537,10 @@
 							
 							// clean up pop transition
 							window.setTimeout( function() {									
-								$popPanel.removeClass('in');							
+								$popPanel.removeClass('in');
+								
+								// reset
+								$('html').data({'clickInProgress':false })								
 								}, 350);																																																																						
 								
 							// fullscreen handler	
@@ -1495,6 +1501,7 @@
 		
 /* -------------------------------------- HELPERS (some from JQM ) -------------------------------------- */				
 
+		
 		findClosestLink: function ( ele ) {			
 			// --- PURPOSE ---		
 			// 1. same as JQM
@@ -1507,8 +1514,8 @@
 			// 	JQM 1.1 RC2  added middle panel
 			
 			// --- TODO ---
-			//			
-			console.log("in");
+			//	This is also inside overthrow... Only use one. Removeing this breaks the script though
+		
 			while ( ele ) {				
 				// Look for the closest element with a nodeName of "a".
 				// Note that we are checking if we have a valid nodeName
@@ -1519,15 +1526,13 @@
 				// SVGAnimatedString.
 				if ( ( typeof ele.nodeName === "string" ) && ele.nodeName.toLowerCase() == "a" ) {					
 					break;
-					}
-				console.log( ele );
+					}				
 				ele = ele.parentNode;					
 				}		
-			console.log("it's done = ");
-			console.log( ele );
 			return ele;			
+			
 			},
-						
+				
 		clearActiveClasses: function ( trigger, useBruteForce, toPage, fromPage, link ) {										
 		
 			// --- PURPOSE ---		
@@ -1571,7 +1576,7 @@
 			},
 					
 		clickRouter: function( e, data, source ) {																
-			
+				
 			// --- PURPOSE ---		
 			// 1. in order to run both click based AND programmatic panel transitions through the same panelTrans() function, this function captures the click
 			//    event on all clicks and stores it at option $stageEvent. The function captures and blocks multiple clicks and is triggered on vclick, so it
@@ -1595,22 +1600,19 @@
 			if ( !link ) {
 				return;
 				}
-				
+			
+			console.log("clickInProgrss needs to be false ="+$('html').data('clickInProgress'));
+			
 			// make sure only one vclick passes, because we only want the vclick event and only one
 			// in case it's firing multiple times
-			if ( $('html').data('clickInProgress') == false ) {								
-				$('html').data({'clickInProgress':true })				
+			if ( $('html').data('clickInProgress') == false ) {					
+				$('html').data({'clickInProgress':true })								
 				
-				//console.log("passed, link is");				
-				//console.log( link );
-				//console.log( $(link) );
-				//console.log( $(link).jqmData("panel") );
-											
-				if ( e.type == "click" && $(link).jqmData("panel") ) {						
-					console.log("click stored");
+				if ( e.type == "vclick" && typeof $(link).jqmData("panel") != "undefined" && $(link).hasClass('toggle_popover') == false ) {						
+					console.log(" vlick stored");
 					// store the click event/link element 								
 					self.options.$stageEvent = $link;					
-					}
+					} 
 					
 				if ( e.type == "click" && $(link).jqmData('context') ) {
 					// fire a second changePage					
@@ -1658,30 +1660,21 @@
 				$targetPanelID = $( $link ).jqmData('panel'),					
 				$targetPanel = $link ? $('div:jqmData(id="'+$targetPanelID+'")') : data.options.pageContainer,
 				$targetPanelActivePage = $targetPanel.find( '.ui-page-active' ) || $targetPanel.find('div:jqmData(show="first")');
+
+			console.log( $targetPanel );
+			console.log( $targetPanel.is('body') );
 				
-				console.log( $link );
-				console.log( $targetPanelID );
-				console.log( $targetPanel );
-				console.log( $targetPanelActivePage );
+			// only continue if it's a panel transition, otherwise JQM does it's thing
+			// if ($targetPanel != "undefined" ||  $targetPanel.is('body') == false ) {
+			if ( $targetPanel.is('body') == false ) {
 				
-				// current - BEWARE: this needs to be the page that is being transitoned out on the targetPanel! Not the page in view on the currentPanel
-				// $currPanel = $link ? $link.closest('div:jqmData(role="panel")') : data.options.fromPage.parents('div:jqmData(role="panel")'),
-				// $currPanelID = $currPanel.jqmData('id'),				
-				// $currPanelActivePage = $currPanel.find( '.ui-page-active' ) || $currPanel.find('div:jqmData(show="first")');				
-									
-				// make sure fromPage.data("page") does not return undefind
-				// $currPanelActivePage.page();
-				
-				// change options
-				// data.options.fromPage = $('div:jqmData(wrapper="true")');
-				// data.options.fromPage = $currPanelActivePage;	
-				
-				
+				console.log("MULTI-TRANS");
+				console.log( data );
 				
 				data.options.fromPage = $targetPanelActivePage;				
 				data.options.pageContainer = $targetPanel;
 				data.options.changeHash = $targetPanel.jqmData('hash') == 'history' ? true : false;										
-								
+												
 				// set scrollTop blocker to keep popover panels visible when loading a new page into the DOM									
 				// removed || $currPanel.jqmData("panel") 
 				if ( $targetPanel.jqmData("panel") == "popover" ) {					
@@ -1734,7 +1727,18 @@
 				$.mobile.pageContainer == $('body') ? $.mobile.pageContainer : $('body'); 
 													
 				// allow next pagebeforecreate to pass again
-				// self.options.$infinity = ''; 			
+				// self.options.$infinity = ''; 
+				
+				console.log("trans over, history = ");
+				console.log( $.mobile.urlHistory );
+				
+				} else {
+					console.log("JQM");
+				console.log( data );
+				
+					}
+
+							
 		
 				
 		},
@@ -1758,141 +1762,158 @@
 				//	}
 
 				// first context hashChange is correctly blocked before, 
-				// 2nd one passes and is stopped here				
+				// 2nd one passes and is stopped here	
+				/*
 				if ( self.options.$contextBlockNextHashChange == true ) {											
 					self.options.$contextBlockNextHashChange = false;
 					self.options.$blockContextScrollTop = true;						
 					return;
 					}
-			/*		
-				// block pagination hashChanges				
-				if ( self.options.$blockPaginationHashChange == true ) {					
-				console.log("block 3");
-					self.options.$blockPaginationHashChange = false;					
-					return;
-					}
-			*/	
+				*/
 
 				var $prev, $prevPage, $prevPanel, $prevFrom, 
-					$tweakHist, $tweakPanel, $tweakPage, $tweakFrom;
+					$tweakHist, $tweakPanel, $tweakPage, $tweakFrom;								
 				
 				// reroute - can't use stack length, because nothing is popped off the history. Use activeIndex instead!
 				// if activeIndex = 1, we are on the inital page
 				if ( $.mobile.urlHistory.activeIndex > 1 ) {				
-					
 						// crumbs button or browser back button.
 						// TODO: find a way to work in JQM backwards transition OR use block regular transitons from entering here.
-						if ( self.options.$crumbsPanel != "" ) {
-							// console.log("A");							
+						if ( self.options.$crumbsPanel != "" ) {													
 							$prevPanel = $('div:jqmData(id="'+self.options.$crumbsPanel+'")');
 							$prevPage = $('div#'+self.options.$crumbsID );																
-							} else {								
-								$prevPage = $('div#'+$.mobile.urlHistory.getPrev().url);																															
+							} else {																								
+								$prevPage = $('div#'+$.mobile.urlHistory.getPrev().url);							
 								$prevPanel = $.mobile.urlHistory.getPrev().pageContainer;
 								}
 							
-					} else {
+					} else {					
 						// as above, backwars transitions are either crumbs button or browser back
 						if ( self.options.$crumbsPanel != "" ) {
-							// console.log("C");						
 							$prevPanel = $('div:jqmData(id="'+self.options.$crumbsPanel+'")');
 							$prevPage = $('div#'+self.options.$crumbsID );																				
-							} else {								
+							} else {					
 								// active index = 1, this is first page = wrapper page. Find not active page with data-show="first" on panel
 								$prevPage = $('div:jqmData(show="first")').not( ".ui-page-active" );
 								$prevPanel = $prevPage.closest('div:jqmData(role="panel")');								
 								}					
 						}
+
+				// if there is no active page on the previous panel and no active wrapper page, we should be going from a JQM page back
+				// to a wrapper page - JQM does this. Multiview handles the rest.
+				console.log( $('div:jqmData(show="first").ui-page-active').length );
+				console.log( $('div.ui-page-active').length-1 );
 				
-				$prevFrom = $prevPanel.find('.ui-page-active');
-				
-				// the problem in using JQM's history vs. having a panel-based history is that JQM history does not 
-				// recognize different panels when storing entries, so going from A1 > A2 and B1 > B2 > B3, will
-				// create the following JQM urlHistory entries "wrapper", A2, B2, B3. Clicking the back button once
-				// will go to prev() = B2, this is correct. Clicking again, JQM will try to go to prev() = A2 from
-				// A2's panels active page, which also is A2, when in fact it should go from B2>B1.
-				
-				// To work around, we need to check if toPageID = fromPageID and if so, don't go prev(), but take the
-				// page with activeIndex in urlHistory (B2 in the above example), get this pages panel (B) and go back
-				// through the history to find the next page with the same panelID. This page should be toPage, the 
-				// activeIndex Page will be fromPage and after the transition, new ActiveIndex needs to be set to the
-				// original toPage. 				
-				if ( $prevPage.attr('id') == $prevFrom.attr('id') ) {					
-					// overwrite 
-					$tweakHist = true;					
-					$tweakFrom = $( 'div#'+$.mobile.urlHistory.getActive().url );					
-					$tweakPanel = $tweakFrom.closest('div:jqmData(role="panel")');					
+				if ($prevPanel.find('.ui-page-active').length != 0 && $('div:jqmData(show="first").ui-page-active').length != $('div.ui-page-active').length-1) {
+					console.log("MULTIVIEW");
 					
-					// loop through history from top to find next page with panelID matching tweakPanel
-					// if no page is found in urlHistory, grab the first page on this panel
-					for (i = $.mobile.urlHistory.activeIndex-1; i>=0; i--) {						
-						if ( $tweakPanel.jqmData('id') == $.mobile.urlHistory.stack[i].pageContainer.jqmData('id') || i == 0 ) {										
-							$tweakPage = i == 0 ? $('div#'+$tweakPanel.find('div:jqmData(show="first")').attr('id') ) 
-									: $('div#'+$.mobile.urlHistory.stack[i].url );																		
-							break;						
+					$prevFrom = $prevPanel.find('.ui-page-active');
+
+					// the problem in using JQM's history vs. having a panel-based history is that JQM history does not 
+					// recognize different panels when storing entries, so going from A1 > A2 and B1 > B2 > B3, will
+					// create the following JQM urlHistory entries "wrapper", A2, B2, B3. Clicking the back button once
+					// will go to prev() = B2, this is correct. Clicking again, JQM will try to go to prev() = A2 from
+					// A's panels active page, which also is A2, when in fact it should go from B2>B1.
+					
+					// To work around, we need to check if toPageID = fromPageID and if so, don't go prev(), but take the
+					// page with activeIndex in urlHistory (B2 in the above example), get this pages panel (B) and go back
+					// through the history to find the next page with the same panelID. This page should be toPage, the 
+					// activeIndex Page will be fromPage and after the transition, new ActiveIndex needs to be set to the
+					// original toPage. 				
+					console.log("if prevFromID = prevPageID ="+$prevPage.attr('id')+"  = "+$prevFrom.attr('id') );
+					if ( $prevPage.attr('id') == $prevFrom.attr('id') ) {					
+						// overwrite 
+						console.log("need to overwrite");
+						$tweakHist = true;					
+						$tweakFrom = $( 'div#'+$.mobile.urlHistory.getActive().url );					
+						$tweakPanel = $tweakFrom.closest('div:jqmData(role="panel")');					
+						
+						// loop through history from top to find next page with panelID matching tweakPanel
+						// if no page is found in urlHistory, grab the first page on this panel
+						for (i = $.mobile.urlHistory.activeIndex-1; i>=0; i--) {						
+							if ( $tweakPanel.jqmData('id') == $.mobile.urlHistory.stack[i].pageContainer.jqmData('id') || i == 0 ) {										
+								$tweakPage = i == 0 ? $('div#'+$tweakPanel.find('div:jqmData(show="first")').attr('id') ) 
+										: $('div#'+$.mobile.urlHistory.stack[i].url );																		
+								break;						
+								}
 							}
 						}
-					}
-								
-				// reset
-				self.options.$crumbsID = "";
-				self.options.$crumbsPanel = "";
-				
-				// set
-				data.options.pageContainer = $tweakPanel || $prevPanel; 
-				data.toPage = $tweakPage || $prevPage;
-				data.options.fromPage = $tweakFrom || $prevFrom;
-				
-				data.options.changeHash = true;
-				data.options.transition = "slide";				
-				data.options.reverse = true;						
+									
+					// reset
+					self.options.$crumbsID = "";
+					self.options.$crumbsPanel = "";
+					
+					// set
+					data.options.pageContainer = $tweakPanel || $prevPanel; 
+					data.toPage = $tweakPage || $prevPage;
+					data.options.fromPage = $tweakFrom || $prevFrom;
+					
+					data.options.changeHash = true;
+					data.options.transition = "slide";				
+					data.options.reverse = true;						
 
-				// reset crumbs button pass
-				self.options.$allowCrumbsHashToPass = false;
-				
-				// unblock for the next click event
-				$('html').data({'clickInProgress':false })
-				
-				// reduce panel stacks	
-				// console.log("stackdown to= "+gotoPage );
-				// self.stackDown( "panelHash", e, data );
-				
-				// Clear active classes
-				self.clearActiveClasses( "panelHash", true, $(data.toPage), data.options.fromPage );
-				
-				// not sure I need to set this.
-				// $.mobile.firstPage[ 0 ] = gotoPage;	
+					// reset crumbs button pass
+					self.options.$allowCrumbsHashToPass = false;
+					
+					// unblock for the next click event
+					$('html').data({'clickInProgress':false })
+					
+					// reduce panel stacks	
+					// console.log("stackdown to= "+gotoPage );
+					// self.stackDown( "panelHash", e, data );
+					
+					// Clear active classes
+					self.clearActiveClasses( "panelHash", true, $(data.toPage), data.options.fromPage );
+					
+					// not sure I need to set this.
+					// $.mobile.firstPage[ 0 ] = gotoPage;	
 
-				//make sure wrapper page stays activePage		
-				$.mobile.activePage = $('div:jqmData(wrapper="true")');
-				
-				// unblock pagebeforechanger blocker
-				self.options.$blockMultiPbc++;								
-				
-				// although I'm declaring toPage here, JQM still receives the wrapper page in the createHandler function 
-				// and adds active class to the wrapper				
-				// on backwards transitions, this means the toPage never gets activeClass, so I'm setting it here by hand.					
-				data.toPage.addClass( $.mobile.activePageClass );
-	
-				// clean up
-				data.options.fromPage.removeClass('.ui-page-active');
-				
-				// reset page container to prevent regular JQM loading pages into a container
-				// pageContainer will be re-set on next panel-transition to correct panel,
-				// but if a regular JQM transition fires pageContainer would be stuck at the 
-				// panel the last page was loaded into. Therefore reset (like for the loader:
-				$.mobile.pageContainer == $('body') ? $.mobile.pageContainer : $('body'); 
-				
-				// unlock for next hashchange
-				window.setTimeout(function () { 
-					self.options.$blockMultiClick = false; 
-					}, 500);	
+					//make sure wrapper page stays activePage		
+					$.mobile.activePage = $('div:jqmData(wrapper="true")');
+					
+					// unblock pagebeforechanger blocker
+					self.options.$blockMultiPbc++;								
+					
+					// although I'm declaring toPage here, JQM still receives the wrapper page in the createHandler function 
+					// and adds active class to the wrapper				
+					// on backwards transitions, this means the toPage never gets activeClass, so I'm setting it here by hand.					
+					data.toPage.addClass( $.mobile.activePageClass );
+		
+					// clean up
+					data.options.fromPage.removeClass('.ui-page-active');
+					
+					// reset page container to prevent regular JQM loading pages into a container
+					// pageContainer will be re-set on next panel-transition to correct panel,
+					// but if a regular JQM transition fires pageContainer would be stuck at the 
+					// panel the last page was loaded into. Therefore reset (like for the loader:
+					$.mobile.pageContainer == $('body') ? $.mobile.pageContainer : $('body'); 
+					
+					// unlock for next hashchange
+					window.setTimeout(function () { 
+						self.options.$blockMultiClick = false; 
+						}, 500);	
 
-				// set active index	
-				if ( $tweakHist = true ) {					
-					$.mobile.urlHistory.activeIndex =  $.mobile.urlHistory.activeIndex = i;					
-					$tweakHist = false; 
-					}
+					// set active index	
+					if ( $tweakHist = true ) {					
+						$.mobile.urlHistory.activeIndex =  $.mobile.urlHistory.activeIndex = i;					
+						$tweakHist = false; 
+						}
+						
+					console.log( $.mobile.urlHistory );
+					console.log( $.mobile.urlHistory.activeIndex );
+					
+					// $.mobile.urlHistory.activeIndex = $.mobile.urlHistory.activeIndex-1;
+					console.log( $.mobile.urlHistory.activeIndex );
+				 } else { 
+				
+					console.log("JQM DOES THIS");
+					
+					console.log("options FROM; TO; CONTAINER")
+					console.log( data.options.fromPage );
+					console.log( data.toPage );
+					console.log( data.options.pageContainer );
+					
+				}
 				
 		},
 		
@@ -1970,6 +1991,9 @@
 			// toggle popover
 			$(document).on('click','a.toggle_popover', function(e) {															
 				self.showPanel(e, $(this) );
+				// since this button also passes clickrouting, this needs to be reset 
+				// alternatively on toggle_popover buttons, the data-panel trigger (relating to the panel-id needs to be changed
+				$('html').data({'clickInProgress':false })
 				});								
 
 			// click panel transition listener
@@ -1989,47 +2013,36 @@
 				});	
 
 			
-			$(document).on("click.clickRouting", function( e, data ) { 	
+			$(document).on("vclick.clickRouting", function( e, data ) { 	
 				// need to bind to vclick, because binding to click = 300ms, so it not possible
 				// to pass event data to options and retrieve them in panelTrans, because by
 				// the time click fires, panelTrans has already run.
 				// vclick however fires way before panelTrans, so this is used to store
 				// click related information
-				console.log("click registered, target is");
-				console.log( $(e.target) );
-				var $tgt = $(e.target);
-					
+
 				// as above... sucks
-				self.clickRouter( e, data, "vclick", $tgt );
+				self.clickRouter( e, data, "vclick" );
 				
 				});				
 			
 			// panel transition handler 
 			$(document).on( "pagebeforechange", function( e, data ) {
-				
-				// clear, otherwise you start with the previously clicked element
-				self.options.$stageEvent = ""
-				
-				console.log("pbc")
+							
 				// since pbc is firing multiple times, esp on hashchange
 				if ( data.options.fromHashChange == true ) {
 					// seems to work
 					if ( self.options.$blockMultiPbc == 1 ) {
-						self.options.$blockMultiPbc = 0;
-						console.log("pbc block 1");
+						self.options.$blockMultiPbc = 0;						
 						return;												
 						}
 					}
-			
-					// console.log("Pagebeforechange");
+								
 					// why does this pass on desktop and fail on iOS?				
 					 if (typeof data.toPage !== 'string') {
-						// this captures the 2nd pagebeforechange being triggered from the first transition!												
-						console.log("pbc block 2");
+						// this captures the 2nd pagebeforechange being triggered from the first transition!																		
 						return;
 					  }										
 					  
-					console.log("passed");	
 					if ( data.options.fromHashChange == true ) {										
 						// reroute to panelHash									
 						self.panelHash( e, data );							
@@ -2630,8 +2643,7 @@ var trigger = $(document).on('pagecreate', 'div:jqmData(wrapper="true")',functio
 			}	
 		}, false);
 						
-		function findClosestLink(ele) {	
-			console.log("not here I hope!!");
+		function findClosestLink(ele) {				
 			var self = this;
 			while (ele){
 				if (ele.nodeName.toLowerCase() == "a"){
@@ -2639,9 +2651,6 @@ var trigger = $(document).on('pagecreate', 'div:jqmData(wrapper="true")',functio
 					}
 				ele = ele.parentNode;
 				}
-			console.log("wtf");
-			console.log("it's =");
-			console.log( ele );
 			return ele;			
 			}	
 		

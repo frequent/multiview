@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+		<meta charset="utf-8">	
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<title>Multiview Sample</title>
+
+		<link rel="stylesheet" type="text/css" href="jquery.mobile-1.1.0.css" />
+        <link rel="stylesheet" type="text/css" href="multiview.css" />
+		<style type="text/css">
+		
+		/* INPUTLIST - including support for inField label plugin */
+		
+		.inField { 
+			position:relative 
+			}
+		.inField label  { 
+			font-weight: bold;
+			line-height: 2.25em;
+			vertical-align: middle;
+			position:absolute; 
+			left:8pt;
+			width: inherit !important;
+			}
+		.inField label, .inputList .ui-fake-label {
+			color:#222222;
+			cursor: text;	
+			}
+		/* global real and fake placeholder styling */	
+		::-webkit-input-placeholder {
+		/* color:#222222;*/
+			}
+		:-moz-placeholder {
+		/* color:#222222;*/
+			}
+		/* split cells 70/30, can be used for ZIP/CITY or input/button */
+		.inputListWrap .split30 {
+			width: 61%;
+			display: inline-block;	
+			border-color: transparent;	
+			}
+		.inputListWrap .split30 label {
+			left: 0;
+			}
+		.inputListWrap .split70 label {
+			right: 0;
+			}
+		.inputListWrap .split70 {
+			width: 35%;
+			display: inline-block;
+			border-color: transparent;
+			}
+		.inputListWrap .inputList .split30  input.ui-input-text {
+			text-indent: 50%;
+			}
+		.inputListWrap .inputList .split70  input.ui-input-text {
+			text-indent: 35%;
+			}
+		.inputListWrap .split70 {
+			width: 61%;
+			display: inline-block;	
+			border-color: transparent;	
+			}
+		.inputListWrap .split30 {
+			width: 35%;
+			display: inline-block;
+			border-color: transparent;
+			}
+		.inputListWrap .inputList .split30  input.ui-input-text {
+			text-indent: 50%;
+			}
+		.inputListWrap .inputList .split70  input.ui-input-text {
+			text-indent: 35%;
+			}
+		/* align ZIP/City */
+		.split30 input {
+			margin-left: 80px !important;
+			max-width: 60px;
+			text-indent: 5px !important;
+			}
+		.split30 label {
+			}
+		.split70 label {
+			left: -75px !important;
+			}
+		@media all and (max-width: 480px) {
+			.split70 label {
+				left: -55px !important;
+				}
+			}
+		.split70 input {
+			margin-left: 30px !important;
+			max-width: 90%;
+			right: 10px !important;
+			text-indent: 6px !important;
+			}	
+		.ui-padlink {
+			padding-right: .5em;
+			}
+		/* select box */
+		.inputListWrap .ui-select {
+			width: 100%;
+			}
+		.inputListWrap .ui-select.togSel {
+			max-width: 28px;
+			}	
+		.inputListWrap .ui-select .ui-btn  .ui-btn-inner .ui-btn-text {
+			font-weight: normal;
+			font-size: 1em;	
+			}	
+		.inputListWrap ul .ui-select .ui-btn {
+			border-width: 0px;
+			z-index: 10; /* otherwise it's stuck behind some other elements */
+			margin: 0;
+			font-size: .875em;	
+			-moz-border-radius: 				.6em;
+			-webkit-border-radius: 				.6em;
+			border-radius: 						.6em;
+			}	
+		.inputListWrap ul .ui-select option[data-placeholder="true"], .inputListWrap ul .ui-select .ui-btn-text {
+			color: /* #A1A1A1; */ #222222;
+			}			
+		.inputListWrap li:not(.liText) {
+			max-height: 39px;
+			}
+		.inputListWrap .pText {
+			text-align: justify;
+			}		
+		.inputListWrap li:not(.liText) {
+			max-height: 39px; /* IE need this */
+			}
+		.msg {	
+			margin-top: 5%;
+			}	
+		/* Readonly */
+		.readonlyList li{ 
+			font-weight: normal;
+			}
+		.alignInputList {
+			margin-top: 28px !important; /* overrule JQM inset...*/
+			}
+		.alignInputList .ui-li-divider {
+			min-height: 21px;
+			}
+		.inactiveList, .callBox {
+			margin: 0.5em 0 1em !important	
+			}
+		.inactiveList li {
+			height: 15px; /* align */
+			border-bottom-width: 0px;
+			}
+		.inactiveList li:last-child {
+			border-bottom-width: 1px;
+			}
+		.inactiveList p {	
+			display: inline;
+			font-size: 1em;
+			height: 20px;
+			text-align: center; 
+			margin: 0;
+			text-shadow: none;
+			}
+		.inactiveList .ui-li-aside {
+			/* width: 80%; */
+			 padding-left: 5%;
+			text-align: left;
+			width: 70%;
+			}
+
+
+		.inputList li input {
+			-webkit-appearance: none;
+		}
+		.inputList li .ui-btn-text {
+			/* font-size: 15px; *//* remove this once it's clear why on Android the font size differs across same inputs */
+		}
+		.inputList.listmenu {
+			margin: 0 0 1em 0;
+		}	
+		.inputList li div.ui-btn-inner {
+			background: none;
+			border-bottom-width: 0px;
+			border-left-width: 0px;
+			border-right-width: 0px;
+			}	
+		/* fake labels */
+		.inputList label, .inputList .ui-fake-label {
+			margin: 3px 0 0 !important;
+			}
+		.inputList .ui-fake-label, .inputList .ui-fake-text {
+			display: inline-block;	
+			vertical-align: middle;
+			}
+		.inputList .ui-fake-label {
+			padding: 0 .15em 0 1em;
+			line-height: 2.25em;
+			width: 50%;
+			min-width: 150px;
+			}
+		.inputList .ui-fake-text {	
+			font-size: 0.875em;    
+			}
+		.inputList .ui-fake-text-block {
+			padding: 1em;
+			}			
+		/* input formatting */
+		.inputList input.ui-input-text, .inputList textarea.ui-input-text {
+			width: 97% !important; /* IE needs important, otherwise structure.css 60% is used */ 
+			margin-left: 1%;
+			padding: 0.6em 0; 
+			/*text-indent: 10px; */	/*if using inField */
+			/*text-indent: 35%; */
+			text-indent: 85px; /* hard-coded */
+			border-width: 0px;
+			background: transparent;	
+			-moz-box-shadow: none; 
+			-webkit-box-shadow: none; 
+			box-shadow: none;	
+			-moz-border-radius:0px; 
+			-webkit-border-radius: 0px; 
+			border-radius: 0px;
+			}	
+		.inputList li .ui-select a, .inputList li .ui-select a .ui-btn-inner {			
+			-moz-border-radius: 0px; 
+			-webkit-border-radius:0px;
+			border-radius: 0px; 
+			}	
+		.inputList li:first-child .ui-select a, .inputList li:first-child .ui-select a .ui-btn-inner {	
+			-moz-border-radius-topleft: 		1em;
+			-webkit-border-top-left-radius: 	1em;
+			border-top-left-radius: 			1em;
+			-moz-border-radius-topright: 		1em;
+			-webkit-border-top-right-radius: 	1em;
+			border-top-right-radius: 			1em;
+			}
+		.inputList li:last-child .ui-select a, .inputList li:last-child .ui-select a .ui-btn-inner {	
+			-moz-border-radius-bottomleft: 		1em;
+			-webkit-border-bottom-left-radius: 	1em;
+			border-bottom-left-radius: 			1em;
+			-moz-border-radius-bottomright: 	1em;
+			-webkit-border-bottom-right-radius: 1em;
+			border-bottom-right-radius: 		1em;
+			}
+		/* long label spacing */
+		.inputList .stretch150 label {
+			width: 150px;
+			}
+		.inputList .stretch150 input {
+			text-indent: 155px;
+			}	
+		.inputList textarea.ui-input-text {
+			text-indent: 0px;
+			padding: 10px 0.6em 0;
+			}	
+		/* remove padding, increase font-size */									
+		.inputList .ui-li-divider:not(.input-divider), .inputList .ui-li-static, .inputList .ui-li-has-alt, .inputList .ui-link-inherit, .inputList .ui-btn-icon-notext .ui-btn-inner {
+			padding: 0px !important; 
+			font-size: 1em !important; /* IE needs important */ 
+			}
+		.inputList div.ui-li-static, .inputList li.ui-li-static {
+			font-size: 1em !important;
+			}
+		.inputList .ui-select {
+			width: 100%;
+			}
+		/* select with spliticon */	
+		.inputList .inputListSplit .ui-select,  .inputList .inputListSplit input{ 
+			width: 86% !important; /* spliticon list elements always 86%|14% */									
+			}			
+		.inputList .ui-select-noIcon .ui-icon {
+			display: none; /* because there is data-iconpos="noicon" does not work */
+			}
+		.inputList .ui-select-noText {
+			border: 1px solid #CCCCCC;
+			border-bottom-width: 0;
+			border-right-width: 0;
+			border-top-width: 0;
+			height: 37px;
+			position: absolute;
+			right: 0;
+			top: 0;
+			/*  width: 14%; splitIcon always 14% */
+			z-index: 2;
+			}	
+		.inputList .ui-select-noText .ui-select {
+			min-width: 40px;
+		}
+		.inputList .ui-select-noText .ui-select  .ui-btn {
+			height: 28px;
+			border: 1px solid #CCCCCC;
+			-moz-border-radius:  1em;
+			-webkit-border-radius:  1em;
+			border-radius: 1em;
+			margin: 5px auto;
+			}
+		.inputList .ui-select-noText .ui-select  .ui-btn  .ui-btn-inner {
+			padding: 4px 5px !important;
+			}
+		.inputList .inputListSplit .ui-btn-text {
+			/* padding-right: 40px; */
+			}
+		.inputList .inSelect .ui-btn {
+			margin: 0;
+			border: 0;	
+			height: inherit;
+			}
+		.inputList li .inSelect a 	{
+			/*
+			-moz-border-radius:	0;
+			-webkit-border-radius: 0; 
+			border-radius: 0;
+			*/
+			}
+		/* IE */	
+		.inputList .ui-li .ui-btn-inner a.ui-link-inherit, .inputList .ui-li-static.ui-li {
+			padding: 0 !important;
+			}	
+		.inputList li:first-child .inSelect .ui-btn {
+			-moz-border-radius-topleft: .6em; 
+			-webkit-border-top-left-radius: .6em; 
+			border-top-left-radius: .6em;
+			-moz-border-radius-topright:.6em; 
+			-webkit-border-top-right-radius:.6em; 
+			border-top-right-radius: .6em;
+			font-size: .875em;
+			}
+		.inputList .inSelect, .inputList .ui-select  {
+			height: 37px; /* not nice! */
+			}
+		/* dividers */
+		.input-divider {
+			padding: .5em 0;
+			}	
+		.ui-divider-text {
+			cursor: normal;
+			/* padding: .25em 0 0; */
+			display: block;
+			text-align: center;
+			}
+		/* search */
+		.ui-embedded-searchfilter .ui-input-search {
+			border: 0 none;
+			-moz-box-shadow: none;
+			-webkit-box-shadow: none;
+			box-shadow: none;	
+			width: 100%;
+			padding: 0;
+			}
+		.ui-embedded-searchfilter .ui-icon-searchfield:after {
+			background: none;	
+			}
+		.ui-embedded-searchfilter .ui-input-search, .ui-embedded-searchfilter .ui-input-search .ui-btn-inner {	
+			-moz-border-radius: 0px;
+			-webkit-border-radius: 	0px;
+			border-radius: 	0px;
+			}
+		.ui-embedded-searchfilter .ui-input-search input {
+			text-indent: 155px;
+			}
+		.ui-embedded-searchfilter .ui-input-search .ui-input-clear{
+			display: none !important;
+			}
+		.hideForm .ui-listview-filter {
+			display: none !important;
+			}
+		/* plain list - input/inactive/regular */
+		.regularList .ui-li-link-alt .ui-btn .ui-icon{
+			margin-top: 1px;
+			top: 35%;
+			right:5px;
+			position: static !important;
+			}
+		.regularList  a.ui-btn {
+			border-width: 0px;
+			border-left-width: 1px;
+			}
+		/* spliticon */
+		.splitIcon {
+			/* commenting out misplaces the icon on index.html!*/    
+			/*
+			right: -1px;
+			top: -2px;
+			*/
+			border-bottom-width: 0;
+			border-right-width: 0;
+			border-top-width: 0;
+			height: 37px;
+			}
+		.inputList .splitIcon {
+			margin-top: -1px;
+			}
+		.splitIcon .ui-btn-inner{
+			border-top: 0 none;
+			}						
+		</style>
+		
+</head>
+<body>	
+				
+ <!--     <div data-role="page" id="container" data-wrapper="true" data-scrollmode="overthrow"> -->
+<div data-role="page" id="container" data-wrapper="true" data-switchable="true" > 
+	
+	<div data-role="panel" data-id="menu" data-panel="menu" data-hash="history">
+			
+			<div data-role="page" id="menu_first" data-show="first">
+		
+				<div data-role="header" data-position="fixed" data-theme="a">					
+					<h1>MENU First</h1>
+				</div>
+				<div data-role="content" class="red">
+					<p>page 2 this panel</p>
+					<a href="#menu_second" data-panel="menu" data-role="button">page2 Menu</a>
+					<p>page 2 mid panel</p>
+					<a href="#mid_second" data-panel="mid" data-role="button">page2 Mid</a>
+					<ul data-role="listview">
+						<li>A</li>
+						<li>B</li>
+						<li>A</li>
+						<li>B</li>
+						<li>A</li>
+						<li>B</li>
+						<li>A</li>
+						<li>B</li>
+						<li>A</li>
+						<li>B</li>
+						<li>A</li>
+						<li>B</li>
+						<li>A</li>
+						<li>B</li>
+						<li>A</li>
+						<li>C</li>
+						<li>A</li>
+						<li>B</li>
+						<li>A</li>
+						<li>B</li>
+						<li>A</li>
+						<li>B</li>
+						<li>A</li>
+						<li>B</li>
+						<li>A</li>
+						<li>D</li>
+						
+					</ul>
+				</div>	
+			</div>
+
+			<div data-role="page" id="menu_second">
+				<div data-role="header" data-theme="a" data-position="fixed" >
+					<h1>Second Page Menu</h1>
+				</div>
+				<div data-role="content" class="blue">
+					<div>Lorem Ipsum</div>
+					<a href="#menu_third" data-panel="menu" data-role="button">Third page</a>
+				</div>
+			</div>	
+			<div data-role="page" id="menu_third">
+				<div data-role="header" data-theme="a" data-position="fixed" >
+					<h1>Third Page Menu</h1>
+				</div>
+				<div data-role="content" class="blue">
+					<div>Lorem Ipsum</div>
+				</div>
+			</div>	
+	</div>
+
+	<div data-role="panel" data-id="mid" data-panel="mid" data-hash="history">
+			
+			<div data-role="page" id="mid_first" data-show="first">
+		
+				<div data-role="header" data-position="fixed" data-theme="a">
+					<h1>MID First</h1>
+				</div>
+				<div data-role="content" class="red">
+					<p>Mid Lorem Ipsum</p>
+					<ul data-role="listview">
+						<li>Some</li>
+						<li>Thing</li>
+						<li>Some</li>
+						<li>Thing</li>
+						<li>Some</li>
+						<li>Thing</li>
+						<li>Some</li>
+						<li>Thing</li>
+						<li>Some</li>
+						<li>Thing</li>
+						<li>Some</li>
+						<li>Thing</li>
+						<li>Some</li>
+						<li>Thing</li>
+						<li>Else</li>
+						<li>Some</li>
+						<li>Thing</li>
+						<li>Some</li>
+						<li>Thing</li>
+						<li>Some</li>
+						<li>Thing</li>
+						<li>Some</li>
+						<li>Thing</li>
+						<li>Some</li>
+						<li>Thing</li>
+						<li>Some</li>
+						<li>More</li>												
+					</ul>
+				</div>	
+			</div>
+
+			<div data-role="page" id="mid_second">
+				<div data-role="header" data-theme="a" data-position="fixed" >
+					<h1>Second Page Mid</h1>
+				</div>
+				<div data-role="content" >
+					<div>Lorem Ipsum</div>
+				</div>
+			</div>				
+	</div>
+	
+	<div data-role="panel" data-id="main" data-panel="main" data-hash="history">
+
+		<div data-role="page" id="main_first" data-show="first">
+		
+			<div data-role="header" data-position="fixed" data-theme="a">
+				
+				<h1>MAIN First</h1>
+				<div class="headWrapRight ui-btn-right">										
+					<div data-role="controlgroup" data-type="horizontal" class="iconposSwitcher-div">
+						<a href="#" data-transition="pop" data-role="button" data-panel="pop_two" data-icon="info" data-iconpos="left" class="iconposSwitcher-a toggle_popover">pop1</a>							
+						<a href="#" data-transition="pop" data-role="button" data-panel="pop_one" data-icon="gear" data-iconpos="left" class="iconposSwitcher-a toggle_popover">pop2</a>														
+					</div>				
+				</div>	
+			</div>
+			<div data-role="content" class="yellow">
+				<p>Main Lorem Ipsum</p>
+				<div class="inputListWrap">
+				<form>				
+				<ul data-role="listview" data-inset="true" class="logList inputList">
+						<li data-role="fieldcontain" data-icon="false" class="inField ui-btn liUser" data-theme="c">
+							
+									<label for="Username">Benutzer</label>
+									<input name="Username" id="Username" type="text" tabindex="1" class="required"  />
+							
+						</li>									
+						<li data-icon="false" data-role="fieldcontain" data-split-icon="forgot" data-split-theme="c" class="inField inputListSplit ui-corner-bl liPass">										
+							<label for="Password">Passwort</label>
+							<input name="Password" id="Password" type="password" tabindex="2" class="required" />
+							
+							<a tabindex="-1" data-transition="slide" class="splitIcon ui-li-link-alt ui-btn ui-corner-br ui-btn-up-c" data-panel="log" data-theme="c" data-icon="forgot" href="#passwort_vergessen" title="Passwort vergessen"><!-- tx_passwort_vergessen -->
+								<span class="ui-btn-inner" aria-hidden="true">
+									<span class="ui-btn-text"></span>
+									<span title="" data-theme="c" class="ui-btn ui-btn-up-c ui-btn-icon-notext ui-btn-corner-all ui-shadow">
+										<span class="ui-btn-inner ui-btn-corner-all" aria-hidden="true">
+											<span class="ui-btn-text"></span>
+											<span class="ui-icon ui-icon-forgot ui-icon-shadow"></span>
+										</span>
+									</span>
+								</span>
+							</a>
+						</li>
+					</ul>
+					</form>
+				</div>
+					<form>					
+					<ul data-role="listview" data-inset="true">
+						<li data-role="fieldcontain">
+							<label for="name">Text Input:</label>
+							<input type="text" name="name" id="name" value=""  />
+						</li>
+						<li data-role="fieldcontain">
+							<label for="name">Text Input:</label>
+							<input type="text" name="name" id="name" value=""  />
+						</li>
+					</ul>
+					</form>
+			</div>					
+		</div>
+		
+		<div data-role="page" id="main_second">
+			<div data-role="header" data-theme="a" data-position="fixed">
+				<h1>Second Page Main</h1>				
+				<div class="headWrapRight ui-btn-right">										
+					<div data-role="controlgroup" data-type="horizontal" class="iconposSwitcher-div">
+						<a href="#" data-transition="pop" data-role="button" data-panel="pop_one" data-icon="info" data-iconpos="left" class="iconposSwitcher-a toggle_popover">pop1</a>							
+						<a href="#" data-transition="pop" data-role="button" data-panel="pop_two" data-icon="gear" data-iconpos="left" class="iconposSwitcher-a toggle_popover">pop2</a>														
+					</div>				
+				</div>
+			</div>
+			<div data-role="content" class="brown">				
+				<div>Lorem Ipsum</div>
+			</div>
+		</div>
+	</div>
+	
+	<div data-role="panel" data-id="pop_one" data-panel="popover" data-fixed="top" data-hash="history" data-triangle="top" class="popover2">
+		
+		<div data-role="page" id="pop_one_first" data-show="first">
+		
+			<div data-role="header" data-position="fixed" data-theme="a">
+				<h1>POP 1 First</h1>
+			</div>
+			<div data-role="content">
+				<ul data-role="listview" data-inset="true" class="logList inputList">
+					<li data-role="fieldcontain" data-icon="false" class="inField ui-btn liUser" data-theme="c">
+						<div class="ui-btn-inner" aria-hidden="true"><div class="ui-btn-text">
+						<label for="Username">Benutzer</label><!-- tx_benutzer -->
+						<input name="Username" id="Username" type="text" tabindex="1" class="required"  />
+						</div></div>
+					</li>									
+					<li data-icon="false" data-role="fieldcontain" data-split-icon="forgot" data-split-theme="c" class="inField inputListSplit ui-corner-bl liPass">										
+						<label for="Password">Passwort</label><!-- tx_passwort -->
+						<input name="Password" id="Password" type="password" tabindex="2" class="required" />
+						
+						<a tabindex="-1" data-transition="slide" class="splitIcon ui-li-link-alt ui-btn ui-corner-br ui-btn-up-c" data-panel="log" data-theme="c" data-icon="forgot" href="#passwort_vergessen" title="Passwort vergessen"><!-- tx_passwort_vergessen -->
+							<span class="ui-btn-inner" aria-hidden="true">
+								<span class="ui-btn-text"></span>
+								<span title="" data-theme="c" class="ui-btn ui-btn-up-c ui-btn-icon-notext ui-btn-corner-all ui-shadow">
+									<span class="ui-btn-inner ui-btn-corner-all" aria-hidden="true">
+										<span class="ui-btn-text"></span>
+										<span class="ui-icon ui-icon-forgot ui-icon-shadow"></span>
+									</span>
+								</span>
+							</span>
+						</a>
+					</li>
+				</ul>
+			</div>					
+		</div>
+		
+		<div data-role="page" id="pop_one_second">
+			<div data-role="header" data-theme="a" data-position="fixed">
+				<h1>POP 1 Second</h1>								
+			</div>
+			<div data-role="content" class="brown">				
+				<div>Lorem Ipsum</div>
+			</div>
+		</div>
+	
+	</div>
+	
+	<div data-role="panel" data-id="pop_two" data-panel="popover" data-fixed="top" data-hash="history" data-triangle="top" class="popover1">
+	
+		<div data-role="page" id="pop_two_first" data-show="first">
+		
+			<div data-role="header" data-position="fixed" data-theme="a">
+				<h1>POP 2 First</h1>
+			</div>
+			<div data-role="content">
+				<a href="next.html" data-role="button" data-panel="pop_two">load into pop2</a>
+				<a href="next.html" data-role="button" data-panel="main">load into main</a>
+				<a href="next.html" data-role="button">replace wrap</a>
+			</div>					
+		</div>
+		
+		<div data-role="page" id="pop_two_second">
+			<div data-role="header" data-theme="a" data-position="fixed">
+				<h1>POP 2 Second</h1>								
+			</div>
+			<div data-role="content" class="brown">				
+				<div>Lorem Ipsum</div>
+			</div>
+		</div>
+	</div>
+
+	
+	
+	
+
+		<div data-role="footer" data-id="mainFooter" data-position="fixed">
+			<div data-role="navbar" data-grid="d">
+				<ul>						
+					<li><a href="#" data-transition="slide" data-iconpos="top" data-icon="search">One</a></li>
+					<li><a href="#" data-transition="slide" data-iconpos="top" data-icon="arrow-l">Two</a></li>
+					<li><a href="#" data-transition="slide" data-iconpos="top" data-icon="arrow-r">Three</a></li>
+					<li><a href="#" data-transition="slide" data-iconpos="top" data-icon="delete">Four</a></li>	
+					<li><a href="#" data-transition="slide" data-iconpos="top" data-icon="arrow-d">Five</a></li>
+				</ul>
+			</div>
+		</div>	
+
+	</div>
+
+	
+
+
+
+	<script type="text/javascript" src="jquery-1.7.1.min.js"></script>
+	<script type="text/javascript">
+		$( window.document ).on("mobileinit", function(e) {
+			// would be possible to catch panel deeplink - right now inside JQM
+			})
+			
+		$(window).on("pagecontainercreate", function( e ) {
+			// would be possible to catch panel deeplink - right now inside JQM				
+			})	
+		</script>
+
+	<script type="text/javascript" src="jquery.mobile-1.1.0.multiview.js"></script>
+	<script type="text/javascript" src="multiview.js"></script>	
+
+
+	</body>
+</html>
