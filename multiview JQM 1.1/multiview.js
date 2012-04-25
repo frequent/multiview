@@ -1507,7 +1507,8 @@
 			// 	JQM 1.1 RC2  added middle panel
 			
 			// --- TODO ---
-			//						
+			//			
+			console.log("in");
 			while ( ele ) {				
 				// Look for the closest element with a nodeName of "a".
 				// Note that we are checking if we have a valid nodeName
@@ -1518,9 +1519,12 @@
 				// SVGAnimatedString.
 				if ( ( typeof ele.nodeName === "string" ) && ele.nodeName.toLowerCase() == "a" ) {					
 					break;
-					}					
+					}
+				console.log( ele );
 				ele = ele.parentNode;					
-				}			
+				}		
+			console.log("it's done = ");
+			console.log( ele );
 			return ele;			
 			},
 						
@@ -1586,7 +1590,7 @@
 			
 			var self = this, 
 				link = self.findClosestLink( e.target );
-				$link = $( link );	
+				$link = $( link );							
 			
 			if ( !link ) {
 				return;
@@ -1596,8 +1600,14 @@
 			// in case it's firing multiple times
 			if ( $('html').data('clickInProgress') == false ) {								
 				$('html').data({'clickInProgress':true })				
-																
-				if ( e.type == "vclick" && $(link).jqmData("panel") ) {						
+				
+				//console.log("passed, link is");				
+				//console.log( link );
+				//console.log( $(link) );
+				//console.log( $(link).jqmData("panel") );
+											
+				if ( e.type == "click" && $(link).jqmData("panel") ) {						
+					console.log("click stored");
 					// store the click event/link element 								
 					self.options.$stageEvent = $link;					
 					}
@@ -1649,6 +1659,10 @@
 				$targetPanel = $link ? $('div:jqmData(id="'+$targetPanelID+'")') : data.options.pageContainer,
 				$targetPanelActivePage = $targetPanel.find( '.ui-page-active' ) || $targetPanel.find('div:jqmData(show="first")');
 				
+				console.log( $link );
+				console.log( $targetPanelID );
+				console.log( $targetPanel );
+				console.log( $targetPanelActivePage );
 				
 				// current - BEWARE: this needs to be the page that is being transitoned out on the targetPanel! Not the page in view on the currentPanel
 				// $currPanel = $link ? $link.closest('div:jqmData(role="panel")') : data.options.fromPage.parents('div:jqmData(role="panel")'),
@@ -1662,8 +1676,9 @@
 				// data.options.fromPage = $('div:jqmData(wrapper="true")');
 				// data.options.fromPage = $currPanelActivePage;	
 				
-				data.options.fromPage = $targetPanelActivePage;
 				
+				
+				data.options.fromPage = $targetPanelActivePage;				
 				data.options.pageContainer = $targetPanel;
 				data.options.changeHash = $targetPanel.jqmData('hash') == 'history' ? true : false;										
 								
@@ -1941,8 +1956,7 @@
 			$(document).bind("vmouseover", function () { });
 			
 			// on vlick store crumbs ID and panel to redirect in hashChange!
-            $(document).on('vclick', 'a.ui-crumbs', function (e, data ) {				
-								;
+            $(document).on('vclick.crumbs', 'a.ui-crumbs', function (e, data ) {											
 				
 				var that = $(this);				
 				self.options.$crumbsID = $( that ).attr('href');
@@ -1959,42 +1973,50 @@
 				});								
 
 			// click panel transition listener
-			$(document).on("vclick", function( e, data ) {
+			$(document).on("vclick.clickRouting", function( e, data ) {
+				/*
 				// need to bind to vclick, because binding to click = 300ms, so it not possible
 				// to pass event data to options and retrieve them in panelTrans, because by
 				// the time click fires, panelTrans has already run.
 				// vclick however fires way before panelTrans, so this is used to store
 				// click related information				
 				// same as above
-				
-					
-				// as above... sucks
+									
+				// strangly running self.findClosestLink does not return the button. Instead most of the time the popover button on any page is 
+				// returned. So click a button somewhere on the page, your e.target will be the popover button top right... Strange.
 				self.clickRouter( e, data, "vclick" );
+				*/
 				});	
 
-			/*
-			$(document).on("vclick", function( e, data ) { 	
+			
+			$(document).on("click.clickRouting", function( e, data ) { 	
 				// need to bind to vclick, because binding to click = 300ms, so it not possible
 				// to pass event data to options and retrieve them in panelTrans, because by
 				// the time click fires, panelTrans has already run.
 				// vclick however fires way before panelTrans, so this is used to store
 				// click related information
+				console.log("click registered, target is");
+				console.log( $(e.target) );
 				var $tgt = $(e.target);
 					
 				// as above... sucks
 				self.clickRouter( e, data, "vclick", $tgt );
 				
 				});				
-			*/
+			
 			// panel transition handler 
-			$(document).on( "pagebeforechange", function( e, data ) {													
+			$(document).on( "pagebeforechange", function( e, data ) {
 				
+				// clear, otherwise you start with the previously clicked element
+				self.options.$stageEvent = ""
+				
+				console.log("pbc")
 				// since pbc is firing multiple times, esp on hashchange
 				if ( data.options.fromHashChange == true ) {
 					// seems to work
 					if ( self.options.$blockMultiPbc == 1 ) {
-						self.options.$blockMultiPbc = 0;	
-						// console.log("END 1");
+						self.options.$blockMultiPbc = 0;
+						console.log("pbc block 1");
 						return;												
 						}
 					}
@@ -2003,10 +2025,11 @@
 					// why does this pass on desktop and fail on iOS?				
 					 if (typeof data.toPage !== 'string') {
 						// this captures the 2nd pagebeforechange being triggered from the first transition!												
-						// console.log("END 2");
+						console.log("pbc block 2");
 						return;
 					  }										
-					// console.log("passed");	
+					  
+					console.log("passed");	
 					if ( data.options.fromHashChange == true ) {										
 						// reroute to panelHash									
 						self.panelHash( e, data );							
@@ -2608,6 +2631,7 @@ var trigger = $(document).on('pagecreate', 'div:jqmData(wrapper="true")',functio
 		}, false);
 						
 		function findClosestLink(ele) {	
+			console.log("not here I hope!!");
 			var self = this;
 			while (ele){
 				if (ele.nodeName.toLowerCase() == "a"){
@@ -2615,7 +2639,10 @@ var trigger = $(document).on('pagecreate', 'div:jqmData(wrapper="true")',functio
 					}
 				ele = ele.parentNode;
 				}
-			return ele;
+			console.log("wtf");
+			console.log("it's =");
+			console.log( ele );
+			return ele;			
 			}	
 		
 	}		
