@@ -1339,11 +1339,12 @@
 				$wrap = $('div:jqmData(wrapper="true").ui-page-active'),
 				$panels = $wrap.find('.ui-panel:not(.ui-popover)'),
 				$pages = $wrap.find('.ui-panel:not(.ui-popover) .ui-page'),
-				$contents = $wrap.find('.ui-panel:not(.ui-popover) .ui-page .ui-content'),								
+				$contents = $wrap.find('.ui-panel:not(.ui-popover) .ui-page .ui-content'),					
 				
 				$overthrow = $wrap.jqmData("scrollmode") == "overthrow",								
-				$cond = $overthrow && ( !$('html').hasClass('ui-popover-mode') && !$('html').hasClass('ui-fullscreen-mode') ),
-				$marPad = $cond ? ["margin-top", "margin-bottom"] : ["padding-top", "padding-bottom"],
+				$cond = $overthrow && ( !$('html').hasClass('ui-popover-mode') && !$('html').hasClass('ui-fullscreen-mode') ),				
+				$blacklist = $('html').hasClass('blacklist'),
+				$marPad = $blacklist ? ["margin-top", "margin-bottom"] : ["padding-top", "padding-bottom"],
 				
 				$glbH = $wrap.find('.ui-header-global:eq(0)'),
 				$glbF = $wrap.find('.ui-footer-global:last'),
@@ -1351,32 +1352,32 @@
 				$setHeight = 0,
 				$locH, $locF, $dims, $localHeight;
 			
-			// set content padding/margin for nestes pages - JQM updatePagePadding is only for wrapper page!
-			// This is tricky, because in overthrow-mode, margin needs to be set instead of padding to not hide 
-			// the content behind the toolbars. Not sure if this works on iOS
-			
+			// sets nestes pages contents' padding/margin for - JQM updatePagePadding is only for wrapper page!
+			// This is tricky, because on blacklisted browsers, margin needs to be set instead of padding to not hide 
+			// the content behind the local toolbars (with pos: abs). Using padding will also work and position the
+			// content correctly, but in overthrow mode this causes the scrollable section to scroll over the local header 
+			// and footer VS scrolling behind.
 			$contents.each(function() {
-								
-				/*
+				
 				$dims = {};
+				$locH = $(this).siblings('.ui-header:eq(0)');
+				$locF = $(this).siblings('.ui-footer:eq(0)');	
 				
-								
-				if ( $cond ) {
-				
-					$dims["padding-top"] = "0px";
-					$dims["padding-bottom"] = "0px";
-					
-					} else {
-					
-					$locH = $(this).siblings('.ui-header:eq(0)');
-					$locF = $(this).siblings('.ui-footer:eq(0)');				
-					
+				if ( $blacklist == true ) {
+					// BLACKLIST - fixed and overthrow mode - marPad - should be margin-top/bottom 
 					$dims[$marPad[0]] = $glbH.length > 0 ? $glbH.outerHeight() + $locH.outerHeight() : $locH.outerHeight(); 
-					$dims[$marPad[1]] = $glbF.length > 0 ? $glbF.outerHeight() + $locF.outerHeight() : $locF.outerHeight();					
-					}
-				
-				$(this).css($dims)	
-				*/				
+					$dims[$marPad[1]] = $glbF.length > 0 ? $glbF.outerHeight() + $locF.outerHeight() : $locF.outerHeight();		
+																			
+					} else if ( $cond ) {
+						
+						// this covers NONE-blacklist, overthrow mode. (Fixed mode is ok). 
+						// in overthrow mode, padding-top/bottom needs to be 0 in order
+						// for content section not to expand by 30px (2x15px JQM padding behind the footer.
+						$dims["padding-top"] = "0px";
+						$dims["padding-bottom"] = "0px";
+						}
+				// set
+				$(this).css($dims);								
 				})
 			
 			
@@ -1414,8 +1415,8 @@
 					
 					// set panel-height and wrapper-page height
 					$('div:jqmData(panel="main"), div:jqmData(panel="mid"), div:jqmData(panel="menu")').css({'height': $setHeight});						
-					}								
-
+					}											
+					
 				// overwrite menu height again, otherwise popover panels expand depending on content 			
 				if ( $('html').hasClass('ui-popover-mode') ) { 					
 					$('div:jqmData(panel="menu")').add('div:jqmData(panel="mid")').css({'height':''});									
@@ -1668,8 +1669,7 @@
 			// if ($targetPanel != "undefined" ||  $targetPanel.is('body') == false ) {
 			if ( $targetPanel.is('body') == false ) {
 				
-				console.log("MULTI-TRANS");
-				console.log( data );
+				console.log("MULTI-TRANS");				
 				
 				data.options.fromPage = $targetPanelActivePage;				
 				data.options.pageContainer = $targetPanel;
@@ -1729,12 +1729,9 @@
 				// allow next pagebeforecreate to pass again
 				// self.options.$infinity = ''; 
 				
-				console.log("trans over, history = ");
-				console.log( $.mobile.urlHistory );
-				
 				} else {
-					console.log("JQM");
-				console.log( data );
+					console.log("JQM TRANS");
+				
 				
 					}
 
@@ -1800,10 +1797,7 @@
 						}
 
 				// if there is no active page on the previous panel and no active wrapper page, we should be going from a JQM page back
-				// to a wrapper page - JQM does this. Multiview handles the rest.
-				console.log( $('div:jqmData(show="first").ui-page-active').length );
-				console.log( $('div.ui-page-active').length-1 );
-				
+				// to a wrapper page - JQM does this. Multiview handles the rest.				
 				if ($prevPanel.find('.ui-page-active').length != 0 && $('div:jqmData(show="first").ui-page-active').length != $('div.ui-page-active').length-1) {
 					console.log("MULTIVIEW");
 					
@@ -1820,10 +1814,9 @@
 					// through the history to find the next page with the same panelID. This page should be toPage, the 
 					// activeIndex Page will be fromPage and after the transition, new ActiveIndex needs to be set to the
 					// original toPage. 				
-					console.log("if prevFromID = prevPageID ="+$prevPage.attr('id')+"  = "+$prevFrom.attr('id') );
+					
 					if ( $prevPage.attr('id') == $prevFrom.attr('id') ) {					
 						// overwrite 
-						console.log("need to overwrite");
 						$tweakHist = true;					
 						$tweakFrom = $( 'div#'+$.mobile.urlHistory.getActive().url );					
 						$tweakPanel = $tweakFrom.closest('div:jqmData(role="panel")');					
@@ -1852,6 +1845,10 @@
 					data.options.transition = "slide";				
 					data.options.reverse = true;						
 
+					console.log("toPage ="+ data.toPage.attr('id') );
+					console.log("fromPage =" + data.options.fromPage.attr('id') );
+					console.log("panel="+ data.options.pageContainer.attr('class') );
+					
 					// reset crumbs button pass
 					self.options.$allowCrumbsHashToPass = false;
 					
