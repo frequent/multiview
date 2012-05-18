@@ -33,8 +33,8 @@
 			}
 		:-moz-placeholder {
 		/* color:#222222;*/
-			}
-		/* split cells 70/30, can be used for ZIP/CITY or input/button */
+			}		
+		/* split cells 70/30, can be used for ZIP/CITY or input/button */		
 		.inputListWrap .split30 {
 			width: 61%;
 			display: inline-block;	
@@ -392,14 +392,18 @@
 			}
 		.splitIcon .ui-btn-inner{
 			border-top: 0 none;
-			}						
+			}
+		.splitIcon .ui-btn-inner .ui-btn {
+			top: 0%;
+			margin: 3px -3px 0 0;
+			}
 		</style>
 		
 </head>
 <body>	
 				
- <!--     <div data-role="page" id="container" data-wrapper="true" data-scrollmode="overthrow"> -->
-<div data-role="page" id="container" data-wrapper="true" data-switchable="true" > 
+ <!--     <div data-role="page" id="container" data-wrapper="true"  data-scrollmode="overthrow"> -->
+<div data-role="page" id="container" data-wrapper="true" data-scrollmode="overthrow"   > 
 	
 	<div data-role="panel" data-id="menu" data-panel="menu" data-hash="history">
 			
@@ -692,7 +696,7 @@
 			// would be possible to catch panel deeplink - right now inside JQM				
 			})	
 		</script>
-
+	<!--- <script type="text/javascript" src="jquery.mobile-1.1.0.multiview.min.js"></script> --->
 	<script type="text/javascript" src="jquery.mobile-1.1.0.multiview.js"></script>
 	<script type="text/javascript" src="multiview.js"></script>	
 
