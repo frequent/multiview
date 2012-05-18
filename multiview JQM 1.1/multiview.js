@@ -17,14 +17,14 @@
 		      */			
 			
 			/**
-			  * self.option.lowerThresh|upperThresh
+			  * self.options.lowerThresh|upperThresh
 		      * threshold screen widths
 			  * 0px - 320px 	= "small"	fullscreen-mode
 			  * 320px - 768px	= "medium"	popover-mode, yield-mode or offset-mode
 			  * 768px - 		= "large"	splitview-mode
 		      */		
-			$lowerThresh: 320,						
-			$upperThresh: 768, 			
+			lowerThresh: 320,						
+			upperThresh: 768, 			
 			
 			/**
 			  * self.options.switchable|switchableHideOnLoad
@@ -34,7 +34,7 @@
 			switchableHideOnLoad: false,
 			
 			/**
-			  * self.option.menuTxt|menuBtnTheme|menuBtnIcon|menuBtnIconPos
+			  * self.options.menuTxt|menuBtnTheme|menuBtnIcon|menuBtnIconPos
 		      * configure menu button, can be set here or on the panel using data-menuTxt="some_text"
 		      */			
 			menuTxt: 'Menu',
@@ -43,7 +43,7 @@
 			menuBtnIconPos: 'left',
 			
 			/**
-			  * self.option.midTxt|midBtnTheme|midBtnIcon|midBtnIconPos
+			  * self.options.midTxt|midBtnTheme|midBtnIcon|midBtnIconPos
 		      * configure mid button, same as above
 		      */
 			midTxt: 'Mid',
@@ -52,31 +52,28 @@
 			midBtnIconPos: 'left',		
 			
 			/**
-			  * self.option.menuWidth|menuMinWidth
+			  * self.options.menuWidth|menuMinWidth
 		      * configure width of menu panel, can also be set on the panel using data-menuWidth="xy%"
 		      */
 			menuWidth: '25%',
 			menuMinWidth: '250px',
 			
 			/**
-			  * self.option.midWidth|midMinWidth
+			  * self.options.midWidth|midMinWidth
 		      * configure width of mid panel, same as above
 		      */
 			midWidth: '25%',
 			midMinWidth: '250px',
 			
 			/**
-			  * self.option.externalSiteMap
-		      * <<not used>>, should be queried on deeplinks in case a deeplink goes to a nested page
-			  * which is not in the multiview page on inital page load.
-			  * For example:
-			  * some.html
-			  * Panel A = #page1, #page2
-			  * Panel B = #page3, #page4 - pageABC.html can be loaded in externally
-			  * > deeplink to some.html#pageABC will produce an error
-			  * by using the sitemap object, it can be specified where to load extenal deeplinked pages
+			  * self.options.siteMap
+		      * stores external pages which are loaded into the site, so fromPage can be identified
+			  * on backwards transitions. <not active:>Plus, this should contain all external pages not 
+			  * "on board" when the wrapper loads to enable deeplinking to these pages.
+			  * 
+			  * format [ type: "external|deeplink", data: "data" ] 
 		      */			
-			externalSiteMap: [ ["#id", "url", "panel"] ],
+			siteMap: [],
 			
 			/**
 			  * self.options
@@ -88,20 +85,7 @@
 		      * block multiple pagebeforechange firing on backwards transitions
 		      */			
 			$blockMultiPbc: false,
-			
-			/**
-			  * self.options.$allowCrumbsHashToPass
-		      * allow crumbs induced backwards transitions to pass hashchange blockers
-			  * NECESSARY?
-		      */			
-			$allowCrumbsHashToPass:false,
-			
-			/**
-			  * self.options.$stageEvent
-		      * store click events, so they are available for overriding changepage options
-		      */			
-			$stageEvent: '',
-					
+				
 			/**
 			  * self.options.$panelTransBlockScrollTop
 		      * block scrollTop on transitions inside a popover
@@ -126,7 +110,20 @@
 		      * prevent multiple clicks firing messing up things on Android
 		      */			
 			$blockMultiClick: false,
-			
+						
+			/**
+			  * self.options.$allowCrumbsHashToPass
+		      * allow crumbs induced backwards transitions to pass hashchange blockers
+			  * NECESSARY?
+		      */			
+			$allowCrumbsHashToPass:false,				
+				
+			/**
+			  * self.options.$stageEvent
+		      * store click events, so they are available for overriding changepage options
+		      */			
+			$stageEvent: '',
+						
 			/**
 			  * self.options.$crumbsID
 		      * crumbs pageID placeholder - uses the 300ms vclick to store the href of the clicked button			  
@@ -1027,7 +1024,7 @@
 			if ( event ) {				
 				// portrait
 				if (window.orientation == 0 || window.orientation == 180 ){
-					if($window.width() > self.options.$upperThresh)  {						
+					if($window.width() > self.options.upperThresh)  {						
 						self.splitView( event);
 						} else {						
 							self.popover( event);
@@ -1035,17 +1032,17 @@
 					}
 					// landscape
 					else if (window.orientation == 90 || window.orientation == -90 ) {
-					if($window.width() > self.options.$upperThresh) {							
+					if($window.width() > self.options.upperThresh) {							
 						self.splitView( event);
 						} else {
 							self.popover( event);
 							}
 						// click, resize, init events
 						// TODO, block trash-events "from Triggers etc."
-						} else if ($window.width() < self.options.$upperThresh){								
+						} else if ($window.width() < self.options.upperThresh){								
 							self.popover( event );
 							}
-							else if ($window.width() > self.options.$upperThresh) {	
+							else if ($window.width() > self.options.upperThresh) {	
 								self.splitView( event );
 								}		
 				}
@@ -1153,7 +1150,7 @@
 			}, 
 							
 		panelWidth: function( update, fromWhere ) {					
-			console.log("panelWidth called");
+			
 			// --- PURPOSE ---		
 			// 1. set and adjust panel width and margin-left ~ similar to JQM updateLayout
 			// 2. set and adjust nested page/header/footer width and margin-left, because (long story...) width/margin need to be set 
@@ -1200,7 +1197,7 @@
 		
 			// prevent multiple calls
 			if ( self.options.$calcInProgress == false )  {	
-				console.log("ONLY THIS ONE PASSES");
+				
 				// block multiple calls
 				self.options.$calcInProgress = true;
 				
@@ -1243,7 +1240,7 @@
 					// unlock
 					self.options.$calcInProgress = false;
 					
-					},350);	
+					},50);	
 				}
 	
 			}, 
@@ -1433,9 +1430,9 @@
 			var self = this;
 				
 				// layout mode - need to use $(window), because $this fails in IE7+8...										
-				if ($.mobile.media("screen and (max-width:320px)")||($.mobile.browser.ie && $(window).width() < self.options.$lowerThresh )) {
+				if ($.mobile.media("screen and (max-width:320px)")||($.mobile.browser.ie && $(window).width() < self.options.lowerThresh )) {
 					var framed = "small";
-					} else if ($.mobile.media("screen and (min-width:768px)")||($.mobile.browser.ie && $(window).width() >= self.options.$upperThresh )) {
+					} else if ($.mobile.media("screen and (min-width:768px)")||($.mobile.browser.ie && $(window).width() >= self.options.upperThresh )) {
 						var framed = "large";
 						} else {
 							var framed = "medium";
@@ -1642,7 +1639,8 @@
 				window.setTimeout(function() { self.options.$pbcCoutner = 0;},250);
 				
 				} else {
-					// console.log( JQM DOES THIS! );
+					
+					// console.log("JQM TRANS");
 					
 					// still, if we are coming from a wrapper page, with panel transitions made, fromPage may not
 					// always be set to the wrapper page, which will cause JQM to drop active class from the panel
@@ -1658,9 +1656,12 @@
 		
 		// panel hashchange handler
 		panelHash: function( e, data ) {				
-				
+
 				var self = this, $prevPage, $prevPanel, $prevFrom, $prevURL, 
-					$tweakHist, $tweakPanel, $tweakPage, $tweakFrom, $tweakURL;
+					$tweakHist, $tweakPanel, $tweakPage, $tweakFrom, $tweakURL,
+					$extUrl, $extPrs, 
+					smfp = "", 
+					smtp = "";
 				
 				// stop Android for 300ms
 				window.setTimeout(function () { self.options.$blockMultiClick = false; }, 300);
@@ -1670,65 +1671,99 @@
 				if ( self.options.$crumbsPanel != "" ) {												
 					$prevPage = $('div#'+self.options.$crumbsID );
 					$prevPanel = $('div:jqmData(id="'+self.options.$crumbsPanel+'")');
-					}
+					}		
 					
 				// browser back button
-				if ( $.mobile.urlHistory.activeIndex > 1 ) {									
+				if ( $.mobile.urlHistory.activeIndex > 1 ) {	
 					$prevPage = $('div#'+$.mobile.urlHistory.getPrev().url);
 					$prevPanel = $.mobile.urlHistory.getPrev().pageContainer;
-					} else {																																
+					} else {			
 						// active index = 1, this is first page = wrapper page. Find not active page with data-show="first" on panel
 						$prevPage = $('div:jqmData(show="first")').not( ".ui-page-active" );
 						$prevPanel = $prevPage.closest('div:jqmData(role="panel")');
 						}			
-						
+				
 				// if there is no active page on the previous panel and no active wrapper page, we should be going from a JQM page back
 				// to a wrapper page - JQM does this. Multiview handles the rest.				
 				if ($prevPanel.find('.ui-page-active').length != 0 && $('div:jqmData(show="first").ui-page-active').length != $('div.ui-page-active').length-1) {					
-
+					
 					$prevURL = $prevPage.attr('id') ? window.location.pathname+"#"+$prevPage.attr('id') : window.location.pathname;
 					$prevFrom = $prevPanel.find('.ui-page-active');
 
 					// the challenge in using JQM's history vs. having a panel-based history is that JQM history does not 
-					// recognize different panels when storing entries, so going from A1 > A2 and B1 > B2 > B3, will
-					// create the following JQM urlHistory entries: "wrapper", A2, B2, B3. Clicking the back button once
+					// recognize different panels when storing entries, so going from nested pages A1 > A2 and B1 > B2 > B3, 
+					// will create the following JQM urlHistory entries: "wrapper", A2, B2, B3. Clicking the back button once
 					// will go to prev() = B2, this is correct. Clicking again, JQM will try to go to prev() = A2 from
 					// A's panels active page, which also is A2, when in fact it should go from B2>B1.
 					
 					// To work around, we need to check if toPageID = fromPageID and if so, don't go prev(), but take the
-					// page with activeIndex in urlHistory (B2 in the above example), get this pages panel (B) and go back
+					// page with activeIndex in urlHistory (B2 in the above example), get this page's panel (B) and go back
 					// through the history to find the next page with the same panelID. This page should be toPage, the 
 					// activeIndex Page will be fromPage and after the transition, new ActiveIndex needs to be set to the
-					// original toPage. 									
-					if ( $prevPage.attr('id') == $prevFrom.attr('id') ) {	
-						$tweakHist = true;
-						$tweakFrom = $( 'div#'+$.mobile.urlHistory.getActive().url );
-						$tweakPanel = $tweakFrom.closest('div:jqmData(role="panel")');
+					// original toPage. However, this will not work for external pages, because the urlHistory will only 
+					// contain the external page url and pageContainer and constructing fromPage and pageContainer for
+					// the backwards transition based on a full url will result in empty objects [], thus the backwards
+					// transition will fail.
+					
+					// The easy way around this for external pages is to select the data-show="first" page from the panel
+					// the external page is sitting in. But in case the external page was called from the 2nd or 3rd page
+					// of this panel, this will not give the correct transition. Therefore the complicated way of 
+					// storing external pages "data" object in self.options.siteMap. On backwards panel transitions, 
+					// the sitemap is scanned for pages with matching toPage. If found, fromPage and pageContainer are
+					// constructed from the stored "data" object. If nothing is found, we assume this has to follow the above 
+					// routine. 
+					
+					if ( $prevPage.attr('id') == $prevFrom.attr('id') ) {
 						
-						// loop through history from top to find next page with panelID matching tweakPanel
+						// run external page check to see if the active page is an external page and is found in the siteMap object
+						for (j = 0; j < self.options.siteMap.length; j++) {
+							$extUrl = self.options.siteMap[i-1].data.toPage;
+							$extPrs = $.mobile.path.parseUrl( $extUrl );							
+							if ( $.mobile.urlHistory.getActive().url === $extUrl.replace($extPrs.domain, "") ) {
+								// set from and to
+								smfp = self.options.siteMap[i-1].data.options.fromPage;
+								smtp = self.options.siteMap[i-1].data.toPage; 								
+								}
+							break;
+							}	
+						
+						$tweakHist = true;
+						if ( smfp == "" && smtp == "" ) {							
+							$tweakFrom = $( 'div#'+$.mobile.urlHistory.getActive().url );
+							$tweakPanel = $tweakFrom.closest('div:jqmData(role="panel")');
+							} else  {								
+								$tweakFrom = $('div:jqmData(url="'+ smtp.replace( $.mobile.path.parseUrl( smtp ).domain,'')+'")'  );
+								$tweakPanel = smfp.closest('div:jqmData(role="panel")');
+								}
+
+
+						// loop through history top-down to find next page with panelID matching tweakPanel
 						// if no page is found in urlHistory, grab the first page on this panel
-						for (i = $.mobile.urlHistory.activeIndex-1; i>=0; i--) {						
-							if ( $tweakPanel.jqmData('id') == $.mobile.urlHistory.stack[i].pageContainer.jqmData('id') || i == 0 ) {										
-								$tweakPage = i == 0 ? $('div#'+$tweakPanel.find('div:jqmData(show="first")').attr('id') ) 
-										: $('div#'+$.mobile.urlHistory.stack[i].url );
+						for (i = $.mobile.urlHistory.activeIndex-1; i>=0; i--) {							
+							if ( $tweakPanel.jqmData('id') == $.mobile.urlHistory.stack[i].pageContainer.jqmData('id') || i == 0 ) {																		
+								$tweakPage = i == 0 ? $('div#' + $tweakPanel.find('div:jqmData(show="first")').attr('id') )
+										: $('div#'+$.mobile.urlHistory.stack[i].url );										
 								break;
 								}
 							}
+
 						// construct a string, because we don't want to pass objects to JQM	
-						$tweakURL = $tweakPage.attr('id') ? window.location.pathname+"#"+$tweakPage.attr('id') : window.location.pathname;
+						$tweakURL = $tweakPage.attr('id') ? 
+								window.location.pathname+"#"+$tweakPage.attr('id') : 
+									window.location.pathname;
 						}
 
 					// reset
 					self.options.$crumbsID = "";
 					self.options.$crumbsPanel = "";
-					
+
 					// set
 					data.options.pageContainer = $tweakPanel || $prevPanel; 
 					data.toPage = $tweakURL || $prevURL;
 					data.options.fromPage = $tweakFrom || $prevFrom;
 					data.options.reverse = true;
 					// data.options.transition = "fade";
-																			
+					
 					// reset crumbs button pass
 					self.options.$allowCrumbsHashToPass = false;
 					
@@ -1763,8 +1798,8 @@
 					
 				 } else { 
 				
-					console.log("JQM DOES THIS, let's fuck it up");
-					console.log( data );
+					// console.log("JQM HASH");
+					
 					
 				}
 				// unblock again
@@ -1825,7 +1860,7 @@
 /* -------------------------------------- EVENT BINDINGS -------------------------------------- */
 
 		_mainEventBindings: function () {
-	
+			
 			var self = this;
 			
 			// https://forum.jquery.com/topic/solution-in-search-of-the-root-problem
@@ -1861,8 +1896,16 @@
 			
 			// panel transition handler 
 			$(document).on( "pagebeforechange", function( e, data ) {				
-			
-				// This is not done nicely, but necessary because JQM in non-pushstate environments just loads the first page, if
+						
+				// when loading an external page, we need to store it along with the fromPage in our sitemap array, so 
+				// we can retrieve it on backwards transitions. Not doing so, will break the page when trying to go
+				// browser/button back from an external loaded page, because there will be no reference to 
+				// the correct fromPage in the URL history. Therefore, we store fromPage along with the rest of "data"
+				if ( data.options.fromHashChange == false && $.mobile.path.parseUrl( data.toPage ).hash == "") {										
+					self.options.siteMap.push( { type: "external", data: data } );
+					}
+					
+				// This is not done nice, but necessary because JQM in non-pushstate environments just loads the first page, if
 				// "no to" page is specified in _handleHashChange. This happens when going backwards from the 2nd page visisted to
 				// the inital page.
 				
@@ -1884,17 +1927,27 @@
 				// BAD, because this requires an on/off flag to only allow the first hashChange coming into here to pass into the function
 				// AND it requires to count all forward and backwards transitions, to determine, when to override the hashChange with the correct URL. 
 				
-				// The following now works for both pushstate and non-pushstate devices				
+				// The following now works for both pushstate and non-pushstate devices:
+				
+				// only allow the first hashchange coming along to pass
 				if ( self.options.$pbcCoutner == 0 ) {
-					self.options.$pbcCoutner = 1;					
+					self.options.$pbcCoutner = 1;						
 					
-					if ( data.options.fromHashChange == true && self.options.$transDelta == 1 ) {												
+					// if we are going backwards and transition-delta (forward-transitions MINUS backwards-transitions) = 1
+					if ( data.options.fromHashChange == true && self.options.$transDelta == 1 ) {
+						
+						// crawl the history start to end to find the first entry with a page container other than BODY
 						for (i = 0; i < $.mobile.urlHistory.stack.length; i++) {							
-							if ( $.mobile.urlHistory.stack[i].pageContainer.get(0).tagName != 'BODY') {								
+							if ( $.mobile.urlHistory.stack[i].pageContainer.get(0).tagName != 'BODY') {	
+								
+								// grab this pageContainers page with data-show="first" = we need to go to this page instead of reloading the wrapper!
 								var fix = $.mobile.urlHistory.stack[i].pageContainer.find('div:jqmData(show="first")').attr('id');
-								//alert("last one, passing "+fix);																
-								// shouldn't be a URL, but to make sure, find a better way than just adding a "#"								
-								data.toPage = '#'+fix;									
+								// alert("last one, passing "+fix);																
+								
+								// because I'm sure this will never be an URL... 
+								data.toPage = '#'+fix;							
+
+								// this will now pass the data.toPage of the hashChange OBJECT as a STRING to panelHash triggering the correct transition!
 								break;
 								}							
 							}
@@ -1903,12 +1956,11 @@
 				}
 				
 				// This blocks all objects coming through here. Similar to $.mobile.urlHistory.ignoreNextHashChange 								
-				if (typeof data.toPage !== 'string') {										
+				if (typeof data.toPage !== 'string') {		
 					return;						
-					}		
-									
-				if ( data.options.fromHashChange == true ) {						
+					}	
 					
+				if ( data.options.fromHashChange == true ) {											
 					// this ensures multiple pagebeforechange events do not pass through here					
 					if ( self.options.$blockMultiPbc == false ) {
 						self.options.$blockMultiPbc = true;
@@ -2003,12 +2055,11 @@
 				});
 						
 			$(document).on("pagebeforeshow", 'div:jqmData(role="page")', function(e){				
-				// need to wait until transition is done, otherwise width of pages pulled in
+				// need to wait until transition and panelHeight is done, otherwise width of pages pulled in
 				// externally cannot be adjusted 
-				window.setTimeout(function(){
+				window.setTimeout(function(){				
 					self.panelWidth( false,"external back&forth");
-					},10);
-					self.panelHeight();							
+					},400);
 				});		
 				
 			// fire splitviewCheck on orientationchange (and resize)
