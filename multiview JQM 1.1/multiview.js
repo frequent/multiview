@@ -275,7 +275,7 @@
 					// autoshow
 					if ( pop.jqmData("autoshow") == "once") {							
 						
-						window.setTimeout(function() {										
+						window.setTimeout(function() {
 							page.find(".toggle_popover:jqmData(panel='"+pop.jqmData('id')+"'):eq(0)").click();
 							},10);
 						
@@ -406,7 +406,7 @@
 		   * @param {string}to check who called
 		   */
 		hideAllPanels: function(from) {
-		
+			
 			var self = this, $pop; 
 					
 			$('.toggle_popover').removeClass('ui-btn-active');
@@ -578,7 +578,7 @@
 		   * @param {object} page = being shown
 		   */				
 		crumble: function(event, data, page) {			
-
+			
 			var self = this, 
 				onPage = $( '#'+page.attr('id') ),
 				$dropZone = onPage.find('div:jqmData(role="header")') || onPage.closest('div:jqmData(wrapper="true").ui-page-active').children('div:jqmData(role="header")'),				
@@ -634,9 +634,13 @@
 					$flexPos : $globalHeader.length ? 
 						$globalHeader : $localHeader.length ? 
 							$localHeader : $wrap.find('div:jqmData(panel="main") .ui-content');
-										
+	
+				if ( $menu.length == 0 && $mid.length == 0 ) {					
+					return;
+					}
+	
 				// menu button 
-				if ( $menu ) {					
+				if ( $menu.length > 0 ) {							
 					var $mnId = $wrap.find('div:jqmData(panel="menu")').jqmData('id'),
 						$mnIc = $menu.jqmData('menu-icon') || self.options.menuBtnIcon,	
 						$mnIp = $menu.jqmData('menu-iconpos') || self.options.menuBtnIconPos,
@@ -647,7 +651,7 @@
 					}
 					
 				// mid button 
-				if ( $mid ) {					
+				if ( $mid.length > 0 ) {										
 					var $mdId = $wrap.find('div:jqmData(panel="mid")').jqmData('id'),
 						$mdIc = $mid.jqmData('mid-icon') || self.options.midBtnIcon,	
 						$mdIp = $mid.jqmData('mid-iconpos') || self.options.midBtnIconPos,
@@ -788,7 +792,7 @@
 		   * @param {object}  event		   
 		   */
 		popover: function (e) {
-			
+		
 			var self = this,				
 				$wrap = $('div:jqmData(wrapper="true").ui-page-active'),
 				$menu = $wrap.find('div:jqmData(panel="menu")'),
@@ -917,8 +921,8 @@
 		   * name: 	      	  splitScreen
 		   * called from: 	  setupMultiview() - for every wrapper page that is loaded initially or externally, also on orientationchange and resize
 		   * purpose: 		  determine which screenmode to run
-		   * ADD yield-mode
-		   * @param {object}  event		   
+		   * ADD yield-mode, find out why this breaks on resize
+		   * @param {string}  event CAREFUL: THIS IS NO REAL EVENT
 		   */	
 		splitScreen: function( event ) {	
 			
@@ -929,7 +933,7 @@
 				return;
 				}
 				
-			// event can be "init" or real event
+			// event can be "init" or orientationchange event
 			if ( event ) {				
 				
 				// portrait
@@ -950,7 +954,7 @@
 							}
 						
 						// click, resize, init events						
-						} else if ($window.width() < self.options.upperThresh){								
+						} else if ( $window.width() < self.options.upperThresh){								
 							self.popover( event );
 							}
 							else if ($window.width() > self.options.upperThresh) {	
@@ -1008,7 +1012,10 @@
 				// set a listener to adapt height of all active pages to the height of the page currently in view. 
 				// if you have a long page in the background and fire a popover in fullscreen mode, the page length 
 				// should match the popovers active page length, otherwise the background page is visible underneath
-				$(document).on('pagebeforeshow', $popPanels.find('div:jqmData(role="page")'), function () {													
+				// HATE IT, that I can't pass variables into on() bindings...
+				
+				
+				$(document).on('pagebeforeshow',  'div:jqmData(panel="popover") div:jqmData(role="page")', function () {	
 					self.backgroundPageHeight( $(this), "set" );
 					});
 				
@@ -1173,8 +1180,7 @@
 			
 			
 			// height 			
-			if ( $cond ) {								
-
+			if ( $cond ) {												
 				// splitview-mode = fix screen to allow overthrow-based scrolling of multiple background panels			
 				$setHeight = $.mobile.getScreenHeight() - $glbH.outerHeight() - $glbF.outerHeight(); 
 												
@@ -1189,19 +1195,20 @@
 		
 				} else {
 					// popover-mode/fullscreen-mode = no overthrow, because there is only one panel visible at a time = use hardware scrolling
-					
+					console.log("da sollten wir sein");
 					//get heighest height of active nested page													
 					$panels.find('.ui-page-active').each(function() {						
 						if ( $(this).outerHeight() > $setHeight ) {				
 							$setHeight = $(this).outerHeight();
 							}					
 						});
-						
+				/*		
 				$contents.each( function() {
 					$localHeight = $(this).siblings('.ui-header:eq(0)').outerHeight() + $(this).siblings('.ui-footer:eq(0)').outerHeight();
+						console.log( $setHeight-$localHeight );
 					$(this).css({ 'height':$setHeight-$localHeight });
 					})	
-					
+				*/	
 					// set 
 					$('div:jqmData(panel="main"), div:jqmData(panel="mid"), div:jqmData(panel="menu")').css({'height': $setHeight});
 					}											
@@ -1905,7 +1912,7 @@
 			  * bind to:	orientationchange
 		      * purpose: 	fire splitviewCheck on orientationchange (and resize)
 		      */						
-			$(window).on('orientationchange', function(event){					
+			$(window).on('orientationchange', function(event){								
 				self.splitScreen(event);
 				self.panelWidth( true, "orientationchange", "update") 
 				self.panelHeight();

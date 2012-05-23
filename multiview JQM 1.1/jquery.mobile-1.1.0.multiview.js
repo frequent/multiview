@@ -2421,13 +2421,13 @@ var createHandler = function( sequential ){
 				}, 150 );
 			},
 			cleanFrom = function(){
-			
+				
 				// XXX FREQUENT - this should cover all cases of intra- and inter-panel transitons!				
-				if ( $to.parents('.ui-page-active').length == 0  && $from.parents('.ui-page-active').length == 0 ) {					
+				if ( $to.parents('.ui-page-active').length == 0  && $from.parents('.ui-page-active').length == 0 ) {									
 					$from.closest(':jqmData(wrapper="true")').removeClass( $.mobile.activePageClass );	
 					return;
-					} 														
-					
+					}
+				
 				$from
 					.removeClass( $.mobile.activePageClass + " out in reverse " + name )
 					.height( "" );								
@@ -3039,7 +3039,7 @@ $.mobile._maybeDegradeTransition = function( transition ) {
 		promise.done(function() {
 
 			//trigger show/hide events
-			if( fromPage ) {
+			if( fromPage ) {				
 				// XXX FREQUENT: if fromPage is an internal page it's a panel transition, so the
 				// hide event has to be blocked to avoid dropping the wrapper page. This 
 				// also catches external panel pages, which have been loaded into the DOM and
@@ -3446,6 +3446,7 @@ $.mobile._maybeDegradeTransition = function( transition ) {
 
 	// Show a specific page in the page container.
 	$.mobile.changePage = function( toPage, options ) {			
+		
 		// If we are in the midst of a transition, queue the current request.
 		// We'll call changePage() once we're done with the current transition to
 		// service the request.
@@ -3633,8 +3634,7 @@ $.mobile._maybeDegradeTransition = function( transition ) {
 		}
 
 		//set page title
-		document.title = urlHistory.getActive().title;
-
+		document.title = urlHistory.getActive().title;		
 		//set "toPage" as activePage
 		$.mobile.activePage = toPage;
 
@@ -3973,8 +3973,6 @@ $.mobile._maybeDegradeTransition = function( transition ) {
 			
 			//if to is defined, load it						
 			if ( to ) {	
-				console.log("handle hash, to=");
-				console.log( to );
 				// At this point, 'to' can be one of 3 things, a cached page element from
 				// a history stack entry, an id, or site-relative/absolute URL. If 'to' is
 				// an id, we need to resolve it against the documentBase, not the location.href,
@@ -3982,8 +3980,7 @@ $.mobile._maybeDegradeTransition = function( transition ) {
 				// that crosses from an external page/dialog to an internal page/dialog.
 				to = ( typeof to === "string" && !path.isPath( to ) ) ? ( path.makeUrlAbsolute( '#' + to, documentBase ) ) : to;				
 				$.mobile.changePage( to, changePageOptions );
-			}	else {							
-				console.log("handleHash, no to");	
+			}	else {											
 				//there's no hash, go to the first page in the dom
 				$.mobile.changePage( $.mobile.firstPage, changePageOptions );
 			}

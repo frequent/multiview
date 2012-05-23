@@ -403,7 +403,7 @@
 <body>	
 				
  <!--     <div data-role="page" id="container" data-wrapper="true"  data-scrollmode="overthrow"> -->
-<div data-role="page" id="container" data-wrapper="true"   > 
+<div data-role="page" id="container" data-wrapper="true"  data-scrollmode="overthrow"> 
 	
 	<div data-role="panel" data-id="menu" data-panel="menu" data-hash="history">
 			
@@ -417,35 +417,9 @@
 					<a href="#menu_second" data-panel="menu" data-role="button">page2 Menu</a>
 					<p>page 2 mid panel</p>
 					<a href="#mid_second" data-panel="mid" data-role="button">page2 Mid</a>
-					<ul data-role="listview">
-						<li>A</li>
-						<li>B</li>
-						<li>A</li>
-						<li>B</li>
-						<li>A</li>
-						<li>B</li>
-						<li>A</li>
-						<li>B</li>
-						<li>A</li>
-						<li>B</li>
-						<li>A</li>
-						<li>B</li>
-						<li>A</li>
-						<li>B</li>
-						<li>A</li>
-						<li>C</li>
-						<li>A</li>
-						<li>B</li>
-						<li>A</li>
-						<li>B</li>
-						<li>A</li>
-						<li>B</li>
-						<li>A</li>
-						<li>B</li>
-						<li>A</li>
-						<li>D</li>
-						
-					</ul>
+					<div class="clickMe">
+						<p>Click this text to load an external page into the menu panel programmatically</p>
+					</div>
 				</div>	
 			</div>
 
@@ -692,13 +666,12 @@
 
 	<script type="text/javascript" src="jquery-1.7.1.min.js"></script>
 	<script type="text/javascript">
-		$( window.document ).on("mobileinit", function(e) {
-			// would be possible to catch panel deeplink - right now inside JQM
-			})
-			
-		$(window).on("pagecontainercreate", function( e ) {
-			// would be possible to catch panel deeplink - right now inside JQM				
-			})	
+		
+		$(document).on('click', 'div.clickMe', function(e, data) {
+			alert("clicked");
+			$.mobile.changePage('dummy2.html', {transition: 'slide', pageContainer: $('div:jqmData(id="mid")') });
+			});
+		
 		</script>
 	<!--- <script type="text/javascript" src="jquery.mobile-1.1.0.multiview.min.js"></script> --->
 	<script type="text/javascript" src="jquery.mobile-1.1.0.multiview.js"></script>
