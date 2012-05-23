@@ -19,7 +19,10 @@ div[data-wrapper="true"] 						{ margin: 0px; padding: 0px; width: inherit; /* h
 .ui-header 										{ height: 41px;}
 .headWrapLeft > *, .headWrapRight > * 			{ display: inline-block; margin: 0; vertical-align: top; }
 .headWrapLeft .ui-btn, .headWrapRight  .ui-btn 	{ top: 0px; -moz-box-shadow: none; -webkit-box-shadow: none; box-shadow: none; }
-.ui-fullscreen-mode .headWrapLeft .ui-btn .ui-icon, .ui-fullscreen-mode  .headWrapRight  .ui-btn .ui-icon { margin: 0px; }
+
+
+.ui-fullscreen-mode .headWrapLeft .ui-btn .ui-icon, .ui-fullscreen-mode  .headWrapRight  .ui-btn .ui-icon { /*margin: 0px; */ }
+/* NOTE: this badly misplaces icons, not sure why I used this in the first place */
 
 /* BUTTONS - optional - Increase padding for icon-only buttons - just too difficult to click them */
 .ui-btn-icon-notext								{ height: 30px; width: 30px; }
@@ -38,9 +41,9 @@ div[data-wrapper="true"] 						{ margin: 0px; padding: 0px; width: inherit; /* h
 .ui-controlgroup-btn-left        					{ vertical-align: middle; }												
 											
 /* PANEL DIMENSIONS */
-.ui-panel-left 									{ z-index: 55; float: left; position: static; /* relative */ }
-.ui-panel-mid									{ z-index: 50; float: left; position: static; /* relative */ }
-.ui-panel-right 									{ z-index: 45; right: 0; }
+.ui-panel-left 									{ float: left; position: static; /* relative */ }
+.ui-panel-mid									{ float: left; position: static; /* relative */ }
+.ui-panel-right 									{ right: 0; }
 /* NOTE: pos:rel on the panel is necessary to hide transitions. If pos:stat is used, you can see the page being pulled up on top of the main panel before sliding over 
  * this does not work anymore with JQM 1.1, because toolbars switching between pos:fix and pos:abs, thereby messing up the layout */
 /* JQM 1.1 RC2: 	back to pos:static to avoid breaking layout in pos:fix mode - see if this works */			
@@ -68,7 +71,7 @@ div[data-wrapper="true"] 						{ margin: 0px; padding: 0px; width: inherit; /* h
 /* TODO: Handle box-shadow in popover mode with 2 out of 3 panels visible - assign ui-panel-yield and ui-panel-supercede depending on data-yield="none" or data-yield="panel_id" */
 
 
-.ui-content                      								{ overflow: visible; z-index: 950; } 
+.ui-content                      								{ overflow: visible; } 
 /* .ui-fullscreen-mode .ui-content					{ overflow-x: hidden !important;  padding: 15px !important; } */
 
 .ui-splitview-hidden { 
@@ -143,7 +146,7 @@ div[data-panel="popover"], .ui-popover-mode div[data-panel="menu"], .ui-popover-
 	right: 0px! important; 
 	z-index:1005 !important; 
 	width: 100% !important; 
-	height: 100%;
+	height: 100% !important;
 	position: absolute; 
 	/* NOTE: Alternative to pos:abs would be leaving it away = pos:static like JQM body.viewport. However this causes the 
 	   panel to stay in the content flow = be positioned after the page content (Page is ok). 
@@ -154,10 +157,10 @@ div[data-panel="popover"], .ui-popover-mode div[data-panel="menu"], .ui-popover-
 
 
 .ui-fullscreen-mode .ui-panel .ui-page-active {
-	z-index: 1010;
+	/* z-index: 1010; */
 }
 .ui-fullscreen-mode .ui-panel .ui-page-active .ui-header-fixed {
-	z-index: 1011;
+	/* z-index: 1011; */
 }
 .ui-fullscreen-mode .ui-footer-fixed {
 	z-index: 1025; /* must always be on top!!!*/
