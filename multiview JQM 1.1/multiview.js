@@ -78,19 +78,13 @@
 			/**
 			  * self.options
 		      * Fixed options
-		      */
-			
-			/**
-			  * self.options.$blockMultiPbc
-		      * block multiple pagebeforechange firing on backwards transitions
 		      */			
-			$blockMultiPbc: false,
 				
 			/**
 			  * self.options.$panelTransBlockScrollTop
 		      * block scrollTop on transitions inside a popover
 		      */			  
-			$panelTransBlockScrollTop:'',
+			// $panelTransBlockScrollTop:'',
 							
 			/**
 			  * self.options.$contextBlockNextHashChange
@@ -256,6 +250,7 @@
 		   * called from: 	setupMultiview - fires once for every wrapper page
 		   * purpose: 		add triangles, handle autoshow (= show popover once, the first time the page loads)
 		   * @param {page}	object
+		   * TODO: REFACTOR triangles, so they can be positioned outside of the panel, so panel can overflow-y... otherwise not visible.
 		   */			
 		_setupPopovers: function( page ) {
 						
@@ -336,7 +331,7 @@
 				// if new pages are appended to DOM - can't find scrollTop 
 				// to block) or if this is a "scrollTop" initiated from a context transition 
 				// (need to keep the initiating popover active)						
-				if ( !$('html').hasClass('ui-fullscreen-mode') && self.options.$panelTransBlockScrollTop == false && !self.options.$blockContextScrollTop == true) {																												
+				if ( !$('html').hasClass('ui-fullscreen-mode') /* && self.options.$panelTransBlockScrollTop == false */ && !self.options.$blockContextScrollTop == true) {																												
 					
 					// prevent iOS keyboard hiding popover						
 					if ( !$("input:focus").length > 0 ) {						
@@ -344,7 +339,7 @@
 						}
 						
 					// reset for next;
-					self.options.$panelTransBlockScrollTop == true; 
+					//self.options.$panelTransBlockScrollTop == true; 
 					}
 				self.options.$blockContextScrollTop = '';
 				});
@@ -1194,8 +1189,7 @@
 					});
 		
 				} else {
-					// popover-mode/fullscreen-mode = no overthrow, because there is only one panel visible at a time = use hardware scrolling
-					console.log("da sollten wir sein");
+					// popover-mode/fullscreen-mode = no overthrow, because there is only one panel visible at a time = use hardware scrolling					
 					//get heighest height of active nested page													
 					$panels.find('.ui-page-active').each(function() {						
 						if ( $(this).outerHeight() > $setHeight ) {				
@@ -1316,7 +1310,7 @@
 		   */		   
 		clearActiveClasses: function ( trigger, toPage, fromPage, link ) {										
 			
-			var self = this;
+			var self = this;			
 			
 			// clear buttons
 			if (link) {
@@ -1352,7 +1346,7 @@
 		   * @param {string}  who called		   
 		   */
 		clickRouter: function( e, data, source ) {																
-
+			
 			var self = this, 
 				link = self.findClosestLink( e.target );
 				$link = $( link );
@@ -1416,8 +1410,7 @@
 		   * @param {object}  event
 		   * @param {object}  data
 		   */
-		panelTrans: function (e, data) {																	
-						
+		panelTrans: function (e, data) {																				
 			var	self = this,
 				$link = self.options.$stageEvent,						
 				$targetPanelID = $( $link ).jqmData('panel'),					
@@ -1425,40 +1418,21 @@
 				$targetPanelActivePage = $targetPanel.find( '.ui-page-active' ) || $targetPanel.find('div:jqmData(show="first")');
 				
 			// if panel transition
-			if ( $targetPanel.is('body') == false ) {
-			
+			if ( $targetPanel.is('body') == false ) {				
 				data.options.fromPage = $targetPanelActivePage;
 				data.options.pageContainer = $targetPanel;
 							
 				// block scrollTop to keep popover panels visible when loading a new page into the DOM
 				// NECESSARY?
 				if ( $targetPanel.jqmData("panel") == "popover" ) {					
-					self.options.$panelTransBlockScrollTop = true;
-					}
-					
-				// clean up stage
-				self.options.$stageEvent = '';
+					//self.options.$panelTransBlockScrollTop = true;
+					}			
 				
-				// unblock for next click
-				self.options.$clickInProgress = false;				
-				
-				// clean active classes				
-				self.clearActiveClasses( "panelTrans", $(data.toPage), data.options.fromPage, $link );
-								
-				// keep active
-				// $.mobile.activePage = $('div:jqmData(wrapper="true")');
-				
-				// reset pageContainer to default			
-				$.mobile.pageContainer = $('body');
-				
-				// +1 aka keep count of panel transitions
-				self.options.$transDelta = self.options.$transDelta + 1;
-				
-				// unblock multiple pagebeforechange 
-				window.setTimeout(function() { self.options.$pbcCoutner = 0;},250);
+				// clean up 
+				self.panelTransitionCleaner("panelTrans", data, $link ? $link : "" );
 				
 				} else {
-					
+					// console.log("JQM");
 					// = JQM territory
 					
 					// still, if we are coming from a wrapper page, with panel transitions made, fromPage may not
@@ -1471,7 +1445,9 @@
 						data.options.fromPage = $( data.options.fromPage ).closest('div:jqmData(wrapper="true")');
 						}
 					}
-
+			
+				// unblock clicker blockers for both jqm and panel transitions
+				self.options.$clickInProgress = false;	
 				
 		},
 		
@@ -1552,21 +1528,22 @@
 					
 					if ( $prevPage.attr('id') == $prevFrom.attr('id') ) {
 						
-						// check sitemap
-						for (j = 0; j < self.options.siteMap.length; j++) {
-							$extUrl = self.options.siteMap[i-1].data.toPage;
-							$extPrs = $.mobile.path.parseUrl( $extUrl );							
+						// check sitemap					
+						for (var j = 0; j < self.options.siteMap.length; j++) {							
+							$extUrl = self.options.siteMap[j].data.toPage;
+							$extPrs = $.mobile.path.parseUrl( $extUrl );														
 							if ( $.mobile.urlHistory.getActive().url === $extUrl.replace($extPrs.domain, "") ) {
 								// set from and to
-								smfp = self.options.siteMap[i-1].data.options.fromPage;
-								smtp = self.options.siteMap[i-1].data.toPage; 								
-								}
-							break;
+								smfp = self.options.siteMap[j].data.options.fromPage;
+								smtp = self.options.siteMap[j].data.toPage; 	
+								break;
+								}							
 							}	
 						
 						$tweakHist = true;
 						// external
-						if ( smfp == "" && smtp == "" ) {							
+						if ( smfp == "" && smtp == "" ) {
+							
 							$tweakFrom = $( 'div#'+$.mobile.urlHistory.getActive().url );
 							$tweakPanel = $tweakFrom.closest('div:jqmData(role="panel")');
 							} else  {
@@ -1576,7 +1553,8 @@
 								}
 
 						// loop through urlHistory
-						for (i = $.mobile.urlHistory.activeIndex-1; i>=0; i--) {							
+						for (var i = $.mobile.urlHistory.activeIndex-1; i>=0; i--) {	
+							
 							if ( $tweakPanel.jqmData('id') == $.mobile.urlHistory.stack[i].pageContainer.jqmData('id') || i == 0 ) {																		
 								$tweakPage = i == 0 ? $('div#' + $tweakPanel.find('div:jqmData(show="first")').attr('id') )
 										: $('div#'+$.mobile.urlHistory.stack[i].url );										
@@ -1589,7 +1567,7 @@
 								window.location.pathname+"#"+$tweakPage.attr('id') : 
 									window.location.pathname;
 						}
-
+					
 					// reset
 					self.options.$crumbsID = "";
 					self.options.$crumbsPanel = "";					
@@ -1600,41 +1578,55 @@
 					data.options.fromPage = $tweakFrom || $prevFrom;
 					data.options.reverse = true;					
 					
-					// unblock
-					self.options.$clickInProgress = false;					
-					
-					// clean up
-					self.clearActiveClasses( "panelHash", $(data.toPage), data.options.fromPage );
-
-					//make sure wrapper page stays activePage		
-					// $.mobile.activePage = $('div:jqmData(wrapper="true")');
-					
-					// reset pageContainer to default			
-					$.mobile.pageContainer = $('body');
-					
 					// set active index	- omitting this also causes endless loop...					
 					if ( $tweakHist = true ) {					
 						$.mobile.urlHistory.activeIndex =  $.mobile.urlHistory.activeIndex - 1;				
 						$tweakHist = false; 
-						}							
-					
-					// -1 aka keep track of transitions
-					self.options.$transDelta = self.options.$transDelta -1;
-					
-					// unblock
-					window.setTimeout(function() { self.options.$pbcCoutner = 0;},250);
-					
+						}						
+						
+					// clean up 
+					self.panelTransitionCleaner("panelHash", data, "");
 					
 				 } else { 
 				
 					// JQM territory;
+					// console.log("JQM");
 					
-					
-				}
-				// unblock again
-				self.options.$blockMultiPbc = false;
+				}				
+				// unblock clicker blockers for both jqm and panel transitions				
+				self.options.$clickInProgress = false;	
 
 
+		},
+		
+		/**
+		   * name: 	      	  panelTransitionCleaner
+		   * called from: 	  panelHash or panelTrans
+		   * purpose: 		  cleans up after panel transitions	to avoid running duplicate code in both functions	   
+		   * @param {string}  transition = panelHash or panelTrans
+		   * @param {object}  data object from original event
+		   * @param {link}    link object that was clicked (or "")
+		   */
+		panelTransitionCleaner: function( transition, data, link ) {
+			
+			var self = this, 
+				tcount = transition == "panelHash" ? -1 : 1;
+				
+			// +1/-1 aka keep count of panel transitions
+			self.options.$transDelta = self.options.$transDelta + tcount;
+			
+			// clean active classes						
+			self.clearActiveClasses( transition, $(data.toPage), data.options.fromPage, link );			
+					
+			// clean up stage event, because backwards transition may have come from a crumbs button click
+			self.options.$stageEvent = '';
+			
+			// reset pageContainer to default			
+			$.mobile.pageContainer = $('body');
+			
+			// unblock multiple pagebeforechange 
+			window.setTimeout(function() { self.options.$pbcCoutner = 0;},250);
+		
 		},
 		
 		/**
@@ -1704,7 +1696,7 @@
 			
             /**
 			  * bind to:	vclick.crumbs, a.ui-crumbs'
-		      * purpose: 	on vlick store crumbs ID and panel to redirect in hashChange!
+		      * purpose: 	on vlick store crumbs ID and panel for redirecting on backwards transition			  
 		      */
 			$(document).on('vclick.crumbs', 'a.ui-crumbs', function (e, data ) {														
 				var that = $(this);				
@@ -1733,17 +1725,29 @@
 			
 			/**
 			  * bind to:	pagebeforechange
-		      * purpose: 	panel transition handler
+		      * purpose: 	panel transition handler, rewrite toPage and options on pagebeforechange w/o preventDefaulting!			  
 		      */
 			$(document).on( "pagebeforechange", function( e, data ) {				
 						
 				// when loading an external page, we need to store its data in sitemap array, so it can be retrieved
 				// on backwards transitions. Not doing so, will break the page when trying to go back from an external
-				// page, because there will be no reference to the correct fromPage in the URL history. 				
-				if ( data.options.fromHashChange == false && $.mobile.path.parseUrl( data.toPage ).hash == "") {										
-					self.options.siteMap.push( { type: "external", data: data } );
+				// page, because there will be no reference to the correct fromPage(!) in the URL history. 						
+				if ( data.options.fromHashChange == false && $.mobile.path.parseUrl( data.toPage ).hash == "") {	
+				
+					// check if this page is already in the sitemap					
+					var j = self.options.siteMap.length;					
+					if (j == 0 ){											
+						self.options.siteMap.push( { type: "external", data: data } );						
+						} else {							
+							for ( var i = 0; i < j; i++) {								
+								if ( data.toPage == self.options.siteMap[i].data.toPage ){																				
+									break;													
+									}								
+								self.options.siteMap.push( { type: "external", data: data } );
+								}														
+							}					
 					}
-					
+				
 				// The following is necessary because JQM in non-pushstate environments loads the first page, if "no to" page is specified
 				// in _handleHashChange. Happens when going backwards from the 2nd page visisted to the initial page. In a panel setup this 
 				// could be a "Panel X 2nd-page" to "Panel X 1st-page" transition, where JQM just wants to load the first 								
@@ -1773,9 +1777,9 @@
 					
 					// if we are going backwards and transition-delta (forward-transitions MINUS backwards-transitions) = 1
 					if ( data.options.fromHashChange == true && self.options.$transDelta == 1 ) {
-						
+							
 						// crawl the history start to end to find the first entry with a page container other than BODY = panel
-						for (i = 0; i < $.mobile.urlHistory.stack.length; i++) {							
+						for (var i = 0; i < $.mobile.urlHistory.stack.length; i++) {							
 							if ( $.mobile.urlHistory.stack[i].pageContainer.get(0).tagName != 'BODY') {	
 								
 								// grab this pageContainers page with data-show="first" = we need to go to this page instead of reloading the wrapper!
@@ -1796,14 +1800,9 @@
 				if (typeof data.toPage !== 'string') {		
 					return;						
 					}	
-					
 				if ( data.options.fromHashChange == true ) {											
-					// only one may pass				
-					if ( self.options.$blockMultiPbc == false ) {
-						self.options.$blockMultiPbc = true;
-						// backwards transitio
-						self.panelHash( e, data );
-						}
+						// backwards transition
+						self.panelHash( e, data );					
 					} else {		
 						// forward transition
 						self.panelTrans( e, data );

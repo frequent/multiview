@@ -112,9 +112,11 @@ div[data-panel="popover"], .ui-popover-mode div[data-panel="menu"], .ui-popover-
 .ui-popover .ui-page                         						{ bottom: 0; /* makes popover pages content expand to the full available width... on iPad */ }
 .ui-popover .ui-page-active								{ min-height: inherit !important;}
 .ui-popover-mode div.ui-popover, .ui-splitview-mode div.ui-panel
-														{ overflow-x: visible; }		
+														{ overflow-x: visible; overflow-y: hidden; }		
 /* NOTE: need to override this to hide menu-scrollbars in splitview mode and make popover triangles re-appear. As this is needs to be
          'hidden' for Android select menu (only?), it should be ok on Android smartphones, as this would be fullscreen mode. */		
+/* NOTE: initially only set overflow-x. Without setting overflow-y, the popover leaks out during transition, which looks really bad. Adding
+         overflow-y however makes the triangles disappear. Need to find alternative to showing the triangle... */
 
 .ui-popover .ui-header									{ bottom: auto; left: 0; position: absolute !important; right: 0; top: 0 !important; }
 .ui-popover .ui-content        								{ /* overthrow */ height: auto; /* end overthrow */ z-index: 999; bottom: 0; left: 0; overflow-x: hidden !important; overflow-y: visible;  position: absolute !important;right: 0; top: 43px;}
