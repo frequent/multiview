@@ -3,7 +3,7 @@
 /* WRAPPER */ 
 body 											{ margin: 0px; width: inherit; overflow-y: auto !important; }
 div[data-wrapper="true"] 						{ margin: 0px; padding: 0px; width: inherit; /* height: inherit; */ }
-.blacklist div[data-wrapper="true"]  	{ overflow-x: hidden !important; }
+.blacklist div[data-wrapper="true"]  				{ overflow-x: hidden !important; }
 /* NOTE: removed height:inherit, because brakes fixed footer positioning */
 /* NOTE: need to add overflow-x:hidden !important, because otherwise on iPad there is ~20px empty space on the right hand of the screen
    but in fullscreen and popover mode, this causes wrapper page to have scrollbars, when toolbars are pos:fix.. use html.blacklist or
@@ -45,7 +45,7 @@ div[data-wrapper="true"] 						{ margin: 0px; padding: 0px; width: inherit; /* h
 .ui-panel-mid									{ float: left; position: static; /* relative */ }
 .ui-panel-right 									{ right: 0; }
 /* NOTE: pos:rel on the panel is necessary to hide transitions. If pos:stat is used, you can see the page being pulled up on top of the main panel before sliding over 
- * this does not work anymore with JQM 1.1, because toolbars switching between pos:fix and pos:abs, thereby messing up the layout */
+ * this does not work anymore with JQM 1.1, because toolbars switching between pos:fix and pos:abs, thereby messing up the layout of regular headers... */
 /* JQM 1.1 RC2: 	back to pos:static to avoid breaking layout in pos:fix mode - see if this works */			
 
 .ui-panel-left .ui-page, .ui-panel-mid .ui-page  	{ min-width: inherit; /* z-index:1050;*/ }
@@ -71,17 +71,16 @@ div[data-wrapper="true"] 						{ margin: 0px; padding: 0px; width: inherit; /* h
 /* TODO: Handle box-shadow in popover mode with 2 out of 3 panels visible - assign ui-panel-yield and ui-panel-supercede depending on data-yield="none" or data-yield="panel_id" */
 
 
+/* div[data-wrapper="true"] div.ui-page				{ position: relative;}
+NOTE: not sure this breaks things, but it sure eases transitions vs. default pos: absolute */
+
 .ui-content                      								{ overflow: visible; } 
-/* .ui-fullscreen-mode .ui-content					{ overflow-x: hidden !important;  padding: 15px !important; } */
+
 
 .ui-splitview-hidden { 
 	display:none; 
 }
-/*
-.menuToggle	{ 
-	position: absolute; 
-}
-*/
+
 
 .dataTables_filter.ui-menu-button-flex .menuToggle {
 	position: static;
@@ -112,7 +111,8 @@ div[data-panel="popover"], .ui-popover-mode div[data-panel="menu"], .ui-popover-
 .ui-popover .ui-page                         						{ bottom: 0; /* makes popover pages content expand to the full available width... on iPad */ }
 .ui-popover .ui-page-active								{ min-height: inherit !important;}
 .ui-popover-mode div.ui-popover, .ui-splitview-mode div.ui-panel
-														{ overflow-x: visible; overflow-y: hidden; }		
+														{ overflow-x: visible; overflow-y: hidden; }
+														
 /* NOTE: need to override this to hide menu-scrollbars in splitview mode and make popover triangles re-appear. As this is needs to be
          'hidden' for Android select menu (only?), it should be ok on Android smartphones, as this would be fullscreen mode. */		
 /* NOTE: initially only set overflow-x. Without setting overflow-y, the popover leaks out during transition, which looks really bad. Adding
@@ -167,6 +167,7 @@ div[data-panel="popover"], .ui-popover-mode div[data-panel="menu"], .ui-popover-
 .ui-fullscreen-mode .ui-footer-fixed {
 	z-index: 1025; /* must always be on top!!!*/
 }
+
 .ui-fullscreen-mode div.ui-mobile-viewport { 
 	overflow-y: auto; /* panels have scrollbar, because they act as viewport if panel is open! overriding body!, hides panel toolbar, question is on mobile devices, how scroll will work*/ 						 
 }
