@@ -1100,8 +1100,7 @@
 		   *				  In regular JQM, page-height is determined by page-content. In multiview, the nested page-content is not
 		   *				  "inherited upwards" to the wrapper-page, because of the panel in between thereby breaking fixed toolbars
 		   *				  (jump to top of screen on hide). This function fixes this, by setting panel-height (and wrapper-page-height)
-		   *				  to the height of the nested page with the largest height (regular) or screen-height less global toolbars (overthrow mode)
-		   * ADJUST padding if global&local toolbars are used & simplyfy
+		   *				  to the height of the nested page with the largest height (regular) or screen-height less global toolbars (overthrow mode)		   
 		   */
 		panelHeight: function (from) {
 			
@@ -1134,18 +1133,18 @@
 				$locH = $(this).siblings('.ui-header:eq(0)');
 				$locF = $(this).siblings('.ui-footer:eq(0)');
 				
-				if ( $blacklist == true ) {
-								
+				if (  $blacklist == true ) {
 					// BLACKLIST - should be margin-top/bottom 
-					$dims[$marPad[0]] = $glbH.length > 0 ? $glbH.outerHeight() + $locH.outerHeight() : $locH.outerHeight(); 
-					$dims[$marPad[1]] = $glbF.length > 0 ? $glbF.outerHeight() + $locF.outerHeight() : $locF.outerHeight();
-																		
-					} else if ( $cond ) {							
-						// NONE-blacklist, overthrow mode. (Fixed mode is ok by default :-). 
+					$dims[$marPad[0]] = ($glbH.length > 0 ? $glbH.outerHeight() + $locH.outerHeight() : $locH.outerHeight()) || 15; 
+					$dims[$marPad[1]] = ($glbF.length > 0 ? $glbF.outerHeight() + $locF.outerHeight() : $locF.outerHeight()) || 15;										
+					
+					} else if ( !$blacklist && $cond ) {			
+
+						// NONE-blacklist, overthrow mode (everything else 15px by default). 
 						// In overthrow mode, padding-top/bottom needs to be 0, otherwise 
 						// margin&padding will be set = 2x15px too much
-						$dims["padding-top"] = "0px";
-						$dims["padding-bottom"] = "0px";
+						$dims[$marPad[0]] = "0px";
+						$dims[$marPad[1]] = "0px";						
 						} 
 				// set				
 				$(this).css($dims);
@@ -1154,22 +1153,27 @@
 			
 			// height 			
 			if ( $cond ) {
+				// in OVERTHROW mode, except fullscreen and popover-mode = splitview-overthrow
 				
-				// splitview-mode = fix screen to allow overthrow-based scrolling of multiple background panels			
-				$setHeight = $.mobile.getScreenHeight() - $glbH.outerHeight() - $glbF.outerHeight(); 
-						
 				// set panel and wrapper									
 				$wrap.css({'overflow':'hidden' });
 				
-				// set content height
+				// splitview-mode = fix screen to allow overthrow-based scrolling of multiple background panels			
+				$setHeight = $.mobile.getScreenHeight() - $glbH.outerHeight() - $glbF.outerHeight(); 
 				
+				// set content height				
 				$contents.each(function() {
+									
 					$localHeight = $(this).siblings('.ui-header:eq(0)').outerHeight() + $(this).siblings('.ui-footer:eq(0)').outerHeight();
-					$(this).css({ 'height':$setHeight-$localHeight }).addClass("overthrow");
+									
+					$(this).addClass("overthrow")
+							.css({ 'height':$setHeight-$localHeight, 'padding-bottom': "0px"});
 					});
 				
-				} else {
-					// popover-mode/fullscreen-mode = no overthrow, because there is only one panel visible at a time = use hardware scrolling					
+				} else {	
+					//console.log("nu auch da = no overthrow and popover/fullscreen, splitview fixed");
+					// no overthrow (popover-mode/fullscreen-mode), because there is only one panel visible at a time = use hardware scrolling
+					// also should cover fixed mode (where the whole screen scrolls )
 					
 					// get heighest height of active nested page
 					// this needs a 1ms timeout, otherwise active-page is still on the previous active page, also taking the preset
@@ -1178,25 +1182,26 @@
 					window.setTimeout( function() {	
 				
 						$('div:jqmData(wrapper="true").ui-page-active').find('.ui-page-active .ui-content').each(function(i) {						
-							if ( $(this).outerHeight() > $setHeight ) {				
-								$setHeight = $(this).outerHeight();								
+							if ( $(this).outerHeight() > $setHeight ) {								
+								$setHeight = $(this).outerHeight();										
 								}					
 							});
-						},1);					
-												
-				$contents.each( function() {
-					$localHeight = $(this).siblings('.ui-header:eq(0)').outerHeight() + $(this).siblings('.ui-footer:eq(0)').outerHeight();						
-					//$(this).css({ 'height':$setHeight-$localHeight });
-					})	
-				
-					// set 
-					$('div:jqmData(panel="main"), div:jqmData(panel="mid"), div:jqmData(panel="menu")').css({'height': $setHeight});
-					}											
+						//console.log( $setHeight );
+						
+						// this needs to be in here, otherwise $setHeight will still be 0 and nothing will be set
+						$contents.each( function() {
+							$localHeight = $(this).siblings('.ui-header:eq(0)').outerHeight() + $(this).siblings('.ui-footer:eq(0)').outerHeight();						
+							$(this).css({ 'height':$setHeight-$localHeight });
+							})	
 					
-				// overwrite menu height again, otherwise popover panels expand depending on content 			
-				if ( $('html').hasClass('ui-popover-mode') ) { 					
-					$('div:jqmData(panel="menu")').add('div:jqmData(panel="mid")').css({'height':''});
-					}
+						// set 
+						$wrap.css({'min-height': $setHeight});
+						$panels.css({'min-height': 'inherit'})
+						
+						},1);					
+
+					}											
+
 			
 			},
 		
@@ -1292,7 +1297,7 @@
 			
 			var self = this,
 				$loopLength = $.mobile.urlHistory.stack.length-1, 
-				$temp, $path, $orig;
+				$temp;
 					
 			if ( scope == "internal") {				
 					
@@ -1304,7 +1309,8 @@
 						
 						if ( $setPageContainer.jqmData('id') == $.mobile.urlHistory.stack[i-1].pageContainer.jqmData('id') ) {
 					
-							$temp =  $('div:jqmData(url="'+ $.mobile.path.parseUrl( $.mobile.urlHistory.stack[i-1].url ).pathname +'")' );
+							$temp =  $('div.ui-page').filter(function(){ return $(this).jqmData('url') === $.mobile.path.parseUrl( $.mobile.urlHistory.stack[i-1].url ).pathname }) 
+									// $('div:jqmData(url="'+ $.mobile.path.parseUrl( $.mobile.urlHistory.stack[i-1].url ).pathname +'")' );
 							break;
 							}							
 						}
@@ -1315,19 +1321,23 @@
 					// When going back we have to make sure we clean the urlHistory of unwanted entries in case 
 					// we pass in a hashChange-based urlString, so set backFix to true to trigger cleansing check after the transition is done.
 					if ( typeof $temp == "undefined" || $loopLength < 2 ){						
-						$temp =  $('div:jqmData(url="'+$setPageContainer.find('div:jqmData(show="first")').attr('data-url')+'")' );
+						$temp = $('div.ui-page').filter(function(){ return $(this).jqmData('url') === $setPageContainer.find('div:jqmData(show="first")').attr('data-url') })  
+							// $('div:jqmData(url="'+$setPageContainer.find('div:jqmData(show="first")').attr('data-url')+'")' );
 						// cleanse urlHistory
 						self.options._backFix = true;
 						}
 						
-				} else {					
+				} else {	
+					
 					// On external transitions (going back from a page X to a wrapper page Y nested page) we crawl the history to find the previous
 					// wrapper page URL, because the nested page we are going to should still be active, so we only need to transition to the wrapper.
 					// We also include the initial page here, because it will be a wrapper page (vs. internal transitions, where it can never be a 
 					// nested page.
 					// NOTE: if we ever start removing externally loaded pages, the page has to be re-loaded through the siteMap reference.					
-					for (var i = $loopLength; i>=1; i--) {						
-						$temp = $('div:jqmData(url="'+$.mobile.path.parseUrl( $.mobile.urlHistory.stack[i-1].url ).pathname +'")' );
+					for (var i = $loopLength; i>=1; i--) {							
+						// only works with attr()
+						$temp = $('div').filter(function(){ return $(this).attr('data-url') === $.mobile.path.parseUrl( $.mobile.urlHistory.stack[i-1].url ).pathname  });
+							// $('div:jqmData(url="'+$.mobile.path.parseUrl( $.mobile.urlHistory.stack[i-1].url ).pathname +'")' );												    
 						if ($temp.jqmData('wrapper') == true ){
 							break;
 							}						
@@ -1521,7 +1531,8 @@
 								
 				// panel transition if the prevPanel is a DIV (panel) or the toPage has a parent panel or is in the sitemap	
 				if ( data.options.pageContainer.get(0).tagName != "BODY"  
-					|| $('div:jqmData(url="'+data.toPage.replace( '#', '' )+'")').closest('div:jqmData(role="panel")').length != 0  
+					|| $('div.ui-page').filter(function(){ return $(this).jqmData('url') === data.toPage.replace( '#', '' ) }).closest('div:jqmData(role="panel")').length != 0 
+						// $('div:jqmData(url="'+data.toPage.replace( '#', '' )+'")').closest('div:jqmData(role="panel")').length != 0  
 						|| !self.options.siteMap[data.toPage] == false ) {
 								
 					// PageContainer can be a panel (DIV) or normal viewport (BODY). So there are 4 types of viewport transitions:
@@ -1549,13 +1560,16 @@
 					// and it's difficult to capture the pageID if only the full URL is available. 
 					
 					var $currentEntry = $.mobile.urlHistory.stack[$.mobile.urlHistory.activeIndex].url,
-						$activePage = $('div:jqmData(url="'+ $currentEntry +'")');
-					
+						// what do you know... iOS3 does not take jqmData(url...)
+						//$currentActive = $('div:jqmData(url="'+ $currentEntry +'")');
+						$currentActive = $('div.ui-page').filter(function(){ return $(this).jqmData('url') === $currentEntry });
+
 					// special case = last backwards transition inside a wrapper page
 					if ( self.options._backFix == true ) {						
 						
 						// this was derived in pagebeforechange
-						$setToPage = $('div:jqmData(url="'+data.toPage+'")')
+						$setToPage = $('div.ui-page').filter(function(){ return $(this).jqmData('url') === data.toPage })
+							// $('div:jqmData(url="'+data.toPage+'")')
 							
 						// take toPage closest container as pageContainer
 						$setPageContainer = $setToPage.closest('.ui-mobile-viewport');
@@ -1563,10 +1577,11 @@
 						// set from Page to the page currently active on the panel
 						$setFromPage = $setPageContainer.find('.ui-page-active');							
 						
-						} else if ( $activePage.closest('.ui-mobile-viewport').get(0).tagName == "DIV" ) {
+						} else if ( $currentActive.closest('.ui-mobile-viewport').get(0).tagName == "DIV" ) {
 							
 							// internal transition (inside wrapper)
-							$setFromPage = $('div:jqmData(url="'+$currentEntry+'")');
+							$setFromPage = $('div.ui-page').filter(function(){ return $(this).jqmData('url') === $currentEntry })
+								//$('div:jqmData(url="'+$currentEntry+'")');
 							
 							// a backwards transition will always change a page INSIDE a panel (click a link in A1 to change B1 to B2. Reverse = B2>B1)
 							$setPageContainer =	$setFromPage.closest('.ui-mobile-viewport')
@@ -1576,19 +1591,18 @@
 							
 							}  else {
 								// external transition (wrapper to nested page)
-																
+								
 								// fromPage will be current entry
-								$setFromPage = $('div:jqmData(url="'+$currentEntry+'")')								
-									// not sure I need those
-									|| $('div:jqmData(wrapper="true").ui-page-active') 
-										|| $('body').children('div.ui-page-active');
+								$setFromPage = $('div.ui-page').filter(function(){ return $(this).jqmData('url') === $currentEntry });
+									// $('div:jqmData(url="'+$currentEntry+'")')								
 								
 								// as we are going back to a wrapper page, pageContainer must be set to BODY (we could try to deeplink to the data.toPage )
 								$setPageContainer =	$('body');
 								
 								// loop for the previous wrapper page in the urlHistory
-								$setToPage = self.loopHistory("external", $setPageContainer);
-								}	
+								$setToPage = self.loopHistory("external", $setPageContainer);								
+								}
+											
 					
 					// ALL SET
 					data.toPage = $setToPage;
@@ -1919,6 +1933,8 @@
 				self.panelHeight("or");
 				self.gulliver();
 				});
+			
+			
 			
 			}
 		

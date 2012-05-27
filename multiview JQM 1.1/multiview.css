@@ -3,14 +3,14 @@
 /* WRAPPER */ 
 body 											{ margin: 0px; width: inherit; overflow-y: auto !important; }
 div[data-wrapper="true"] 						{ margin: 0px; padding: 0px; width: inherit; /* height: inherit; */ }
-.blacklist div[data-wrapper="true"]  				{ overflow-x: hidden !important; }
+.blacklist div[data-wrapper="true"]  				{ overflow-x: hidden !important; min-height: inherit; height: 100%;  }
 /* NOTE: removed height:inherit, because brakes fixed footer positioning */
 /* NOTE: need to add overflow-x:hidden !important, because otherwise on iPad there is ~20px empty space on the right hand of the screen
    but in fullscreen and popover mode, this causes wrapper page to have scrollbars, when toolbars are pos:fix.. use html.blacklist or
    otherwise in fullscreen-mode and popover mode   */
 
-.ui-mobile-viewport								{ height: inherit; }
-/* NOTE: not sure whether width: inherit/height:inherit works across browsers and whether it's still necessary
+.ui-mobile-viewport						      		{ height: inherit;} 
+/* NOTE: this should cover panels AND body.not sure whether width: inherit/height:inherit works across browsers and whether it's still necessary
  * Originally both rules were included to make sure dimensions are passed correctly, because JQM only has
  * body>page, while the plugin needs to pass dimensions body>wrapper>panel>pages and panels had none or
  * incorrect dimensions to pass on to nested pages.  */
@@ -71,6 +71,8 @@ div[data-wrapper="true"] 						{ margin: 0px; padding: 0px; width: inherit; /* h
 /* TODO: Handle box-shadow in popover mode with 2 out of 3 panels visible - assign ui-panel-yield and ui-panel-supercede depending on data-yield="none" or data-yield="panel_id" */
 
 
+
+
 /* div[data-wrapper="true"] div.ui-page				{ position: relative;}
 NOTE: not sure this breaks things, but it sure eases transitions vs. default pos: absolute */
 
@@ -80,6 +82,11 @@ NOTE: not sure this breaks things, but it sure eases transitions vs. default pos
 .ui-splitview-hidden { 
 	display:none; 
 }
+
+
+
+
+
 
 
 .dataTables_filter.ui-menu-button-flex .menuToggle {
@@ -110,13 +117,17 @@ div[data-panel="popover"], .ui-popover-mode div[data-panel="menu"], .ui-popover-
 
 .ui-popover .ui-page                         						{ bottom: 0; /* makes popover pages content expand to the full available width... on iPad */ }
 .ui-popover .ui-page-active								{ min-height: inherit !important;}
+.ui-popover-mode div.ui-popover							{ overflow-y: hidden; }
+/* NOTE: Without setting overflow-y, the popover leaks out during transition, which looks really bad. Adding
+         overflow-y however makes the triangles disappear. Need to find alternative to showing the triangle...
+		 since scrolling on popovers in popover-mode is done using Overthrow, this can be set to hidden */
 .ui-popover-mode div.ui-popover, .ui-splitview-mode div.ui-panel
-														{ overflow-x: visible; overflow-y: hidden; }
+														{ overflow-x: visible; }
+														
 														
 /* NOTE: need to override this to hide menu-scrollbars in splitview mode and make popover triangles re-appear. As this is needs to be
          'hidden' for Android select menu (only?), it should be ok on Android smartphones, as this would be fullscreen mode. */		
-/* NOTE: initially only set overflow-x. Without setting overflow-y, the popover leaks out during transition, which looks really bad. Adding
-         overflow-y however makes the triangles disappear. Need to find alternative to showing the triangle... */
+
 
 .ui-popover .ui-header									{ bottom: auto; left: 0; position: absolute !important; right: 0; top: 0 !important; }
 .ui-popover .ui-content        								{ /* overthrow */ height: auto; /* end overthrow */ z-index: 999; bottom: 0; left: 0; overflow-x: hidden !important; overflow-y: visible;  position: absolute !important;right: 0; top: 43px;}
@@ -199,6 +210,8 @@ div[data-panel="popover"], .ui-popover-mode div[data-panel="menu"], .ui-popover-
 
 /* OVERTHROW */
 .overthrow-enabled .overthrow 								{ overflow: auto; -webkit-overflow-scrolling: touch; }
+
+
 
 
 
