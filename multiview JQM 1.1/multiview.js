@@ -327,9 +327,8 @@
 				// only hide if not in fullscreen mode, no blocker has been set (necessary 
 				// if new pages are appended to DOM - can't find scrollTop 
 				// to block) or if this is a "scrollTop" initiated from a context transition 
+				if ( !$('html').hasClass('ui-fullscreen-mode') 					
 				// (need to keep the initiating popover active)						
-				if ( !$('html').hasClass('ui-fullscreen-mode') 
-					// && $('div:jqmData(yieldmode="true")').length == 0
 						&& self.options._panelTransBlockScrollTop == false  
 							&& !self.options._blockContextScrollTop == true) {
 					
@@ -779,29 +778,29 @@
 				main = wrap.find('div:jqmData(panel="main")'),
 				popover = wrap.find('div:jqmData(panel="popover")'),
 				allPanels = $('div:jqmData(panel="popover"), div:jqmData(panel="menu"), div:jqmData(panel="mid")'),
-				popClasses = 'ui-popover pop_menuBox ui-panel-active ui-triangle-top',
-				yield = $('div:jqmData(yieldmode="true")');
-				
+				yield = $('div:jqmData(yieldmode="true")').length > 0,				
+				popClasses = yield ? 'pop_fullscreen ui-panel-active' : 'ui-popover pop_menuBox ui-panel-active ui-triangle-top';
+								
 				$('html').addClass('ui-multiview-active ui-popover-mode').removeClass('ui-splitview-mode');
 								
 			// race condition	
-			if( !$('html').hasClass('ui-fullscreen-mode') && yield.length == 0 ) {
+			if( !$('html').hasClass('ui-fullscreen-mode') ) {
 				
-				menu.addClass( popClasses )					
-						.removeClass('ui-panel-left pop_fullscreen')
-						.attr({'data-fixed':'top'})
-						.css({ 'width' :  menu.jqmData("width") || self.options.menuWidth, 
-							   'min-width' : menu.jqmData("minWidth") || self.options.menuMinWidth })
-						.append('<div class="popover_triangle" />')					
-						.find('.ui-page .ui-content').addClass('overthrow');
+				menu.removeClass('ui-panel-left pop_fullscreen')
+						.addClass( popClasses )						
+						.css({ 'width' :  ( yield ? '' : menu.jqmData("width") || self.options.menuWidth ), 
+							   'min-width' : ( yield ? '' : menu.jqmData("minWidth") || self.options.menuMinWidth ),
+							   'margin-left' : ''})
+						.append( yield ? '' : '<div class="popover_triangle" />')					
+						.find('.ui-page .ui-content').addClass( yield ? '' : 'overthrow');
 
-				mid.addClass( popClasses )					
-						.removeClass('ui-panel-mid pop_fullscreen')
-						.attr({'data-fixed':'top'})
-						.css({'width': mid.jqmData("width") || self.options.midWidth, 
-								'min-width': mid.jqmData("minWidth") || self.options.midMinWidth })
-						.append('<div class="popover_triangle" />')			
-						.find('.ui-page .ui-content').addClass('overthrow');
+				mid.removeClass('ui-panel-mid pop_fullscreen')
+						.addClass( popClasses )						
+						.css({'width': ( yield ? '' : mid.jqmData("width") || self.options.midWidth ), 
+								'min-width': ( yield ? '' : mid.jqmData("minWidth") || self.options.midMinWidth ),
+								'margin-left' : '' })
+						.append( yield ? '' : '<div class="popover_triangle" />')			
+						.find('.ui-page .ui-content').addClass( yield ? '' : 'overthrow');
 					
 				main.removeClass('ui-panel-right pop_fullscreen')
 						.addClass('ui-panel-active')
@@ -811,24 +810,7 @@
 				popover.removeClass('pop_fullscreen')
 						.addClass('ui-popover');
 				
-				} else if ( yield.length == 1 ) {
-					
-					main.add( menu).add( mid ).removeClass( popClasses )
-							.addClass( "pop_fullscreen" )							
-								.find('div:jqmData(role="page")').andSelf()
-									.css({'width':'', 'margin-left':'', 'min-width':'', height:'' });	
-					
-					$('div:jqmData(role="panel")').each(function(){
-						console.log( $(this).jqmData("yield-to") );
-						$(this).jqmData("yield-to") == "none" ? 
-								$(this).css({'display':'block'}).addClass('ui-panel-active') : 	
-										$(this).css({'display':'none'}).removeClass('ui-panel-active');
-						});
-					
-					popover.removeClass('pop_fullscreen')
-							.addClass('ui-popover');
-						
-					} else {
+				} else {
 						// fullscreen mode - will also be assigned by Gulliver. Not sure this is needed!
 						allPanels.addClass('pop_fullscreen ui-panel-hidden').removeClass('ui-popover ui-panel-active');
 						}
@@ -862,16 +844,14 @@
 			
 			$menu.removeClass( $popClasses )									
 					.addClass('ui-panel-left ui-panel-active')
-					.removeAttr('status')
-					.removeAttr('data-fixed')
+					.removeAttr('status')					
 					.find('.ui-page .ui-content').removeClass('overthrow').end()
 					.children('.popover_triangle').remove().end()
 					.find('div:jqmData(show="first") .closePanel').remove().end()					
 			
 			$mid.removeClass( $popClasses )					
 					.addClass('ui-panel-mid ui-panel-active')
-					.removeAttr('status')
-					.removeAttr('data-fixed')
+					.removeAttr('status')					
 					.find('.ui-page .ui-content').removeClass('overthrow').end()
 					.children('.popover_triangle').remove().end()
 					.find('div:jqmData(show="first") .closePanel').remove().end()									
