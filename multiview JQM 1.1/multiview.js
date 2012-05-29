@@ -328,7 +328,10 @@
 				// if new pages are appended to DOM - can't find scrollTop 
 				// to block) or if this is a "scrollTop" initiated from a context transition 
 				// (need to keep the initiating popover active)						
-				if ( !$('html').hasClass('ui-fullscreen-mode') && self.options._panelTransBlockScrollTop == false  && !self.options._blockContextScrollTop == true) {
+				if ( !$('html').hasClass('ui-fullscreen-mode') 
+					// && $('div:jqmData(yieldmode="true")').length == 0
+						&& self.options._panelTransBlockScrollTop == false  
+							&& !self.options._blockContextScrollTop == true) {
 					
 					// prevent iOS keyboard hiding popover						
 					if ( !$("input:focus").length > 0 ) {
@@ -388,7 +391,7 @@
 		   * @param {string}to check who called
 		   */
 		hideAllPanels: function(from) {
-			
+			console.log(from)
 			var self = this, $pop; 
 					
 			$('.toggle_popover').removeClass('ui-btn-active');
@@ -591,8 +594,7 @@
 		/**
 		   * name: 	      	popoverBtn
 		   * called from: 	popover() - regular popover button (same as for yield mode) / splitview() - switchable button							
-		   * purpose: 		add popover buttons for menu|mid. If both panels are used it will be a 2-button controlgroup
-		   * ADD YIELD MODE
+		   * purpose: 		add popover buttons for menu|mid. If both panels are used it will be a 2-button controlgroup		   
 		   * @param {string}  buttonType (info who called)
 		   */	
 		popoverBtn: function ( buttonType ) {
@@ -771,48 +773,65 @@
 		popover: function (e) {
 		
 			var self = this,
-				$wrap = $('div:jqmData(wrapper="true").ui-page-active'),
-				$menu = $wrap.find('div:jqmData(panel="menu")'),
-				$mid = $wrap.find('div:jqmData(panel="mid")'),
-				$main = $wrap.find('div:jqmData(panel="main")'),
-				$popover = $wrap.find('div:jqmData(panel="popover")'),
-				$allPanels = $('div:jqmData(panel="popover"), div:jqmData(panel="menu"), div:jqmData(panel="mid")'),
-				$popClasses = 'ui-popover pop_menuBox ui-panel-active ui-triangle-top',
-				$yield = $('div:jqmData(yieldmode="true")');
+				wrap = $('div:jqmData(wrapper="true").ui-page-active'),
+				menu = wrap.find('div:jqmData(panel="menu")'),
+				mid = wrap.find('div:jqmData(panel="mid")'),
+				main = wrap.find('div:jqmData(panel="main")'),
+				popover = wrap.find('div:jqmData(panel="popover")'),
+				allPanels = $('div:jqmData(panel="popover"), div:jqmData(panel="menu"), div:jqmData(panel="mid")'),
+				popClasses = 'ui-popover pop_menuBox ui-panel-active ui-triangle-top',
+				yield = $('div:jqmData(yieldmode="true")');
 				
 				$('html').addClass('ui-multiview-active ui-popover-mode').removeClass('ui-splitview-mode');
 								
 			// race condition	
-			if( !$('html').hasClass('ui-fullscreen-mode') && $yield.length == 0 ) {
+			if( !$('html').hasClass('ui-fullscreen-mode') && yield.length == 0 ) {
 				
-				$menu.addClass( $popClasses )					
+				menu.addClass( popClasses )					
 						.removeClass('ui-panel-left pop_fullscreen')
 						.attr({'data-fixed':'top'})
-						.css({ 'width' :  $menu.jqmData("width") || self.options.menuWidth, 
-							   'min-width' : $menu.jqmData("minWidth") || self.options.menuMinWidth })
+						.css({ 'width' :  menu.jqmData("width") || self.options.menuWidth, 
+							   'min-width' : menu.jqmData("minWidth") || self.options.menuMinWidth })
 						.append('<div class="popover_triangle" />')					
 						.find('.ui-page .ui-content').addClass('overthrow');
 
-				$mid.addClass( $popClasses )					
+				mid.addClass( popClasses )					
 						.removeClass('ui-panel-mid pop_fullscreen')
 						.attr({'data-fixed':'top'})
-						.css({'width': $mid.jqmData("width") || self.options.midWidth, 
-								'min-width': $mid.jqmData("minWidth") || self.options.midMinWidth })
+						.css({'width': mid.jqmData("width") || self.options.midWidth, 
+								'min-width': mid.jqmData("minWidth") || self.options.midMinWidth })
 						.append('<div class="popover_triangle" />')			
 						.find('.ui-page .ui-content').addClass('overthrow');
 					
-				$main.removeClass('ui-panel-right pop_fullscreen')
+				main.removeClass('ui-panel-right pop_fullscreen')
 						.addClass('ui-panel-active')
 						.find('div:jqmData(role="page")').andSelf()
 						.css({'width':'', 'margin-left':'', 'min-width':''});
 			
-				$popover.removeClass('pop_fullscreen')
+				popover.removeClass('pop_fullscreen')
 						.addClass('ui-popover');
 				
-				} else {
-					// fullscreen mode - will also be assigned by Gulliver. Not sure this is needed!
-					$allPanels.addClass('pop_fullscreen ui-panel-hidden').removeClass('ui-popover ui-panel-active');
-					}
+				} else if ( yield.length == 1 ) {
+					
+					main.add( menu).add( mid ).removeClass( popClasses )
+							.addClass( "pop_fullscreen" )							
+								.find('div:jqmData(role="page")').andSelf()
+									.css({'width':'', 'margin-left':'', 'min-width':'', height:'' });	
+					
+					$('div:jqmData(role="panel")').each(function(){
+						console.log( $(this).jqmData("yield-to") );
+						$(this).jqmData("yield-to") == "none" ? 
+								$(this).css({'display':'block'}).addClass('ui-panel-active') : 	
+										$(this).css({'display':'none'}).removeClass('ui-panel-active');
+						});
+					
+					popover.removeClass('pop_fullscreen')
+							.addClass('ui-popover');
+						
+					} else {
+						// fullscreen mode - will also be assigned by Gulliver. Not sure this is needed!
+						allPanels.addClass('pop_fullscreen ui-panel-hidden').removeClass('ui-popover ui-panel-active');
+						}
 
 			// popover button			
 			self.popoverBtn("plain");
@@ -1031,25 +1050,25 @@
 		panelWidth: function( update, fromWhere ) {
 				
 			var self = this,
-				$wrap = $('div:jqmData(wrapper="true").ui-page-active'),
-				$main = $wrap.find('div:jqmData(panel="main")'), 
-				$mainPages = $main.find("div:jqmData(role='page')"), 
-				$mainElems = $mainPages.find('.ui-header, .ui-footer'),
+				wrap = $('div:jqmData(wrapper="true").ui-page-active'),
+				main = wrap.find('div:jqmData(panel="main")'), 
+				mainPages = main.find("div:jqmData(role='page')"), 
+				mainElems = mainPages.find('.ui-header, .ui-footer'),
 			
-				$mid = $wrap.find('div:jqmData(panel="mid")'), 
-				$midPages = $mid.find("div:jqmData(role='page')"), 
-				$midElems = $midPages.find('.ui-header, .ui-footer'),
+				mid = wrap.find('div:jqmData(panel="mid")'), 
+				midPages = mid.find("div:jqmData(role='page')"), 
+				midElems = midPages.find('.ui-header, .ui-footer'),
 			
-				$menu = $wrap.find('div:jqmData(panel="menu"):not("ui-popover")'), 
-				$menuPages = $menu.find("div:jqmData(role='page')"), 
-				$menuElems = $menuPages.find('.ui-header, .ui-footer'),
+				menu = wrap.find('div:jqmData(panel="menu"):not("ui-popover")'), 
+				menuPages = menu.find("div:jqmData(role='page')"), 
+				menuElems = menuPages.find('.ui-header, .ui-footer'),
 				
-				$wrapWidth, 				
+				wrapWidth, 				
 				
 				// TODOT: modifiy this depending on yield-mode and priority
-				$mainWidth,
-				$menuWidth = 0, 
-				$midWidth = 0;
+				mainWidth,
+				menuWidth = 0, 
+				midWidth = 0;
 			
 					
 				// prevent multiple calls
@@ -1065,29 +1084,29 @@
 					// UPDATE: since I need another 1ms timeout in panelHeight to correctly set external pages, this also needs a timeout again...
 					window.setTimeout( function() {		
 						
-						$wrapWidth = $wrap.innerWidth();
+						wrapWidth = wrap.innerWidth();
 												
 						if (self.framer() != 'small' && $('html').hasClass('ui-splitview-mode') ) {
 										
 							// width = 0 ? > no menu/mid or switchable mode
-							$menuWidth = !$menu || !$menu.is(":visible") ? 0 : parseFloat($menu.outerWidth() );
-							$midWidth = !$mid || !$mid.is(":visible") ? 0 : parseFloat($mid.outerWidth() );
+							menuWidth = !menu || !menu.is(":visible") ? 0 : parseFloat(menu.outerWidth() );
+							midWidth = !mid || !mid.is(":visible") ? 0 : parseFloat(mid.outerWidth() );
 
 							// set
-							$menuPages.add( $menuElems ).css({ 'width' : $menuWidth });
-							$midPages.add( $midElems ).css({ 'margin-left' : $menuWidth, 'width' : $midWidth });
+							menuPages.add( menuElems ).css({ 'width' : menuWidth });
+							midPages.add( midElems ).css({ 'margin-left' : menuWidth, 'width' : midWidth });
 							
 							// As Android does not give the correct width on orientationchange, this needs to go here
 							// and must be set again for fullscreen mode
-							$main.add( $mainPages ).css({'margin-left': $menuWidth+$midWidth, 'width':$wrapWidth-$menuWidth-$midWidth });
-							$mainElems.css({'width':$wrapWidth-$menuWidth-$midWidth, 'left':'auto'});
+							main.add( mainPages ).css({'margin-left': menuWidth+midWidth, 'width':wrapWidth-menuWidth-midWidth });
+							mainElems.css({'width':wrapWidth-menuWidth-midWidth, 'left':'auto'});
 							
 							} else if ( $('html').hasClass('ui-popover-mode') || $('html').hasClass('ui-fullscreen-mode')  ) {
 								
-								$main.add( $mainPages ).css({'margin-left': 0, 'width':"100%" })
-								$mainElems.css({ 'width':'100%', 'left':'auto' })
+								main.add( mainPages ).css({'margin-left': 0, 'width':"100%" })
+								mainElems.css({ 'width':'100%', 'left':'auto' })
 
-								$menuPages.add( $midPages ).css({'width':''});
+								menuPages.add( midPages ).css({'width':''});
 								}
 						
 						// unlock
@@ -1127,6 +1146,7 @@
 					// toolbars VS scrolling behind. 
 					blacklist = $('html').hasClass('blacklist'),
 					overthrow = wrap.jqmData("scrollmode") == "overthrow" && ( !$('html').hasClass('ui-popover-mode') && !$('html').hasClass('ui-fullscreen-mode') ),
+					
 					
 					// toolbars					
 					gsH = $.mobile.getScreenHeight(),
@@ -1191,7 +1211,20 @@
 						// clear overthrow, set height to content height
 						panels.css({ "height": self.options._iPadFixHeight });
 						// clear overthrow, set height to content height (local toolbars count towards scrollable region )
-						contents.css({ "max-height":"", "height": self.options._iPadFixHeight, "margin-top":"15px", "margin-bottom":"15px" }).removeClass('overthrow');
+						contents.each(function(){ 
+							var lclH = $(this).siblings('.ui-header:eq(0)'),
+								lclF = $(this).siblings('.ui-footer:eq(0)'),									
+								lclHH = lclH.length > 0 && blacklist == true ? parseFloat( lclH.outerHeight() ) : 0,
+								lclFH = lclF.length > 0 && blacklist == true ? parseFloat( lclF.outerHeight() ) : 0;
+									
+							$(this).css({ "max-height":"", "height": self.options._iPadFixHeight, "margin-top":lclHH, "margin-bottom":lclFH }).removeClass('overthrow');
+							});
+						}
+						
+					// overwrite menu height again, otherwise popover panels expand depending on content and margin will be off. 			
+					if ( $('html').hasClass('ui-popover-mode') ) { 					
+						$('div:jqmData(panel="menu")').add('div:jqmData(panel="mid")').css({'height':''})
+							.find('.ui-content').css({ "margin-top":"0px", "margin-bottom":"0px" });
 						}
 					
 				},1);
