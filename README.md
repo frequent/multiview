@@ -57,12 +57,12 @@ This is a list of all attributes you can use.
 </tr>
 <tr>
 	<td>data-scrollMode="overthrow"</td>
-	<td>OPTIONAL on wrapper-page (**NEW**)</td>
+	<td>OPTIONAL on wrapper-page (new)</td>
 	<td>this locks the active page to screen dimensions and uses Overthrow to scroll panels independently from one another.</td>
 </tr>
 <tr>
 	<td>data-yieldmode="true"</td>
-	<td>OPTIONAL on wrapper-page (**NEW**)</td>
+	<td>OPTIONAL on wrapper-page (new)</td>
 	<td>By default popovers and menu|mid panels will open as *popovers* in popover-mode and *fullscreen* in fullscreen-mode. 
 	Setting this attribute will also use *fullscreen* pages in **popover-mode** (still buggy!)</td>
 </tr>
@@ -124,12 +124,12 @@ This is a list of all attributes you can use.
 	</tr>
 	<tr>
 		<td>data-menu|mid-width="15%"</td>
-		<td>OPTIONAL (**NEW**)</td>
+		<td>OPTIONAL (new)</td>
 		<td>width of the menu|mid panel, default is *25%*</td>
 	</tr>
 	<tr>
 		<td>data-menuMinWidth|midMinWidth-width="100px"</td>
-		<td>OPTIONAL  (**NEW**)</td>
+		<td>OPTIONAL  (new)</td>
 		<td>min-width of the menu|mid panel, default is *250px*</td>
 	</tr>
 	<tr>
@@ -162,7 +162,7 @@ This is a list of all attributes you can use.
 	<TABLE cellspacing="2" border="1">	
 	<tr>
 		<td>data-drop-pop="true"</td>
-		<td>OPTIONAL on any element (**NEW**)</td>
+		<td>OPTIONAL on any element (new)</td>
 		<td>If you want to place the menu|mid switchable button outside of the header you can add *data-drop-pop="true"* to any element inside your page. The 
 		switchable buttons will then be inserted here (either a single button if only a menu is used or a controlgroup if both mid|menu are used).</td>
 	</tr>
