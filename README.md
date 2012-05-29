@@ -7,32 +7,26 @@ To use this plugin you will need 3 files:
      
      - jquery.mobile.multiview.js (gzip 7k/9k (incl. [Overthrow](https://github.com/filamentgroup/Overthrow/) scoller)
      - jquery.mobile.multiview.css (gzip 1k) 
-     - jquery.mobile-1.1.0.multiview - Jquery Mobile with slight modifications (details below)
-
-	Multiview now uses **Overthrow** as default scroller. The scroller is only necessary inside popover-panels or if you want
-	to use the screen-lock function (scrollmode="overthrow") to allow side-by-side panels to scroll independently. Earlier versions
-	used the experimental [JQM **Scrollview**](http://jquerymobile.com/demos/1.0a3/experiments/scrollview/) plugin, which
-	in my view had a better performance, but currently seems no longer supported by JQM. Overthrow is at version 0.1 so
-	I'm hoping this will develop into a proper polyfill. I will try to setup the plugin so you are free to choose which
-	scroller to use. Will be some time though. 
+     - jquery.mobile-1.1.0.multiview - Jquery Mobile with slight modifications (details below)  
+	 
+	 Multiview now uses **Overthrow** as default scroller. The scroller is only necessary inside popover-panels or if you want to use the screen-lock function (scrollmode="overthrow") to allow side-by-side panels to scroll independently. Earlier versions used the experimental [JQM **Scrollview**](http://jquerymobile.com/demos/1.0a3/experiments/scrollview/) plugin, which in my view had a better performance, but currently seems no longer supported by JQM. Overthrow is at version 0.1 so I'm hoping this will develop into a proper polyfill. I will try to setup the plugin so you are free to choose which scroller to use. Will be some time though.  
 	 	 
 2. Current Status   
-Aside from some smaller bugs, multiview 1.1.0 is working fine. 
+Aside from some smaller bugs, multiview 1.1.0 is working fine.  
 
-	Demo Page: [JQM multiview plugin](http://www.stokkers.mobi/jqm/multiview/demo.html)
+Demo Page: [JQM multiview plugin](http://www.stokkers.mobi/jqm/multiview/demo.html)  
 
-	The demo pages show all features and attributes, plus provides templates you can use to get started. Below I'm only listing
-	the quick start and all available attributes. For more details, please refer to the Demo page. 
+The demo pages show all features and attributes, plus provides templates you can use to get started. Below I'm only listing the quick start and all available attributes. For more details, please refer to the Demo page. 
 
 3. JQM Modifications  
 The plugin now needs 4 remaining tweaks to JQM (eventually hoping to be tweak-free):
 
-     - add changePage option *pageContainer* to the *$.mobile.urlHistory* to run panel navigation and history through JQM
-	 - add an if-clause to also remove active class from multiview wrapper-pages when leaving them
-	 - add an if-clause to prevent removing wrapper pages from the DOM when leaving them
-	 - add a && condition to the plugin initalization allowing to deeplink to panel pages
-	 
-	Everything else is running on pure JQM. 
+  - add changePage option *pageContainer* to the *$.mobile.urlHistory* to run panel navigation and history through JQM
+  - add an if-clause to also remove active class from multiview wrapper-pages when leaving them
+  - add an if-clause to prevent removing wrapper pages from the DOM when leaving them 
+  - add a && condition to the plugin initalization allowing to deeplink to panel pages  
+  
+  Everything else is running on pure JQM. 
 
 4. Quick Start
    - Start with a regular JQM page
