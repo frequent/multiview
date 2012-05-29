@@ -1119,7 +1119,8 @@
 			// and any contained panels' pages' content sections.
 			window.setTimeout( function() {	
 			
-				var wrap = $('div:jqmData(wrapper="true").ui-page-active'),
+				// last() is for iOS
+				var wrap = $('div:jqmData(wrapper="true").ui-page-active').last(),
 					panels = wrap.find('.ui-panel.ui-panel-active:not(.ui-popover)'),
 					pages = wrap.find('.ui-panel:not(.ui-popover) .ui-page'),
 					contents = wrap.find('.ui-panel:not(.ui-popover) .ui-page .ui-content'),
@@ -1142,8 +1143,7 @@
 					calcLH, 
 					setCntHeight = 0,
 					setLcTbHeight = 0;
-					
-				
+									
 				// iPad iOS3 only returns crap after orientationchange and inside timeout, so try to store this value here... half a day of guessing...
 				// CONFLICT with browser window resize!!!
 				contents.each(function(i) {					
@@ -1189,29 +1189,29 @@
 
 					} else {
 						// fixed screen mode
-
+						
 						// clear overthrow, set height to content height + global toolbars
-						wrap.css({ "max-height" : "", "overflow": "visible", "height" : parseFloat(self.options._iPadFixHeight) + glbHH + glbFH+"px" });
+						wrap.css({ "max-height" : "", "overflow": "visible !important", "height" : parseFloat(self.options._iPadFixHeight) + glbHH + glbFH+"px" });
 						// clear overthrow, set height to content height
-						panels.css({ "height": self.options._iPadFixHeight });
+						panels.css({ "max-height": self.options._iPadFixHeight, "overflow":"visible !important" });
 						// clear overthrow, set height to content height (local toolbars count towards scrollable region )
 						contents.each(function(){ 
 							var lclH = $(this).siblings('.ui-header:eq(0)'),
 								lclF = $(this).siblings('.ui-footer:eq(0)'),									
 								lclHH = lclH.length > 0 && blacklist == true ? parseFloat( lclH.outerHeight() ) : 0,
 								lclFH = lclF.length > 0 && blacklist == true ? parseFloat( lclF.outerHeight() ) : 0;
-									
+							
 							$(this).css({ "max-height":"", "height": self.options._iPadFixHeight, "margin-top":lclHH, "margin-bottom":lclFH }).removeClass('overthrow');
 							});
 						}
-						
+					
 					// overwrite menu height again, otherwise popover panels expand depending on content and margin will be off. 			
 					if ( $('html').hasClass('ui-popover-mode') ) { 					
 						$('div:jqmData(panel="menu")').add('div:jqmData(panel="mid")').css({'height':''})
 							.find('.ui-content').css({ "margin-top":"0px", "margin-bottom":"0px" });
 						}
 					
-				},1);
+				},10);
 		
 			},
 		
@@ -1344,16 +1344,17 @@
 						self.options._backFix = true;
 						}
 						
-				} else {					
+				} else {
+					
 					// On external transitions (going back from a page X to a wrapper page Y nested page) we crawl the history to find the previous
 					// wrapper page URL, because the nested page we are going to should still be active, so we only need to transition to the wrapper.
 					// We also include the initial page here, because it will be a wrapper page (vs. internal transitions, where it can never be a 
 					// nested page.
 					// NOTE: if we ever start removing externally loaded pages, the page has to be re-loaded through the siteMap reference.										
-					for (var i = $loopLength; i>=1; i--) {
+					for (var i = $loopLength; i>=1; i--) {						
 						// only works with attr()						
 						$temp = $('div').filter(function(){  return $(this).attr('data-url') === $.mobile.path.parseUrl( $.mobile.urlHistory.stack[i-1].url ).pathname; });							
-						if ($temp.jqmData('wrapper') == true ){							
+						if ($temp.jqmData('wrapper') == true ){								
 							break;
 							}						
 						}
@@ -1605,9 +1606,9 @@
 							
 							// external transition (wrapper to nested page) 
 							}  else {
-							
-								// fromPage will be current entry
-								$setFromPage = $('div.ui-page').filter(function(){ return $(this).attr('data-url') === currentEntry });																	
+								
+								// fromPage will be current entry NOTE: iPad iOS3 and IE require jqmData here
+								$setFromPage = $('div.ui-page').filter(function(){ return $(this).jqmData('url') === currentEntry })
 								// as we are going back to a wrapper page, pageContainer must be set to BODY (we could try to deeplink to the data.toPage )
 								$setPageContainer =	$('body');								
 								// store original toPage activeIndex, because we are going to a wrapper page and will falsely set activeIndex to this page
@@ -1842,9 +1843,11 @@
 				
 				// we identify the last backwards transition using fromHashChange and panel-transition-delta counter (+1 forward, -1 backward)
 				// we also need to exclude dialogs and make sure we are NOT coming from a wrapper page.
+				
+				
 				if ( data.options.fromHashChange == true && self.options._transDelta == 1 						
 						&& data.options.role != "dialog" 
-							&& $('div.ui-page').filter(function(){ return $(this).attr('data-url') === $.mobile.urlHistory.stack[$.mobile.urlHistory.activeIndex].url }).jqmData("wrapper") != true 
+							&& $('div.ui-page').filter(function(){ return $(this).jqmData('url') === $.mobile.urlHistory.stack[$.mobile.urlHistory.activeIndex].url }).jqmData("wrapper") != true 
 					) {
 						
 						// as the last bogus hashchange data.options cannot be used to indentify from page and crawling back through the 
