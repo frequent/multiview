@@ -2821,7 +2821,7 @@ $.mobile._maybeDegradeTransition = function( transition ) {
 
 			// addNew is used whenever a new page is added
 			// XXX FREQUENT: added container
-			addNew: function( url, transition, title, pageUrl, role, pageContainer ) {
+			addNew: function( url, transition, title, pageUrl, role, pageContainer ) {				
 				//if there's forward history, wipe it
 				if( urlHistory.getNext() ) {
 					urlHistory.clearForward();
@@ -2829,7 +2829,7 @@ $.mobile._maybeDegradeTransition = function( transition ) {
 
 				// XXX FREQUENT: storing pageContainer in url-history
 				urlHistory.stack.push( {url : url, transition: transition, title: title, pageUrl: pageUrl, role: role, pageContainer: pageContainer } );
-				urlHistory.activeIndex = urlHistory.stack.length - 1;
+				urlHistory.activeIndex = urlHistory.stack.length - 1;				
 			},
 
 			//wipe urls ahead of active index
@@ -2840,21 +2840,22 @@ $.mobile._maybeDegradeTransition = function( transition ) {
 			directHashChange: function( opts ) {
 				var back , forward, newActiveIndex, prev = this.getActive();
 
-				// check if url isp in history and if it's ahead or behind current page
+				// check if url is in history and if it's ahead or behind current page
 				$.each( urlHistory.stack, function( i, historyEntry ) {
 
+					//if the url is in the stack, it's a forward or a back
 					//if the url is in the stack, it's a forward or a back
 					if( opts.currentUrl === historyEntry.url ) {
 						//define back and forward by whether url is older or newer than current page
 						back = i < urlHistory.activeIndex;
 						forward = !back;
-						newActiveIndex = i;
+						newActiveIndex = i;										
 					}
 				});
 
 				// save new page index, null check to prevent falsey 0 result
 				this.activeIndex = newActiveIndex !== undefined ? newActiveIndex : this.activeIndex;
-
+				
 				if( back ) {
 					( opts.either || opts.isBack )( true );
 				} else if( forward ) {
@@ -3446,11 +3447,12 @@ $.mobile._maybeDegradeTransition = function( transition ) {
 
 	// Show a specific page in the page container.
 	$.mobile.changePage = function( toPage, options ) {			
-		
+		console.log("changePage");
 		// If we are in the midst of a transition, queue the current request.
 		// We'll call changePage() once we're done with the current transition to
 		// service the request.
 		if( isPageTransitioning ) {	
+			console.log("QUEUE");
 			pageTransitionQueue.unshift( arguments );			
 			return;
 		}		
@@ -3629,7 +3631,7 @@ $.mobile._maybeDegradeTransition = function( transition ) {
 
 		//add page to history stack if it's not back or forward
 		// XXX FREQUENT: added page container		
-		if( !historyDir ) {				
+		if( !historyDir ) {						
 			urlHistory.addNew( url, settings.transition, pageTitle, pageUrl, settings.role, settings.pageContainer );
 		}
 

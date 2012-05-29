@@ -202,9 +202,7 @@
 							
 				.find('div:jqmData(role="panel") div:jqmData(show="first")').addClass( $.mobile.activePageClass );
 
-				// unchainable.... 
-				console.log("at init:"+page.attr('_transDelta') )
-			
+				// unchainable.... 				
 			
 				// this is so wtf. External pages need a delay ouf at least 400ms, otherwise they get the URL of the previous page assinged
 				// the inital page also tends to not overwrite the data-url="page_ID" if we don't wait... so... we wait...
@@ -1310,7 +1308,7 @@
 			var self = this,
 				$loopLength = $.mobile.urlHistory.stack.length-1, 
 				$temp, aMatch;
-								
+				
 			if ( scope == "internal") {
 				
 				if ( $loopLength >= 2) {
@@ -1319,13 +1317,16 @@
 					// on the same panel. The problem will be that this entry may have been removed from the DOM by JQM already, but
 					// still have a reference in the urlHistory (TODO: improve transitionCleaner). Anyway. A reference to this page 
 					// will be in the sitemap... but we might as well just check for length of the found match and if there is 
-					// no element in the DOM, we just keep going.
-					for (var i = $loopLength; i>1; i--) {
-						if ( $setPageContainer.jqmData('id') == $.mobile.urlHistory.stack[i-1].pageContainer.jqmData('id') ) {
+					// no element in the DOM, we just keep going. Since JQM seems to randomly add pages to the urlHistory and I'm
+					// only cleaning up AFTER this function runs, we need to make sure we don't select a duplicate from the history stack.
+					for (var i = $loopLength; i>1; i--) {												
+												
+						if ( $setPageContainer.jqmData('id') == $.mobile.urlHistory.stack[i-1].pageContainer.jqmData('id') 
+							&& $.mobile.path.parseUrl( $.mobile.urlHistory.stack[i-1].url ).pathname != $.mobile.path.parseUrl( $.mobile.urlHistory.stack[$.mobile.urlHistory.activeIndex].url ).pathname
+								) {										
 							aMatch = $('div.ui-page').filter(function(){ return $(this).jqmData('url') === $.mobile.path.parseUrl( $.mobile.urlHistory.stack[i-1].url ).pathname });
-							if ( aMatch.length > 0 ){
-								$temp =  $('div.ui-page').filter(function(){ return $(this).jqmData('url') === $.mobile.path.parseUrl( $.mobile.urlHistory.stack[i-1].url ).pathname }) 									
-								console.log("found a match that is still on the page");
+							if ( aMatch.length > 0 ){								
+								$temp =  aMatch;								
 								break;
 								}
 							}							
@@ -1578,16 +1579,10 @@
 					var currentEntry = $.mobile.urlHistory.stack[$.mobile.urlHistory.activeIndex].url,
 						// iOS3 does not take jqmData("url")..... pffff						
 						currentActive = $('div.ui-page').filter(function(){ return $(this).jqmData('url') === currentEntry }),
-						getPath = $('div.ui-page').filter(function(){ return $(this).jqmData('url') === $.mobile.path.parseUrl( data.toPage ).pathname }).attr('data-url');
-					
-					console.log( currentEntry )
-					console.log( currentActive )
-					console.log( getPath )
-					
+						getPath = $('div.ui-page').filter(function(){ return $(this).jqmData('url') === $.mobile.path.parseUrl( data.toPage ).pathname }).attr('data-url');					
 					
 					// special case = last backwards transition inside a wrapper page
-					if ( self.options._backFix == true ) {
-						console.log("BACKFIX");
+					if ( self.options._backFix == true ) {						
 						// this was derived in pagebeforechange
 						$setToPage = $('div.ui-page').filter(function(){ return $(this).jqmData('url') === data.toPage })							
 						// take toPage closest container as pageContainer
@@ -1599,7 +1594,7 @@
 						
 						// internal transition (inside wrapper)
 						} else if ( currentActive.closest('.ui-mobile-viewport').get(0).tagName == "DIV" ) {
-							console.log("internal");
+							
 							$setFromPage = $('div.ui-page').filter(function(){ return $(this).attr('data-url') === currentEntry })															
 							// a backwards transition will always change a page INSIDE a panel (click a link in A1 to change B1 to B2. Reverse = B2>B1)
 							$setPageContainer =	$setFromPage.closest('.ui-mobile-viewport')							
@@ -1637,10 +1632,6 @@
 					data.options.pageContainer = $setPageContainer;
 					data.options.fromPage = $setFromPage;
 					data.options.reverse = true;					
-					
-					console.log( data.toPage )
-					console.log( data.options.pageContainer )
-					console.log( data.options.fromPage )
 					
 					// set flag 
 					self.options._trans = "panelHash";
@@ -1851,23 +1842,10 @@
 				
 				// we identify the last backwards transition using fromHashChange and panel-transition-delta counter (+1 forward, -1 backward)
 				// we also need to exclude dialogs and make sure we are NOT coming from a wrapper page.
-				console.log("BACKFIX CHECK")
-				console.log("backwards ="+data.options.fromHashChange)
-				console.log("is 1? "+self.options._transDelta)
-				console.log("no dialog="+data.options.role != "dialog")
-				console.log("not coming from a wrapper")
-				console.log( $.mobile.urlHistory.activeIndex )
-				console.log( $.mobile.urlHistory.stack[$.mobile.urlHistory.activeIndex].url )
-				console.log( $('div.ui-page').filter(function(){ return $(this).attr('data-url') === $.mobile.urlHistory.stack[$.mobile.urlHistory.activeIndex].url }) )
-				console.log( "false to pass="+$('div.ui-page').filter(function(){ return $(this).attr('data-url') === $.mobile.urlHistory.stack[$.mobile.urlHistory.activeIndex].url }).jqmData("wrapper"))
-				
-				
 				if ( data.options.fromHashChange == true && self.options._transDelta == 1 						
 						&& data.options.role != "dialog" 
 							&& $('div.ui-page').filter(function(){ return $(this).attr('data-url') === $.mobile.urlHistory.stack[$.mobile.urlHistory.activeIndex].url }).jqmData("wrapper") != true 
 					) {
-						
-						console.log("in backfix");
 						
 						// as the last bogus hashchange data.options cannot be used to indentify from page and crawling back through the 
 						// urlHistory also does not work we simply take the parent wrapper and check which panel is not on data-show="first"
@@ -1878,50 +1856,6 @@
 						
 						data.toPage = isId;
 						self.options._backFix = true;
-						
-						/*
-						var isPage = $('div').filter(function(){ return $(this).attr('data-url') === $.mobile.urlHistory.stack[$.mobile.urlHistory.activeIndex].url }),
-							isPanel = isPage.closest('div:jqmData(role="panel")'),
-							isFirst = isPanel.find('div:jqmData(show="first")'),
-							isId = isFirst.attr('id');
-						data.toPage = isId;
-						self.options._backFix = true;
-						
-						// crawl the history start ot end and find the first entry NOT having a BODY pageContainer. Since we are
-						// on the last transition before returning all panels to their initial setup, this should give us the
-						// correct pageContainer and page. Also set a backFix flag to clean up again.
-						
-						// As there can be more than one wrapper page in the DOM, we cannot simply start from stackHeight[0], but have 
-						// to find the last wrapper page added to the urlHistory and from it's position get the next pageContainer
-						// being a DIV. Then get this panels data-show="first" page...
-						
-						for ( var i = $.mobile.urlHistory.stack.length-1; i>=0; i-- ){											
-													
-							var isAWrap = $.mobile.urlHistory.stack[i].url,
-								isPage = $('div').filter(function(){ return $(this).attr('data-url') === isAWrap }),
-								wrapPos = "";
-								
-							if ( isPage.jqmData("wrapper") == true ){
-								// position of last wrapper in urlHistory
-								wrapPos = i;	
-								console.log("start@ "+i+" goto "+$.mobile.urlHistory.activeIndex );
-								// now start from the active history entry to this position							
-								for ( var j = $.mobile.urlHistory.activeIndex; j >= wrapPos; j--) {
-								
-									if ( $.mobile.urlHistory.stack[j].pageContainer.get(0).tagName != 'BODY' ) {							
-										// grab this pageContainers page with data-show="first" = we need to go to this page instead of reloading the wrapper!
-										var fix = $.mobile.urlHistory.stack[j].pageContainer.find('div:jqmData(show="first")').attr('id');									
-										data.toPage = fix;		
-										console.log("fix = "+fix )
-										// set backfix to prevent overwriting this again!
-										self.options._backFix = true;
-										break;
-										} 					
-									}								
-								break;
-								}
-							};
-							*/				
 					} 
 								
 				// block trailing hashchange (objects)
