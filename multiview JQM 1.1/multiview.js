@@ -131,6 +131,12 @@
 			_backFix: '',
 			
 			/**
+			  * self.options._actualActiveIndex
+		      * the activeIndex of a page we are going back to. If this is a nested page, we are loading the wrapper and need to reset activeIndex afterwards
+		      */
+			_actualActiveIndex: 0,
+			
+			/**
 			  * self.options._clickInProgress
 		      * flag to block multiple clicks being triggered
 		      */
@@ -184,6 +190,7 @@
 				
 				.addClass( $.mobile.activePageClass )
 				
+				.attr('_transDelta', 0 )
 				
 				.find("div:jqmData(role='panel')").addClass('ui-mobile-viewport ui-panel').end()			
 								
@@ -196,6 +203,8 @@
 				.find('div:jqmData(role="panel") div:jqmData(show="first")').addClass( $.mobile.activePageClass );
 
 				// unchainable.... 
+				console.log("at init:"+page.attr('_transDelta') )
+			
 			
 				// this is so wtf. External pages need a delay ouf at least 400ms, otherwise they get the URL of the previous page assinged
 				// the inital page also tends to not overwrite the data-url="page_ID" if we don't wait... so... we wait...
@@ -1300,52 +1309,54 @@
 			
 			var self = this,
 				$loopLength = $.mobile.urlHistory.stack.length-1, 
-				$temp;
-					
+				$temp, aMatch;
+								
 			if ( scope == "internal") {
-					
+				
 				if ( $loopLength >= 2) {
-					
-					// if there are more than 2 entries in the urlHistory, we need to check the crawl back through the history to
-					// find the previous entry on the same panel.					
-					for (var i = $loopLength; i>1; i--) {
 						
+					// if there are 2+ entries in the urlHistory, we need to crawl back through the history to find the previous entry 
+					// on the same panel. The problem will be that this entry may have been removed from the DOM by JQM already, but
+					// still have a reference in the urlHistory (TODO: improve transitionCleaner). Anyway. A reference to this page 
+					// will be in the sitemap... but we might as well just check for length of the found match and if there is 
+					// no element in the DOM, we just keep going.
+					for (var i = $loopLength; i>1; i--) {
 						if ( $setPageContainer.jqmData('id') == $.mobile.urlHistory.stack[i-1].pageContainer.jqmData('id') ) {
-					
-							$temp =  $('div.ui-page').filter(function(){ return $(this).jqmData('url') === $.mobile.path.parseUrl( $.mobile.urlHistory.stack[i-1].url ).pathname }) 
-									// $('div:jqmData(url="'+ $.mobile.path.parseUrl( $.mobile.urlHistory.stack[i-1].url ).pathname +'")' );
-							break;
+							aMatch = $('div.ui-page').filter(function(){ return $(this).jqmData('url') === $.mobile.path.parseUrl( $.mobile.urlHistory.stack[i-1].url ).pathname });
+							if ( aMatch.length > 0 ){
+								$temp =  $('div.ui-page').filter(function(){ return $(this).jqmData('url') === $.mobile.path.parseUrl( $.mobile.urlHistory.stack[i-1].url ).pathname }) 									
+								console.log("found a match that is still on the page");
+								break;
+								}
 							}							
 						}
-					}					
+					}	
+					
 					// in case looping back does not return anything, take the first page on this panel. Regarding loopLength, 
 					// 0 or 1 items will not be possible on backwards transitions. Two history entries will mean the inital page plus
 					// another page loaded. 
 					// When going back we have to make sure we clean the urlHistory of unwanted entries in case 
 					// we pass in a hashChange-based urlString, so set backFix to true to trigger cleansing check after the transition is done.
 					if ( typeof $temp == "undefined" || $loopLength < 2 ){
-						$temp = $('div.ui-page').filter(function(){ return $(this).jqmData('url') === $setPageContainer.find('div:jqmData(show="first")').attr('data-url') })  
-							// $('div:jqmData(url="'+$setPageContainer.find('div:jqmData(show="first")').attr('data-url')+'")' );
-						// cleanse urlHistory
+						$temp = $('div.ui-page').filter(function(){ return $(this).jqmData('url') === $setPageContainer.find('div:jqmData(show="first")').attr('data-url') })  						
+						// cleanse urlHistory, although unlikely an illegal entry was made
 						self.options._backFix = true;
 						}
 						
-				} else {
-					
+				} else {					
 					// On external transitions (going back from a page X to a wrapper page Y nested page) we crawl the history to find the previous
 					// wrapper page URL, because the nested page we are going to should still be active, so we only need to transition to the wrapper.
 					// We also include the initial page here, because it will be a wrapper page (vs. internal transitions, where it can never be a 
 					// nested page.
-					// NOTE: if we ever start removing externally loaded pages, the page has to be re-loaded through the siteMap reference.					
+					// NOTE: if we ever start removing externally loaded pages, the page has to be re-loaded through the siteMap reference.										
 					for (var i = $loopLength; i>=1; i--) {
-						// only works with attr()
-						$temp = $('div').filter(function(){ return $(this).attr('data-url') === $.mobile.path.parseUrl( $.mobile.urlHistory.stack[i-1].url ).pathname  });
-							// $('div:jqmData(url="'+$.mobile.path.parseUrl( $.mobile.urlHistory.stack[i-1].url ).pathname +'")' );    
-						if ($temp.jqmData('wrapper') == true ){
+						// only works with attr()						
+						$temp = $('div').filter(function(){  return $(this).attr('data-url') === $.mobile.path.parseUrl( $.mobile.urlHistory.stack[i-1].url ).pathname; });							
+						if ($temp.jqmData('wrapper') == true ){							
 							break;
 							}						
 						}
-					}					
+					}						
 					return $temp;
 				},
 		
@@ -1508,7 +1519,7 @@
 					}
 				
 				// clean up 
-				self.panelTransitionCleaner( data, $link ? $link : "" );
+				self.panelTransitionCleaner( data, "blockdoubles", $link ? $link : "" );
 				
 		},
 		
@@ -1527,15 +1538,15 @@
 					$temp,
 					$setFromPage,
 					$setPageContainer,
-					$setFromPage;
+					$setFromPage,
+					setExt;
 				
 				// stall Android for 300ms
 				window.setTimeout(function () { self.options._blockMultiClick = false; }, 300);
-								
-				// panel transition if the prevPanel is a DIV (panel) or the toPage has a parent panel or is in the sitemap	
+
+				// panel transition if the prevPanel is a DIV (panel) or is in the sitemap or toPage is a panel page				
 				if ( data.options.pageContainer.get(0).tagName != "BODY"  
-					|| $('div.ui-page').filter(function(){ return $(this).jqmData('url') === data.toPage.replace( '#', '' ) }).closest('div:jqmData(role="panel")').length != 0 
-						// $('div:jqmData(url="'+data.toPage.replace( '#', '' )+'")').closest('div:jqmData(role="panel")').length != 0  
+					|| $('div.ui-page').filter(function(){ return $(this).jqmData('url') === data.toPage.replace( '#', '' ) }).closest('div:jqmData(role="panel")').length != 0 						
 						|| !self.options.siteMap[data.toPage] == false ) {
 						
 					// PageContainer can be a panel (DIV) or normal viewport (BODY). So there are 4 types of viewport transitions:
@@ -1543,7 +1554,9 @@
 					// #1 <body> to <body> 	= regular JQM backwards transition
 					// #2 <div> to <div> 	= panel or cross-panel backwards transition (internal transitions/special case: last panel back transition)
 					// #3 <div> to <body> 	= leaving a wrapper to another JQM or wrapper page. Done by JQM.
-					// #4 <body> to <div> 	= going back to a JQM multiview page (external transitions)
+					// #4 <body> to <div> 	= going back to a JQM multiview page (external transitions) - this should be handled by JQM, BUT 
+					//						  we are still handling this transition, because otherwise this would load an external page into the body.viewport
+					//						  versus going back to the wrapper page with the external page loaded in a panel.
 					
 					// #2 - cross-panel backwards - DEFAULT					
 					// the problem in using JQM's history (with pageContainer added) is that JQM history does not recognize 
@@ -1562,48 +1575,60 @@
 					// transitions. This is because pages loaded in externally will be stored with full URL in the urlHistory, 
 					// and it's difficult to capture the pageID if only the full URL is available. 
 					
-					var $currentEntry = $.mobile.urlHistory.stack[$.mobile.urlHistory.activeIndex].url,
-						// what do you know... iOS3 does not take jqmData(url...)
-						//$currentActive = $('div:jqmData(url="'+ $currentEntry +'")');
-						$currentActive = $('div.ui-page').filter(function(){ return $(this).jqmData('url') === $currentEntry });
-
+					var currentEntry = $.mobile.urlHistory.stack[$.mobile.urlHistory.activeIndex].url,
+						// iOS3 does not take jqmData("url")..... pffff						
+						currentActive = $('div.ui-page').filter(function(){ return $(this).jqmData('url') === currentEntry }),
+						getPath = $('div.ui-page').filter(function(){ return $(this).jqmData('url') === $.mobile.path.parseUrl( data.toPage ).pathname }).attr('data-url');
+					
+					console.log( currentEntry )
+					console.log( currentActive )
+					console.log( getPath )
+					
+					
 					// special case = last backwards transition inside a wrapper page
 					if ( self.options._backFix == true ) {
-						
+						console.log("BACKFIX");
 						// this was derived in pagebeforechange
-						$setToPage = $('div.ui-page').filter(function(){ return $(this).jqmData('url') === data.toPage })
-							// $('div:jqmData(url="'+data.toPage+'")')
-							
+						$setToPage = $('div.ui-page').filter(function(){ return $(this).jqmData('url') === data.toPage })							
 						// take toPage closest container as pageContainer
 						$setPageContainer = $setToPage.closest('.ui-mobile-viewport');
-						
 						// set from Page to the page currently active on the panel
 						$setFromPage = $setPageContainer.find('.ui-page-active');
+						// this transition is allowed to modifiy transDelta
+						$setExt = false;
 						
-						} else if ( $currentActive.closest('.ui-mobile-viewport').get(0).tagName == "DIV" ) {
-							
-							// internal transition (inside wrapper)
-							$setFromPage = $('div.ui-page').filter(function(){ return $(this).jqmData('url') === $currentEntry })
-								//$('div:jqmData(url="'+$currentEntry+'")');
-							
+						// internal transition (inside wrapper)
+						} else if ( currentActive.closest('.ui-mobile-viewport').get(0).tagName == "DIV" ) {
+							console.log("internal");
+							$setFromPage = $('div.ui-page').filter(function(){ return $(this).attr('data-url') === currentEntry })															
 							// a backwards transition will always change a page INSIDE a panel (click a link in A1 to change B1 to B2. Reverse = B2>B1)
-							$setPageContainer =	$setFromPage.closest('.ui-mobile-viewport')
-							
+							$setPageContainer =	$setFromPage.closest('.ui-mobile-viewport')							
 							// loop for the previous wrapper page in the urlHistory						
-							$setToPage = self.loopHistory("internal", $setPageContainer);
+							$setToPage = self.loopHistory("internal", $setPageContainer);							
+							// this transition is allowed to modifiy transDelta
+							$setExt = false;
 							
+							// external transition (wrapper to nested page) 
 							}  else {
-								// external transition (wrapper to nested page)
-								
+							
 								// fromPage will be current entry
-								$setFromPage = $('div.ui-page').filter(function(){ return $(this).jqmData('url') === $currentEntry });
-									// $('div:jqmData(url="'+$currentEntry+'")')								
-								
+								$setFromPage = $('div.ui-page').filter(function(){ return $(this).attr('data-url') === currentEntry });																	
 								// as we are going back to a wrapper page, pageContainer must be set to BODY (we could try to deeplink to the data.toPage )
-								$setPageContainer =	$('body');
+								$setPageContainer =	$('body');								
+								// store original toPage activeIndex, because we are going to a wrapper page and will falsely set activeIndex to this page
+								// when we should set it to the page we are changing back to
 								
+								for (var x = 0; x < $.mobile.urlHistory.stack.length; x++) {
+									if ( $.mobile.urlHistory.stack[x].url == getPath ){										
+										self.options._actualActiveIndex = x;
+										break;
+										}									
+									}								
 								// loop for the previous wrapper page in the urlHistory
-								$setToPage = self.loopHistory("external", $setPageContainer);
+								$setToPage = self.loopHistory("external", $setPageContainer);								
+								// pass a variable to the cleaner to NOT change transDelta because we are reverting a backwards transition from
+								// JQM page to a wrapper, which was not causing transDelta to increase when we did the forward transition
+								$setExt = true;
 								}
 											
 					
@@ -1611,8 +1636,12 @@
 					data.toPage = $setToPage;
 					data.options.pageContainer = $setPageContainer;
 					data.options.fromPage = $setFromPage;
-					data.options.reverse = true;
-							
+					data.options.reverse = true;					
+					
+					console.log( data.toPage )
+					console.log( data.options.pageContainer )
+					console.log( data.options.fromPage )
+					
 					// set flag 
 					self.options._trans = "panelHash";
 					
@@ -1622,8 +1651,8 @@
 					}				
 				
 				// clean up 
-				self.panelTransitionCleaner(data, "");
-
+				self.panelTransitionCleaner(data, $setExt, "");
+				
 
 		},
 		
@@ -1635,11 +1664,11 @@
 		   * @param {object}  data object from original event
 		   * @param {link}    link object that was clicked (or "")
 		   */
-		panelTransitionCleaner: function(data, link ) {
+		panelTransitionCleaner: function(data, todo, link ) {
 			
 			var self = this,
 				transition = self.options._trans,
-				tcount = data.options.role == "dialog" ? 0 : ( transition == "panelHash" ? -1 : (transition ==  "panelTrans" ? 1 : 0 ) );
+				tcount = data.options.role != "dialog" ? ( transition == "panelHash" ? ( todo == true ? 0 : -1) : (transition ==  "panelTrans" ? 1 : 0 ) ) : 0;
 			
 			// +1/-1 aka keep count of panel transitions
 			self.options._transDelta = self.options._transDelta + tcount;
@@ -1659,26 +1688,61 @@
 			// set flag 
 			self.options._trans = "";
 			
-			// clear backfix
-			if ( self.options._backFix == true ){
-				
-				// since we broke the logic on the last panel backwards transition, we need to make sure this does not push anything into the
-				// urlHistory, otherwise it can mess up future transitions.
-				// 250ms seems to be long enough to clean up the urlHistory
-				window.setTimeout(function() {
-				
-					// loop over history. If an entry with matching data.toPage of backFix transition is found, remove it again
-					for (var i = 0; i < $.mobile.urlHistory.stack.length; i++) {
-						if ( $.mobile.urlHistory.stack[i].url == data.toPage.attr('data-url') ) {							
+			// clear up either backFix or double entries from forward transitions	
+			// 250ms seems to be long enough to clean up the urlHistory			
+			window.setTimeout(function() {
+				var activePagefromUrl = $.mobile.urlHistory.stack[$.mobile.urlHistory.activeIndex].url;
+					
+				// loop over history. If an entry with matching data.toPage of backFix transition is found, remove it again
+				for (var i = 0; i < $.mobile.urlHistory.stack.length; i++) {
+					
+					if ( self.options._backFix == true ){	
+					
+						// since we broke the logic on the last panel backwards transition, we need to make sure this does not push anything into the
+						// urlHistory, otherwise it can mess up future transitions.									
+						if ( $.mobile.urlHistory.stack[i].url == data.toPage.attr('data-url') ) {														
+							
 							$.mobile.urlHistory.stack.splice(i,1);
-							$.mobile.urlHistory.activeIndex = $.mobile.urlHistory.activeIndex-1;
-						}
-					}
-					// reset
-					self.options._backFix = false;
-				},250)
+							$.mobile.urlHistory.activeIndex = $.mobile.urlHistory.activeIndex -1;
+							
+							// and clear all forwards							
+							$.mobile.urlHistory.clearForward();
+							}
+						} else if ( todo == "blockdoubles" ){							
+							
+							// either the backFix or some other process does not prevent the same page from being added to the urlHistory multiple
+							// times. This check looks for doubles and filters them out. 
+							
+							// check if the current page is already in the history
+							if ( i != 0 && i < $.mobile.urlHistory.stack.length-1 && $.mobile.urlHistory.stack[i].url == activePagefromUrl ) {								
+								
+								$.mobile.urlHistory.stack.splice(i,1);								
+								$.mobile.urlHistory.activeIndex = $.mobile.urlHistory.activeIndex -1;
+								
+								// and clear all forwards
+								$.mobile.urlHistory.clearForward();
+								}
+							}							
+					
+				}
 				
-			}
+				// as going back to a wrapper page resets the urlHistory activeIndex to the wrapper page vs. the page we want to got to,
+				// we need to reset activeIndex accordingly
+				if ( self.options._actualActiveIndex != 0 ){					
+					$.mobile.urlHistory.activeIndex = self.options._actualActiveIndex
+					self.options._actualActiveIndex = 0;
+					$.mobile.urlHistory.clearForward();
+					}
+				
+				// reset
+				self.options._backFix = false;
+								
+			},250);
+			
+			
+				
+			
+			
 		
 		},
 		
@@ -1762,11 +1826,8 @@
 		      */
 			$(document).on( "pagebeforechange", function( e, data ) {
 				
-				// when loading an external page, we store its data object in the global sitemap, so it can be retrieved
-				// on backwards transitions. Not doing so, will break the page when trying to go back from an external
-				// page, because there will be no reference to the correct fromPage(!) in the URL history. 						
+				// store data object of AJAX-in pages in siteMap in order to allow backwards transitions to external pages
 				if ( data.options.fromHashChange == false && $.mobile.path.parseUrl( data.toPage ).hash == "") {
-										
 					var newExt = $.mobile.path.parseUrl( data.toPage ).pathname;
 					if (!self.options.siteMap[newExt]){
 						self.options.siteMap[newExt] = { type: "external", data: data };
@@ -1774,8 +1835,8 @@
 					}
 				
 				// #history-3 
-				// The following is necessary because JQM in non-pushstate environments loads the first page, if "no to" page is specified
-				// in _handleHashChange. Happens when going backwards from the 2nd page visisted to the initial page. In a panel setup this 
+				// The following is necessary because JQM loads the first page, if "no to" page is specified in _handleHashChange. 
+				// This happens when going backwards from the 2nd page visisted to the initial page. In a panel setup this 
 				// could be a "Panel X 2nd-page" to "Panel X 1st-page" transition, where JQM just wants to load the first 								
 				// history entry (= wrapper-page) altogether. 
 				
@@ -1784,34 +1845,83 @@
 				// which does not include a URL, hence "to" is not defined in _handleHashChange, hence JQM just loads the first page, without.
 				// activating the panel page the transition should be made to. 				
 				
-				// An easy workaround would be to make sure, when loading the first page, that all nested pages first pages are enhanced 
-				// and activated, but this did not work.
+				// To work around we are breaking the JQM logic and "convert the hashChange object into a string" with the correct data.toPage
+				//  specified. The string will trigger a panelHash, which will modify the data.options, so the whole thing passes JQM
+				// as a "to" transition, thereby MESSING up the urlHistory, which we need to clean up afterwards.		
 				
-				// The difficult workaround below does the following: it's taking the hashChange object and converts it to a string with the correct 
-				// data.toPage specified. The string will trigger a panelHash, which will modify the data.options, so the whole thing passes JQM
-				// as a "to" transition.
+				// we identify the last backwards transition using fromHashChange and panel-transition-delta counter (+1 forward, -1 backward)
+				// we also need to exclude dialogs and make sure we are NOT coming from a wrapper page.
+				console.log("BACKFIX CHECK")
+				console.log("backwards ="+data.options.fromHashChange)
+				console.log("is 1? "+self.options._transDelta)
+				console.log("no dialog="+data.options.role != "dialog")
+				console.log("not coming from a wrapper")
+				console.log( $.mobile.urlHistory.activeIndex )
+				console.log( $.mobile.urlHistory.stack[$.mobile.urlHistory.activeIndex].url )
+				console.log( $('div.ui-page').filter(function(){ return $(this).attr('data-url') === $.mobile.urlHistory.stack[$.mobile.urlHistory.activeIndex].url }) )
+				console.log( "false to pass="+$('div.ui-page').filter(function(){ return $(this).attr('data-url') === $.mobile.urlHistory.stack[$.mobile.urlHistory.activeIndex].url }).jqmData("wrapper"))
+				
+				
+				if ( data.options.fromHashChange == true && self.options._transDelta == 1 						
+						&& data.options.role != "dialog" 
+							&& $('div.ui-page').filter(function(){ return $(this).attr('data-url') === $.mobile.urlHistory.stack[$.mobile.urlHistory.activeIndex].url }).jqmData("wrapper") != true 
+					) {
+						
+						console.log("in backfix");
+						
+						// as the last bogus hashchange data.options cannot be used to indentify from page and crawling back through the 
+						// urlHistory also does not work we simply take the parent wrapper and check which panel is not on data-show="first"
+						// this is the last active panel for our last transition.
+						var isWrap = $('div:jqmData(wrapper="true").ui-page-active'),
+							isNotActive = isWrap.find('div:jqmData(show="first")').not('.ui-page-active');
+							isId = isNotActive.attr('id');
+						
+						data.toPage = isId;
+						self.options._backFix = true;
+						
+						/*
+						var isPage = $('div').filter(function(){ return $(this).attr('data-url') === $.mobile.urlHistory.stack[$.mobile.urlHistory.activeIndex].url }),
+							isPanel = isPage.closest('div:jqmData(role="panel")'),
+							isFirst = isPanel.find('div:jqmData(show="first")'),
+							isId = isFirst.attr('id');
+						data.toPage = isId;
+						self.options._backFix = true;
+						
+						// crawl the history start ot end and find the first entry NOT having a BODY pageContainer. Since we are
+						// on the last transition before returning all panels to their initial setup, this should give us the
+						// correct pageContainer and page. Also set a backFix flag to clean up again.
+						
+						// As there can be more than one wrapper page in the DOM, we cannot simply start from stackHeight[0], but have 
+						// to find the last wrapper page added to the urlHistory and from it's position get the next pageContainer
+						// being a DIV. Then get this panels data-show="first" page...
+						
+						for ( var i = $.mobile.urlHistory.stack.length-1; i>=0; i-- ){											
+													
+							var isAWrap = $.mobile.urlHistory.stack[i].url,
+								isPage = $('div').filter(function(){ return $(this).attr('data-url') === isAWrap }),
+								wrapPos = "";
 								
-				// = BAD, because this requires an on/off flag to only allow the first hashChange coming into here to pass into the function
-				// AND it requires to count all forward and backwards transitions to determine, when to override the hashChange with the correct URL. 
-					
-				// if we are going backwards and transition-delta (forward-transitions MINUS backwards-transitions) = 1
-				if ( data.options.fromHashChange == true && self.options._transDelta == 1 && data.options.role != "dialog" ) {
-					
-					// crawl the history start to end to find the first entry with a page container other than BODY = panel
-					for (var i = 0; i < $.mobile.urlHistory.stack.length; i++) {
-						if ( $.mobile.urlHistory.stack[i].pageContainer.get(0).tagName != 'BODY') {
-							// grab this pageContainers page with data-show="first" = we need to go to this page instead of reloading the wrapper!
-							var fix = $.mobile.urlHistory.stack[i].pageContainer.find('div:jqmData(show="first")').attr('id');
-							
-							// an id will never be an URL... 
-							data.toPage = fix;
-							// data.options.dataUrl  = $.mobile.firstPage.attr('data-url');
-							
-							// set backfix to prevent overwriting this again!
-							self.options._backFix = true;
-							break;
-							} 					
-						}						
+							if ( isPage.jqmData("wrapper") == true ){
+								// position of last wrapper in urlHistory
+								wrapPos = i;	
+								console.log("start@ "+i+" goto "+$.mobile.urlHistory.activeIndex );
+								// now start from the active history entry to this position							
+								for ( var j = $.mobile.urlHistory.activeIndex; j >= wrapPos; j--) {
+								
+									if ( $.mobile.urlHistory.stack[j].pageContainer.get(0).tagName != 'BODY' ) {							
+										// grab this pageContainers page with data-show="first" = we need to go to this page instead of reloading the wrapper!
+										var fix = $.mobile.urlHistory.stack[j].pageContainer.find('div:jqmData(show="first")').attr('id');									
+										data.toPage = fix;		
+										console.log("fix = "+fix )
+										// set backfix to prevent overwriting this again!
+										self.options._backFix = true;
+										break;
+										} 					
+									}								
+								break;
+								}
+							};
+							*/				
 					} 
 								
 				// block trailing hashchange (objects)
