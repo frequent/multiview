@@ -390,7 +390,7 @@
 		   * @param {string}to check who called
 		   */
 		hideAllPanels: function(from) {
-			console.log(from)
+			
 			var self = this, $pop; 
 					
 			$('.toggle_popover').removeClass('ui-btn-active');
@@ -987,11 +987,8 @@
 								
 				// set a listener to adapt height of all active pages to the height of the page currently in view. 
 				// if you have a long page in the background and fire a popover in fullscreen mode, the page length 
-				// should match the popovers active page length, otherwise the background page is visible underneath
-				// HATE IT, that I can't pass variables into on() bindings...
-				
-				
-				$(document).on('pagebeforeshow',  'div:jqmData(panel="popover") div:jqmData(role="page")', function () {
+				// should match the popovers active page length, otherwise the background page is visible underneath				
+				$(document).on('pagebeforeshow',  'div:jqmData(panel="popover") div:jqmData(role="page")', function () {					
 					self.backgroundPageHeight( $(this), "set" );
 					});
 				
@@ -1484,7 +1481,7 @@
 				$targetPanelActivePage = $targetPanel.find( '.ui-page-active' ) || $targetPanel.find('div:jqmData(show="first")');
 				
 			// if panel transition
-			if ( $targetPanel.is('body') == false ) {
+			if ( $targetPanel.is('body') == false ) {				
 				data.options.fromPage = $targetPanelActivePage;
 				data.options.pageContainer = $targetPanel;
 				
@@ -1497,7 +1494,7 @@
 				self.options._trans = "panelTrans";
 								
 				} else {
-					// = JQM territory
+					// = JQM territory					
 					
 					// still, if we are coming from a wrapper page, with panel transitions made, fromPage may not
 					// always be set to the wrapper page, which will cause JQM to drop active class from the panel
@@ -1540,7 +1537,7 @@
 					|| $('div.ui-page').filter(function(){ return $(this).jqmData('url') === data.toPage.replace( '#', '' ) }).closest('div:jqmData(role="panel")').length != 0 
 						// $('div:jqmData(url="'+data.toPage.replace( '#', '' )+'")').closest('div:jqmData(role="panel")').length != 0  
 						|| !self.options.siteMap[data.toPage] == false ) {
-								
+						
 					// PageContainer can be a panel (DIV) or normal viewport (BODY). So there are 4 types of viewport transitions:
 					
 					// #1 <body> to <body> 	= regular JQM backwards transition
@@ -1620,7 +1617,8 @@
 					self.options._trans = "panelHash";
 					
 				 } else { 				
-					// JQM transition					
+					// JQM transition
+					
 					}				
 				
 				// clean up 
@@ -1641,8 +1639,8 @@
 			
 			var self = this,
 				transition = self.options._trans,
-				tcount = transition == "panelHash" ? -1 : "panelTrans" ? 1 : 0;
-				
+				tcount = data.options.role == "dialog" ? 0 : ( transition == "panelHash" ? -1 : (transition ==  "panelTrans" ? 1 : 0 ) );
+			
 			// +1/-1 aka keep count of panel transitions
 			self.options._transDelta = self.options._transDelta + tcount;
 			
@@ -1663,7 +1661,7 @@
 			
 			// clear backfix
 			if ( self.options._backFix == true ){
-			
+				
 				// since we broke the logic on the last panel backwards transition, we need to make sure this does not push anything into the
 				// urlHistory, otherwise it can mess up future transitions.
 				// 250ms seems to be long enough to clean up the urlHistory
@@ -1671,7 +1669,7 @@
 				
 					// loop over history. If an entry with matching data.toPage of backFix transition is found, remove it again
 					for (var i = 0; i < $.mobile.urlHistory.stack.length; i++) {
-						if ( $.mobile.urlHistory.stack[i].url == data.toPage.attr('data-url') ) {
+						if ( $.mobile.urlHistory.stack[i].url == data.toPage.attr('data-url') ) {							
 							$.mobile.urlHistory.stack.splice(i,1);
 							$.mobile.urlHistory.activeIndex = $.mobile.urlHistory.activeIndex-1;
 						}
@@ -1746,7 +1744,7 @@
 			$(document).on('click','a.toggle_popover', function(e) {
 				self.showPanel(e, $(this) );
 				self.options._clickInProgress = false;
-				});
+				});				
 			
 			/**
 			  * bind to:	vclick.clickRouting
@@ -1797,9 +1795,8 @@
 				// AND it requires to count all forward and backwards transitions to determine, when to override the hashChange with the correct URL. 
 					
 				// if we are going backwards and transition-delta (forward-transitions MINUS backwards-transitions) = 1
-				// NOTE THIS SOMETIMES BREAKS, cause transDelta = 0, when it shouldn't be.
-				if ( data.options.fromHashChange == true && self.options._transDelta == 1 ) {
-				
+				if ( data.options.fromHashChange == true && self.options._transDelta == 1 && data.options.role != "dialog" ) {
+					
 					// crawl the history start to end to find the first entry with a page container other than BODY = panel
 					for (var i = 0; i < $.mobile.urlHistory.stack.length; i++) {
 						if ( $.mobile.urlHistory.stack[i].pageContainer.get(0).tagName != 'BODY') {
@@ -1819,7 +1816,8 @@
 								
 				// block trailing hashchange (objects)
 				// TODO: switch to JQM ignoreNextHashChange - previous ignoreMyOwnNextHashChange
-				if (typeof data.toPage !== 'string') {
+				if (typeof data.toPage !== 'string') {					
+					self.options._backFix = false;
 					return;
 					}	
 				

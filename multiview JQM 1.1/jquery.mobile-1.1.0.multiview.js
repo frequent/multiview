@@ -2425,7 +2425,7 @@ var createHandler = function( sequential ){
 				// XXX FREQUENT - this should cover all cases of intra- and inter-panel transitons!				
 				if ( $to.parents('.ui-page-active').length == 0  && $from.parents('.ui-page-active').length == 0 ) {									
 					$from.closest(':jqmData(wrapper="true")').removeClass( $.mobile.activePageClass );	
-					return;
+					// return;
 					}
 				
 				$from
@@ -2833,7 +2833,7 @@ $.mobile._maybeDegradeTransition = function( transition ) {
 			},
 
 			//wipe urls ahead of active index
-			clearForward: function() {
+			clearForward: function() {				
 				urlHistory.stack = urlHistory.stack.slice( 0, urlHistory.activeIndex + 1 );
 			},
 
@@ -3587,7 +3587,7 @@ $.mobile._maybeDegradeTransition = function( transition ) {
 		// If we're displaying the page as a dialog, we don't want the url
 		// for the dialog content to be used in the hash. Instead, we want
 		// to append the dialogHashKey to the url of the current page.
-		if ( isDialog && active ) {
+		if ( isDialog && active ) {			
 			// on the initial page load active.url is undefined and in that case should
 			// be an empty string. Moving the undefined -> empty string back into
 			// urlHistory.addNew seemed imprudent given undefined better represents
@@ -3598,7 +3598,7 @@ $.mobile._maybeDegradeTransition = function( transition ) {
 			// However, if a dialog is already displayed at this point, and we're
 			// about to display another dialog, then we must add another hash and
 			// history entry on top so that one may navigate back to the original dialog
-			if ( active.url.indexOf( dialogHashKey ) > -1 && !$.mobile.activePage.is( ".ui-dialog" ) ) {
+			if ( active.url.indexOf( dialogHashKey ) > -1 && !$.mobile.activePage.is( ".ui-dialog" ) ) {				
 				settings.changeHash = false;
 				alreadyThere = true;
 			}			
@@ -3607,7 +3607,7 @@ $.mobile._maybeDegradeTransition = function( transition ) {
 
 		// Set the location hash.
 		if( settings.changeHash !== false && url ) {			
-			//disable hash listening temporarily
+			//disable hash listening temporarily			
 			urlHistory.ignoreNextHashChange = true;			
 			//update hash and history
 			path.set( url );
@@ -3628,8 +3628,8 @@ $.mobile._maybeDegradeTransition = function( transition ) {
 			|| ( isDialog ? $.mobile.defaultDialogTransition : $.mobile.defaultPageTransition );
 
 		//add page to history stack if it's not back or forward
-		// XXX FREQUENT: added page container
-		if( !historyDir ) {
+		// XXX FREQUENT: added page container		
+		if( !historyDir ) {				
 			urlHistory.addNew( url, settings.transition, pageTitle, pageUrl, settings.role, settings.pageContainer );
 		}
 
