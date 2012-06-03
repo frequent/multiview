@@ -104,13 +104,11 @@ NOTE: not sure this breaks things, but it sure eases transitions vs. default pos
 .ui-popover 												{ position:  absolute; z-index:1005 !important; color: black; font-weight: normal;  line-height: 1; cursor: auto; background-color: black; border: 3px solid black;  border-radius: 4px; -webkit-border-radius: 4px; -moz-border-radius: 4px; border-radius: 4px; -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); -webkit-transition: opacity 0.25s linear; -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); -moz-transition: opacity 0.25s linear; box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); transition: opacity 0.25s linear; left: auto; }
 /* NOTE: need !important on z-index, otherwise CSS3 transition change overrides to z-index 10 during transition */ 
 
-div[data-panel="popover"], .ui-popover-mode div[data-panel="menu"], .ui-popover-mode div[data-panel="mid"]							
-														{ display: none; overflow-x:visible !important; height:25em; width: 15em; top: 0; }
-/* NOTE: default popover dimensions, customize by adding own class .popover1, .popover2... and setting own dimensions, like so: */
-.popover1												{ margin-top: 3.25em; right: 5em;}
-.popover2 			                            					{ margin-top: 3.25em; right: 1em;}
-.pop_menuBox											{ margin-top: 3.25em; left: 1em; }
-.pop_midBox												{ margin-top: 3.25em; left: 5em; }
+
+.popover1												{ margin-top: 3.25em; right: 5em;  height:25em; width: 15em; top: 0; display: none;}
+.popover2 			                            					{ margin-top: 3.25em; right: 1em;  height:25em; width: 15em; top: 0;display: none; }
+.pop_menuBox											{ margin-top: 3.25em; left: 1em;  height:25em; width: 15em; top: 0; display: none;}
+.pop_midBox												{ margin-top: 3.25em; left: 5em;  height:25em; width: 15em; top: 0; display: none; }
 .popover1 .popover_triangle , .popover2 .popover_triangle{ right: 0.25em;}
 .pop_menuBox .popover_triangle , .pop_midBox .popover_triangle{ left: 0.25em;}
 								
@@ -122,7 +120,7 @@ div[data-panel="popover"], .ui-popover-mode div[data-panel="menu"], .ui-popover-
          overflow-y however makes the triangles disappear. Need to find alternative to showing the triangle...
 		 since scrolling on popovers in popover-mode is done using Overthrow, this can be set to hidden */
 .ui-popover-mode div.ui-popover, .ui-splitview-mode div.ui-panel
-														{ overflow-x: visible; }
+														{ /* overflow-x: visible; */ }
 														
 														
 /* NOTE: need to override this to hide menu-scrollbars in splitview mode and make popover triangles re-appear. As this is needs to be
