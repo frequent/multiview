@@ -1258,7 +1258,8 @@
 		
 /** -------------------------------------- UTILS (some from JQM ) -------------------------------------- **/					
 		
-/**
+
+		  /**
 		   * name: 	      	  activePageCleaner
 		   * called from: 	  pagebeforechange hashChange blocking 
 		   * purpose: 		  cleans up after panel transitions	to complement JQM cleanFrom inside createHandler - MUST fire after cleanFrom!
@@ -1266,15 +1267,19 @@
 		   * @return {object} fromPage
 		   */
 		  activePageCleaner: function( $to, $from ) {
-		  				
+		  		console.log("activePageCleaning called")
+				
 				window.setTimeout(function(){
-				if ( ( $to.parents('.ui-page-active').length == 0  && $from.parents('.ui-page-active').length == 0 ) 
-					|| ( $to.jqmData("role") == "dialog" && $from.parents('.ui-page-active').length != 0 )
-					) {						
+				if ( $to.parents('.ui-page-active').length == 0  && $from.parents('.ui-page-active').length == 0 ) {						
 					
 					$from.closest(':jqmData(wrapper="true")')
-						.removeClass( $.mobile.activePageClass ).end()	
-							// need to wait for JQM transition to cease, otherwise when going to dialogs, body will 
+						.removeClass( $.mobile.activePageClass ).end()								
+					}
+					
+				if ( $to.jqmData("role") == "dialog" && $from.parents('.ui-page-active').length != 0 ) {
+					alert("dialog");
+					/*
+					// need to wait for JQM transition to cease, otherwise when going to dialogs, body will 
 							// keep ui-viewport-transitioning classes
 							.delay(100)
 								// not sure if this is doesn't break something else here, but I can't query for the
@@ -1283,12 +1288,11 @@
 								.not('div:jqmData(wrapper="true")')
 									// this should add the activePage class back to the panel page that lost it
 									// when a dialog was opened. This must run after JQM cleanFrom.
-									.addClass( $.mobile.activePageClass );					
+									.addClass( $.mobile.activePageClass );	
+									*/
+					}	
 					
-					}
-				},100);	
-			
-			},  
+				},100);	 
 			
 		/**
 		   * name: 	      	  framer
@@ -1942,10 +1946,10 @@
 			  *				checks for >1 active pages in a panel and removes the first one. Seems to work.
 		      */			
 			$(document).on('pagebeforeshow.doubleActive', function() {
-			
+				
 				var activePanelPages = $('div:jqmData(panel="popover"):visible .ui-page-active');				
 				if ( activePanelPages.length > 1 ){					
-					activePanelPages.first().removeClass( $.mobile.activePageClass ).addClass("FUCKFACE");
+					activePanelPages.first().removeClass( $.mobile.activePageClass )
 					}	
 				});
 			

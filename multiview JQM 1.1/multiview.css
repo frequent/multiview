@@ -71,23 +71,14 @@ div[data-wrapper="true"] 						{ margin: 0px; padding: 0px; width: inherit; /* h
 /* TODO: Handle box-shadow in popover mode with 2 out of 3 panels visible - assign ui-panel-yield and ui-panel-supercede depending on data-yield="none" or data-yield="panel_id" */
 
 
-
-
 /* div[data-wrapper="true"] div.ui-page				{ position: relative;}
 NOTE: not sure this breaks things, but it sure eases transitions vs. default pos: absolute */
 /*
 .ui-content                      								{ overflow: visible; } 
 */
-
 .ui-splitview-hidden { 
 	display:none; 
 }
-
-
-
-
-
-
 
 .dataTables_filter.ui-menu-button-flex .menuToggle {
 	position: static;
@@ -96,10 +87,7 @@ NOTE: not sure this breaks things, but it sure eases transitions vs. default pos
 	margin: 2px 0.25em !important;
 }
 
-									
-											
-											
-											
+										
 /** POPOVERS - modified from http://www.cagintranet.com/archive/create-an-ipad-like-dropdown-popover/ **/
 .ui-popover 												{ position:  absolute; z-index:1005 !important; color: black; font-weight: normal;  line-height: 1; cursor: auto; background-color: black; border: 3px solid black;  border-radius: 4px; -webkit-border-radius: 4px; -moz-border-radius: 4px; border-radius: 4px; -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); -webkit-transition: opacity 0.25s linear; -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); -moz-transition: opacity 0.25s linear; box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); transition: opacity 0.25s linear; left: auto; }
 /* NOTE: need !important on z-index, otherwise CSS3 transition change overrides to z-index 10 during transition */ 

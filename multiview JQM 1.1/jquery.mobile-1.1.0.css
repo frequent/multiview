@@ -1,5 +1,5 @@
 /*
-* jQuery Mobile Framework 1.1.0 db342b1f315c282692791aa870455901fdb46a55
+* jQuery Mobile Framework Git Build: SHA1: 68030a8b8c03dd3ddb29fc63c2eaad88df6aec0d <> Date: Mon Jun 4 23:11:56 2012 +0300
 * http://jquerymobile.com
 *
 * Copyright 2011 (c) jQuery Project
@@ -375,7 +375,7 @@
 	color: 					#222 /*{c-bhover-color}*/;
 	text-shadow: 0 /*{c-bhover-shadow-x}*/ 1px /*{c-bhover-shadow-y}*/ 0 /*{c-bhover-shadow-radius}*/ #ffffff /*{c-bhover-shadow-color}*/;
 	background-image: -webkit-gradient(linear, left top, left bottom, from( #f6f6f6 /*{c-bhover-background-start}*/), to( #e0e0e0 /*{c-bhover-background-end}*/)); /* Saf4+, Chrome */
-	background-image: -webkit-linear-gradient( #f9f9f9 /*{c-bhover-background-start}*/, #e0e0e0 /*{c-bhover-background-end}*/); /* Chrome 10+, Saf5.1+ */
+	background-image: -webkit-linear-gradient( #f6f6f6 /*{c-bhover-background-start}*/, #e0e0e0 /*{c-bhover-background-end}*/); /* Chrome 10+, Saf5.1+ */
 	background-image:    -moz-linear-gradient( #f6f6f6 /*{c-bhover-background-start}*/, #e0e0e0 /*{c-bhover-background-end}*/); /* FF3.6 */
 	background-image:     -ms-linear-gradient( #f6f6f6 /*{c-bhover-background-start}*/, #e0e0e0 /*{c-bhover-background-end}*/); /* IE10 */
 	background-image:      -o-linear-gradient( #f6f6f6 /*{c-bhover-background-start}*/, #e0e0e0 /*{c-bhover-background-end}*/); /* Opera 11.10+ */
@@ -412,6 +412,7 @@
 	border: 1px solid 		#bbb /*{d-bar-border}*/;
 	background: 			#bbb /*{d-bar-background-color}*/;
 	color: 					#333 /*{d-bar-color}*/;
+	font-weight: bold;
 	text-shadow: 0 /*{d-bar-shadow-x}*/ 1px /*{d-bar-shadow-y}*/ 0 /*{d-bar-shadow-radius}*/ #eee /*{d-bar-shadow-color}*/;
 	background-image: -webkit-gradient(linear, left top, left bottom, from( #ddd /*{d-bar-background-start}*/), to( #bbb /*{d-bar-background-end}*/)); /* Saf4+, Chrome */
 	background-image: -webkit-linear-gradient( #ddd /*{d-bar-background-start}*/, #bbb /*{d-bar-background-end}*/); /* Chrome 10+, Saf5.1+ */
@@ -544,6 +545,7 @@
 	border: 1px solid 		#F7C942 /*{e-bar-border}*/;
 	background: 			#fadb4e /*{e-bar-background-color}*/;
 	color: 					#333 /*{e-bar-color}*/;
+	font-weight: bold;
 	text-shadow: 0 /*{e-bar-shadow-x}*/ 1px /*{e-bar-shadow-y}*/ 0 /*{e-bar-shadow-radius}*/ 	#fff /*{e-bar-shadow-color}*/;
 	background-image: -webkit-gradient(linear, left top, left bottom, from( #fceda7 /*{e-bar-background-start}*/), to( #fbef7e /*{e-bar-background-end}*/)); /* Saf4+, Chrome */
 	background-image: -webkit-linear-gradient( #fceda7 /*{e-bar-background-start}*/, #fbef7e /*{e-bar-background-end}*/); /* Chrome 10+, Saf5.1+ */
@@ -1141,7 +1143,7 @@ div.ui-mobile-viewport { overflow-x: hidden; }
 	-webkit-animation-timing-function: ease-in;
 	-webkit-animation-duration: 225ms;
 	-moz-animation-timing-function: ease-in;
-	-moz-animation-duration: 225;
+	-moz-animation-duration: 225ms;
 }
 @-webkit-keyframes fadein {
     from { opacity: 0; }
@@ -1688,6 +1690,9 @@ div.ui-mobile-viewport { overflow-x: hidden; }
 	position: fixed;
 	z-index: 1000;
 }
+.ui-page-pre-in {
+	opacity: 0;
+}
 .ui-header-fixed {
 	top: 0;
 }
@@ -1726,7 +1731,7 @@ div.ui-mobile-viewport { overflow-x: hidden; }
 .ui-navbar li.ui-navbar-truncate { position: absolute; left: -9999px; top: -9999px; }
 .ui-navbar li .ui-btn, .ui-navbar .ui-navbar-toggle .ui-btn { display: block; font-size: 12px; text-align: center; margin: 0; border-right-width: 0; max-width: 100%; }
 .ui-navbar li .ui-btn {  margin-right: -1px; }
-.ui-navbar li .ui-btn:last-child { margin-right: 0; }
+.ui-navbar li:last-child .ui-btn { margin-right: 0; }
 .ui-header .ui-navbar li .ui-btn, .ui-header .ui-navbar .ui-navbar-toggle .ui-btn,
 .ui-footer .ui-navbar li .ui-btn, .ui-footer .ui-navbar .ui-navbar-toggle .ui-btn { border-top-width: 0; border-bottom-width: 0; }
 .ui-navbar .ui-btn-inner { padding-left: 2px; padding-right: 2px; }
@@ -1748,6 +1753,10 @@ div.ui-mobile-viewport { overflow-x: hidden; }
 .ui-btn-block { display: block; }
 .ui-header .ui-btn,
 .ui-footer .ui-btn { display: inline-block; margin: 0; }
+.ui-header .ui-btn-block,
+.ui-footer .ui-btn-block { display: block; margin: .25em 5px; }
+.ui-header .ui-btn-block.ui-fullsize,
+.ui-footer .ui-btn-block.ui-fullsize { margin: .5em 5px; }
 .ui-header .ui-btn-inner,
 .ui-footer .ui-btn-inner,
 .ui-mini .ui-btn-inner { font-size: 12.5px; padding: .55em 11px .5em; }
@@ -1756,7 +1765,7 @@ div.ui-mobile-viewport { overflow-x: hidden; }
 .ui-btn-icon-notext { width: 24px; height: 24px; }
 .ui-btn-icon-notext .ui-btn-inner { padding: 0; height: 100%; }
 .ui-btn-icon-notext .ui-btn-inner .ui-icon { margin: 2px 1px 2px 3px; }
-.ui-btn-text { position: relative; z-index: 1; width: 100%; }
+.ui-btn-text { position: relative; z-index: 1; width: 100%; -moz-user-select: none; -webkit-user-select: none; -ms-user-select: none; }
 .ui-btn-icon-notext .ui-btn-text { position: absolute; left: -9999px; }
 .ui-btn-icon-left .ui-btn-inner { padding-left: 40px; }
 .ui-btn-icon-right .ui-btn-inner { padding-right: 40px; }
@@ -1776,7 +1785,7 @@ div.ui-mobile-viewport { overflow-x: hidden; }
 .ui-mini .ui-btn-icon-bottom .ui-btn-inner { padding: .55em 3px 30px 3px; }
 /*btn icon positioning*/
 .ui-btn-icon-notext .ui-icon { display: block; z-index: 0;}
-.ui-btn-icon-left .ui-btn-inner .ui-icon, .ui-btn-icon-right .ui-btn-inner .ui-icon { position: absolute; top: 50%; margin-top: -9px; }
+.ui-btn-icon-left > .ui-btn-inner > .ui-icon, .ui-btn-icon-right > .ui-btn-inner > .ui-icon { position: absolute; top: 50%; margin-top: -9px; }
 .ui-btn-icon-top .ui-btn-inner .ui-icon, .ui-btn-icon-bottom .ui-btn-inner .ui-icon { position: absolute; left: 50%;  margin-left: -9px; }
 .ui-btn-icon-left .ui-icon { left: 10px; }
 .ui-btn-icon-right .ui-icon { right: 10px; }
@@ -1799,7 +1808,7 @@ div.ui-mobile-viewport { overflow-x: hidden; }
 .ui-mini.ui-btn-icon-bottom .ui-icon,
 .ui-mini .ui-btn-icon-bottom .ui-icon { bottom: 5px; }
 /*hiding native button,inputs */
-.ui-btn-hidden { position: absolute; top: 0; left: 0; width: 100%; height: 100%; -webkit-appearance: button; opacity: .1; cursor: pointer; background: #fff; background: rgba(255,255,255,0); filter: Alpha(Opacity=.0001); font-size: 1px; border: none; text-indent: -9999px; }
+.ui-btn-hidden { position: absolute; top: 0; left: 0; width: 100%; height: 100%; -webkit-appearance: none; opacity: .1; cursor: pointer; background: #fff; background: rgba(255,255,255,0); filter: Alpha(Opacity=.0001); font-size: 1px; border: none; text-indent: -9999px; }
 .ui-collapsible { margin: .5em 0; }
 .ui-collapsible-heading { font-size: 16px; display: block; margin: 0 -8px; padding: 0; border-width: 0 0 1px 0; position: relative; }
 .ui-collapsible-heading a { text-align: left; margin: 0;  }
@@ -1880,6 +1889,53 @@ div.ui-mobile-viewport { overflow-x: hidden; }
 .ui-dialog { 
 	margin-top: -15px;  
 }
+.ui-popup-container {
+	z-index: 1100;
+	display: inline-block;
+	position: absolute;
+	padding: 0px;
+}
+.ui-popup-screen {
+	left: 0px;
+	top: 0px;
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	opacity: 0;
+	border: 0px;
+	z-index: 1099;
+}
+@-webkit-keyframes popup-fadein {
+    from { opacity: 0; }
+    to { opacity: 0.5; }
+}
+@-moz-keyframes popup-fadein {
+    from { opacity: 0; }
+    to { opacity: 0.5; }
+}
+@-webkit-keyframes popup-fadeout {
+    from { opacity: 0.5; }
+    to { opacity: 0; }
+}
+@-moz-keyframes popup-fadeout {
+    from { opacity: 0.5; }
+    to { opacity: 0; }
+}
+.ui-popup-screen.fade.in {
+	opacity: 0.5;
+	-webkit-animation-name: popup-fadein;
+	-moz-animation-name: popup-fadein;
+}
+.ui-popup-screen.fade.out {
+	opacity: 0;
+	-webkit-animation-name: popup-fadeout;
+	-moz-animation-name: popup-fadeout;
+}
+.ui-popup-btn-close {
+	position:absolute; 
+	top:-15px; 
+	right:-15px;	
+}
 .ui-checkbox, .ui-radio { position: relative; clear: both; margin: .2em 0 .5em; z-index: 1;  }
 .ui-checkbox .ui-btn, .ui-radio .ui-btn { margin: 0; text-align: left; z-index: 2; }
 .ui-checkbox .ui-btn-inner, .ui-radio .ui-btn-inner { white-space: normal; }
@@ -1920,12 +1976,12 @@ div.ui-mobile-viewport { overflow-x: hidden; }
 .ui-select { display: block; position: relative; }
 .ui-select select { position: absolute; left: -9999px; top: -9999px; }
 .ui-select .ui-btn { overflow: hidden; opacity: 1; margin: 0; }
-/* Fixes #2588 — When Windows Phone 7.5 (Mango) tries to calculate a numeric opacity for a select—including “inherit”—without explicitly specifying an opacity on the parent to give it context, a bug appears where clicking elsewhere on the page after opening the select will open the select again. */
-.ui-select .ui-btn select { cursor: pointer; -webkit-appearance: button; left: 0; top:0; width: 100%;  min-height: 1.5em; min-height: 100%; height: 3em; max-height: 100%; opacity: 0; -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)"; filter: alpha(opacity=0); z-index: 2; }
+/* Fixes #2588 â€” When Windows Phone 7.5 (Mango) tries to calculate a numeric opacity for a selectâ€”including â€œinheritâ€â€”without explicitly specifying an opacity on the parent to give it context, a bug appears where clicking elsewhere on the page after opening the select will open the select again. */
+.ui-select .ui-btn select { cursor: pointer; -webkit-appearance: none; left: 0; top:0; width: 100%;  min-height: 1.5em; min-height: 100%; height: 3em; max-height: 100%; opacity: 0; -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)"; filter: alpha(opacity=0); z-index: 2; }
 .ui-select .ui-disabled { opacity: .3; }
 @-moz-document url-prefix() {.ui-select .ui-btn select { opacity: 0.0001; }}
 .ui-select .ui-btn select.ui-select-nativeonly { opacity: 1; text-indent: 0; }
-.ui-select .ui-btn-icon-right .ui-btn-inner { padding-right: 45px; } 
+.ui-select .ui-btn-icon-right .ui-btn-inner { padding-right: 45px; }
 .ui-select .ui-btn-icon-right .ui-icon { right: 15px;  }
 .ui-select .ui-mini.ui-btn-icon-right .ui-icon { right: 7px;  }
 /* labels */
@@ -1934,19 +1990,20 @@ label.ui-select { font-size: 16px; line-height: 1.4;  font-weight: normal; margi
 .ui-select .ui-btn-text, .ui-selectmenu .ui-btn-text { display: block; min-height: 1em; overflow: hidden !important;
 /* This !important is required for iPad Safari specifically. See https://github.com/jquery/jquery-mobile/issues/2647 */ }
 .ui-select .ui-btn-text { text-overflow: ellipsis; }
-.ui-selectmenu { position: absolute; padding: 0; z-index: 1100 !important; width: 80%; max-width: 350px; padding: 6px; }
+.ui-select .ui-btn-text span { display: inline-block; }
+.ui-selectmenu { padding: 6px; min-width: 160px; }
 .ui-selectmenu .ui-listview { margin: 0; }
 .ui-selectmenu .ui-btn.ui-li-divider { cursor: default; }
-.ui-selectmenu-hidden { top: -9999px; left: -9999px; }
+.ui-selectmenu-hidden { top: -99999px; left: -9999px; }
 .ui-selectmenu-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%;  z-index: 99; }
 .ui-screen-hidden, .ui-selectmenu-list .ui-li .ui-icon { display: none; }
 .ui-selectmenu-list .ui-li .ui-icon { display: block; }
 .ui-li.ui-selectmenu-placeholder { display: none; }
 .ui-selectmenu .ui-header .ui-title { margin: 0.6em 46px 0.8em; }
-@media all and (min-width: 450px){	
+@media all and (min-width: 450px){
 	.ui-field-contain label.ui-select { vertical-align: top;  display: inline-block;  width: 20%;  margin: 0 2% 0 0; }
 	.ui-field-contain .ui-select { width: 60%; display: inline-block; }
-}	
+}
 /* when no placeholder is defined in a multiple select, the header height doesn't even extend past the close button.  this shim's content in there */
 .ui-selectmenu .ui-header h1:after { content: '.'; visibility: hidden; }
 label.ui-input-text { font-size: 16px; line-height: 1.4; display: block; font-weight: normal; margin: 0 0 .3em; }
@@ -1982,6 +2039,9 @@ textarea.ui-mini { height: 45px; }
 .ui-li, .ui-li.ui-field-contain { display: block; margin:0; position: relative; overflow: visible; text-align: left; border-width: 0; border-top-width: 1px; }
 .ui-li .ui-btn-text a.ui-link-inherit { text-overflow: ellipsis; overflow: hidden; white-space: nowrap;  }
 .ui-li-divider, .ui-li-static { padding: .5em 15px; font-size: 14px; font-weight: bold;  }
+/* Fixes #4254 to prevent inherit font-size from .ui-li-divider, .ui-li-static */
+.ui-li-divider .ui-btn-text, .ui-li-static .ui-btn-text { font-size: 16px; }
+.ui-li-divider .ui-mini .ui-btn-text, .ui-li-static .ui-mini .ui-btn-text { font-size: inherit; }
 .ui-li-divider { counter-reset: listnumbering;  }
 ol.ui-listview .ui-link-inherit:before, ol.ui-listview .ui-li-static:before, .ui-li-dec { font-size: .8em; display: inline-block; padding-right: .3em; font-weight: normal;counter-increment: listnumbering; content: counter(listnumbering) ". "; }
 ol.ui-listview .ui-li-jsnumbering:before { content: "" !important; } /* to avoid chance of duplication */
@@ -2013,6 +2073,7 @@ ol.ui-listview .ui-li-jsnumbering:before { content: "" !important; } /* to avoid
 .ui-li-link-alt .ui-btn { overflow: hidden; position: absolute; right: 8px; top: 50%; margin: -11px 0 0 0; border-bottom-width: 1px; z-index: -1;}
 .ui-li-link-alt .ui-btn-inner { padding: 0; height: 100%; position: absolute; width: 100%; top: 0; left: 0;}
 .ui-li-link-alt .ui-btn .ui-icon { right: 50%; margin-right: -9px;  }
+.ui-li-link-alt .ui-btn-icon-notext .ui-btn-inner .ui-icon { position: absolute; top: 50%; margin-top: -9px; }
 .ui-listview * .ui-btn-inner > .ui-btn > .ui-btn-inner { border-top: 0px; }
 .ui-listview-filter { border-width: 0; overflow: hidden; margin: -15px -15px 15px -15px }
 .ui-listview-filter .ui-input-search { margin: 5px; width: auto; display: block; }
