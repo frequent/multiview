@@ -236,7 +236,7 @@
 					
 				// fire splitScreen	
 				self.splitScreen("init");
-				}	
+				}
 							
 			// init popovers
 			self._setupPopovers( page );
@@ -267,10 +267,11 @@
 					pop
 						.jqmData('set','ok')
 						.removeClass( "popEnhance" )
-						.addClass("ui-triangle-"+pop.jqmData("triangle") )
+						.addClass("ui-popover ui-triangle-"+pop.jqmData("triangle") )
 						.filter( ".ui-triangle-top").append('<div class="popover_triangle" />').end()
-						.filter( ".ui-triangle-bottom" ).prepend('<div class="popover_triangle" />').end();
-					
+						.filter( ".ui-triangle-bottom" ).prepend('<div class="popover_triangle" />').end()
+						.find('.ui-page .ui-content').addClass('overthrow');
+								
 					// autoshow
 					if ( pop.jqmData("autoshow") == "once") {
 						
@@ -770,6 +771,7 @@
 		
 /** -------------------------------------- SCREEN MODE HANDLER -------------------------------------- **/
 
+		
 		/**
 		   * name: 	      	  popover
 		   * called from: 	  splitscreen()
@@ -834,7 +836,7 @@
 		   * @param {object}  event		   
 		   */			
 		splitView: function (e) {
-   
+		
 			var self = this,
 				$wrap = $('div:jqmData(wrapper="true").ui-page-active'),
 				$menu = $wrap.find('div:jqmData(panel="menu")'),
@@ -1357,7 +1359,7 @@
 					for (var i = $loopLength; i>1; i--) {												
 				
 						if ( setPageContainer.jqmData('id') == $.mobile.urlHistory.stack[i-1].pageContainer.jqmData('id') 
-							&& $.mobile.path.parseUrl( $.mobile.urlHistory.stack[i-1].url ).pathname != $.mobile.path.parseUrl( $.mobile.urlHistory.stack[$.mobile.urlHistory.activeIndex].url ).pathname
+							&& $.mobile.path.parseUrl( $.mobile.urlHistory.stack[i-1].url ).pathname != $.mobile.path.parseUrl( $.mobile.urlHistory.stack[$.mobile.urlHistory.activeIndex].pageUrl ).pathname
 								) {										
 							aMatch = $('div.ui-page').filter(function(){ return $(this).jqmData('url') === $.mobile.path.parseUrl( $.mobile.urlHistory.stack[i-1].url ).pathname });
 							if ( aMatch.length > 0 ){					
@@ -1717,7 +1719,7 @@
 			// 150ms seems to be long enough to clean up the urlHistory						
 			window.setTimeout(function() {
 				
-				var activePagefromUrl = $.mobile.urlHistory.stack[$.mobile.urlHistory.activeIndex].url;
+				var activePagefromUrl = $.mobile.urlHistory.stack[$.mobile.urlHistory.activeIndex].pageUrl;
 								
 				// loop over history. If an entry with matching data.toPage of backFix transition is found, remove it again
 				for (var i = 0; i < $.mobile.urlHistory.stack.length; i++) {
@@ -1932,7 +1934,21 @@
 			$(document).on('pagechange.fixedHeight', function() {				
 				self.panelHeight("pagechange")
 				});
-				
+							
+			/**
+			  * bind to:	pagebeforeshow
+		      * purpose: 	if only popovers are used (and maybe because of handling cleanFrom from the plugin, JQM
+			  *             adds ui-page-active to first page when going in a popover from 2nd to third page. This
+			  *				checks for >1 active pages in a panel and removes the first one. Seems to work.
+		      */			
+			$(document).on('pagebeforeshow.doubleActive', function() {
+			
+				var activePanelPages = $('div:jqmData(panel="popover"):visible .ui-page-active');
+				console.log("NOW");
+				if ( activePanelPages.length > 1 ){					
+					activePanelPages.first().removeClass( $.mobile.activePageClass ).addClass("FUCKFACE");
+					}	
+				});
 			
 			/**
 			  * bind to:	blur, inputs
