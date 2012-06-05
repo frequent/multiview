@@ -1943,8 +1943,7 @@
 		      */			
 			$(document).on('pagebeforeshow.doubleActive', function() {
 			
-				var activePanelPages = $('div:jqmData(panel="popover"):visible .ui-page-active');
-				console.log("NOW");
+				var activePanelPages = $('div:jqmData(panel="popover"):visible .ui-page-active');				
 				if ( activePanelPages.length > 1 ){					
 					activePanelPages.first().removeClass( $.mobile.activePageClass ).addClass("FUCKFACE");
 					}	
