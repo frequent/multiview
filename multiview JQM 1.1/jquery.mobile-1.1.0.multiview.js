@@ -2422,12 +2422,6 @@ var createHandler = function( sequential ){
 			},
 			cleanFrom = function(){
 				
-				// XXX FREQUENT - this should cover all cases of intra- and inter-panel transitons!				
-				if ( $to.parents('.ui-page-active').length == 0  && $from.parents('.ui-page-active').length == 0 ) {									
-					$from.closest(':jqmData(wrapper="true")').removeClass( $.mobile.activePageClass );	
-					// return;
-					}
-				
 				$from
 					.removeClass( $.mobile.activePageClass + " out in reverse " + name )
 					.height( "" );								
@@ -3447,12 +3441,12 @@ $.mobile._maybeDegradeTransition = function( transition ) {
 
 	// Show a specific page in the page container.
 	$.mobile.changePage = function( toPage, options ) {			
-		console.log("changePage");
+		
 		// If we are in the midst of a transition, queue the current request.
 		// We'll call changePage() once we're done with the current transition to
 		// service the request.
 		if( isPageTransitioning ) {	
-			console.log("QUEUE");
+		
 			pageTransitionQueue.unshift( arguments );			
 			return;
 		}		

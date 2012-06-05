@@ -1255,6 +1255,38 @@
 
 		
 /** -------------------------------------- UTILS (some from JQM ) -------------------------------------- **/					
+		
+/**
+		   * name: 	      	  activePageCleaner
+		   * called from: 	  pagebeforechange hashChange blocking 
+		   * purpose: 		  cleans up after panel transitions	to complement JQM cleanFrom inside createHandler - MUST fire after cleanFrom!
+		   * @return {object} toPage
+		   * @return {object} fromPage
+		   */
+		  activePageCleaner: function( $to, $from ) {
+		  				
+				window.setTimeout(function(){
+				if ( ( $to.parents('.ui-page-active').length == 0  && $from.parents('.ui-page-active').length == 0 ) 
+					|| ( $to.jqmData("role") == "dialog" && $from.parents('.ui-page-active').length != 0 )
+					) {						
+					
+					$from.closest(':jqmData(wrapper="true")')
+						.removeClass( $.mobile.activePageClass ).end()	
+							// need to wait for JQM transition to cease, otherwise when going to dialogs, body will 
+							// keep ui-viewport-transitioning classes
+							.delay(100)
+								// not sure if this is doesn't break something else here, but I can't query for the
+								// a custom select dialog when it's the first thing clicked, because then fromPage
+								// will still be set to the wrapper
+								.not('div:jqmData(wrapper="true")')
+									// this should add the activePage class back to the panel page that lost it
+									// when a dialog was opened. This must run after JQM cleanFrom.
+									.addClass( $.mobile.activePageClass );					
+					
+					}
+				},100);	
+			
+			},  
 			
 		/**
 		   * name: 	      	  framer
@@ -1481,16 +1513,13 @@
 		   * @param {object}  data
 		   */
 		panelTrans: function (e, data) {
-			
-			
-			var	self = this,
-				dial = data.options.role == "dialog" ? true : false,
+						
+			var	self = this,				
 				$link = self.options._stageEvent,
+				dial = data.options.role == "dialog" ? true : ( $link && $link.jqmData("rel") == "dialog" ? true :  false ),
 				$targetPanelID = $( $link ).jqmData('panel'),
 				$targetPanel = $link ? $('div:jqmData(id="'+$targetPanelID+'")') : data.options.pageContainer,
-				$targetPanelActivePage = $targetPanel.find( '.ui-page-active' ) || $targetPanel.find('div:jqmData(show="first")');			
-
-				
+				$targetPanelActivePage = $targetPanel.find( '.ui-page-active' ) || $targetPanel.find('div:jqmData(show="first")');	
 				
 			// if panel transition
 			if ( $targetPanel.is('body') == false && dial == false ) {
@@ -1579,7 +1608,7 @@
 					// transitions. This is because pages loaded in externally will be stored with full URL in the urlHistory, 
 					// and it's difficult to capture the pageID if only the full URL is available. 
 					
-					var currentEntry = $.mobile.urlHistory.stack[$.mobile.urlHistory.activeIndex].url,
+					var currentEntry = $.mobile.urlHistory.stack[$.mobile.urlHistory.activeIndex].pageUrl,
 						// iOS3 does not take jqmData("url")..... pffff						
 						currentActive = $('div.ui-page').filter(function(){ return $(this).jqmData('url') === currentEntry }),
 						getPath = $('div.ui-page').filter(function(){ return $(this).jqmData('url') === $.mobile.path.parseUrl( data.toPage ).pathname }).attr('data-url');					
@@ -1685,7 +1714,7 @@
 			self.options._trans = "";
 		
 			// clear up either backFix or double entries from forward transitions	
-			// 250ms seems to be long enough to clean up the urlHistory						
+			// 150ms seems to be long enough to clean up the urlHistory						
 			window.setTimeout(function() {
 				
 				var activePagefromUrl = $.mobile.urlHistory.stack[$.mobile.urlHistory.activeIndex].url;
@@ -1734,7 +1763,7 @@
 				// reset
 				self.options._backFix = false;
 							
-			},250);
+			},150);
 
 		},
 		
@@ -1841,14 +1870,13 @@
 				//  specified. The string will trigger a panelHash, which will modify the data.options, so the whole thing passes JQM
 				// as a "to" transition, thereby MESSING up the urlHistory, which we need to clean up afterwards.		
 				
-				// we identify the last backwards transition using fromHashChange, dialogs and panel-transition-delta counter (+1 forward, -1 backward)
+				// we identify the last backwards transition using fromHashChange, dialogs and panel-transition-delta counter (+1 forward, -1 backward)				
+				var from = data.options.fromPage;
 				
-				var checkWrap = $('div.ui-page').filter(function(){ return $(this).jqmData('url') === $.mobile.urlHistory.stack[$.mobile.urlHistory.activeIndex].url }),
-					from = data.options.fromPage;
-				
-				if ( data.options.fromHashChange == true && self.options._transDelta == 1 && data.options.role != "dialog" 						
+				if ( data.options.fromHashChange == true && self.options._transDelta == 1 && ( data.options.role != "dialog" )
 						// internal transitions are hard to pin down... this should work 					
-						&& ( from.parent('body').length === 0  || typeof from.jqmData('external-page') === 'undefined' ) ) {						
+						&& ( from.parent('body').length === 0  || ( typeof from.jqmData('external-page') === 'undefined' && data.options.fromPage.jqmData("role") != "dialog" ) ) 
+						) {							
 
 						// as the last bogus hashchange data.options cannot be used to indentify from page and crawling back through the 
 						// urlHistory also does not work we simply take the parent wrapper and check which panel is not on data-show="first"
@@ -1864,6 +1892,12 @@
 				// block trailing hashchange (objects)
 				// TODO: switch to JQM ignoreNextHashChange - previous ignoreMyOwnNextHashChange
 				if (typeof data.toPage !== 'string') {	
+				
+					// this complements cleanFrom inside JQM createHandler to remove activeClasses
+					// has to be in here, because custom select dialogs don't seem to trigger a changePage
+					// if they would, this could go into panelTransitionCleaner, too.
+					// this MUST fire after cleanFrom fires!
+					self.activePageCleaner( $(data.toPage), $(data.options.fromPage) );
 					
 					self.options._backFix = false;
 					return;
