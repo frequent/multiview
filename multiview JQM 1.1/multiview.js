@@ -8,7 +8,7 @@
 		
 (function( $, window) {
 	
-	$.widget("mobile.multiview",$.mobile.widget, {
+	$.widget("mobile.multiview", $.mobile.widget, {
 		
 		options: {
 			
@@ -123,7 +123,7 @@
 		      * counter for capturing the second-to-last backwards transition
 			  * FIND BETTER WAY
 		      */			
-			_transDelta: 0,
+			//_transDelta: 0,
 			
 			/**
 			  * self.options._trans
@@ -191,7 +191,7 @@
 		   */	
 		setupMultiview: function(event, page) {
 			
-			var self = this, header;
+			var self = this, header, data;
 								
 			page
 				
@@ -214,7 +214,13 @@
 				// this is so wtf. External pages need a delay ouf at least 400ms, otherwise they get the URL of the previous page assinged
 				// the inital page also tends to not overwrite the data-url="page_ID" if we don't wait... so... we wait...
 				window.setTimeout(function(){ 
+					// overwrite data-url ID
 					page.attr({'data-url':$.mobile.path.parseUrl( window.location.href ).pathname}) 
+										
+					// store a reference in the sitemap, so in case it's removed accidentally, we can recover
+					data = {};
+					data.toPage = page.attr('data-url');
+					self.options.siteMap[data.toPage] = { type: "init", data: data };					
 					},400);
 				
 				// need to call page(), otherwise fromPage.data("page") is undefined on first panel transition
@@ -1283,11 +1289,12 @@
 		   */
 		  activePageCleaner: function( $to, $from ) {				
 
-				
 				window.setTimeout(function(){
 				
 				if ( $to.parents('.ui-page-active').length == 0  && $from.parents('.ui-page-active').length == 0 
-					&& $to.attr('id') != $from.attr('id') ) {						
+					// not sure what this was for (dialogs?), the second part avoids removing the page on same page transitions
+					&&  ( $to.attr('id') != $from.attr('id') && $to.length != 0 )
+					) {
 					
 					$from.closest(':jqmData(wrapper="true")')
 						.removeClass( $.mobile.activePageClass );							
@@ -1369,7 +1376,6 @@
 				temp, aMatch;
 				
 			if ( scope == "internal") {
-
 				if ( $loopLength >= 2) {
 						
 					// if there are 2+ entries in the urlHistory, we need to crawl back through the history to find the previous entry 
@@ -1380,19 +1386,11 @@
 					// only cleaning up AFTER this function runs, we need to make sure we don't select a duplicate from the history stack.
 					for (var i = $loopLength; i>1; i--) {												
 				
-
-
-
-
-
-
-
 						if ( setPageContainer.jqmData('id') == $.mobile.urlHistory.stack[i-1].pageContainer.jqmData('id') 
 							&& $.mobile.path.parseUrl( $.mobile.urlHistory.stack[i-1].url ).pathname != $.mobile.path.parseUrl( $.mobile.urlHistory.stack[$.mobile.urlHistory.activeIndex].pageUrl ).pathname
 								) {										
 							aMatch = $('div.ui-page').filter(function(){ return $(this).jqmData('url') === $.mobile.path.parseUrl( $.mobile.urlHistory.stack[i-1].url ).pathname });
 							if ( aMatch.length > 0 ){					
-
 								temp =  aMatch;								
 								break;
 								}
@@ -1550,8 +1548,7 @@
 		   * @param {object}  data
 		   */
 		panelTrans: function (e, data) {
-
-						
+				
 			var	self = this,				
 				wrap = $('div:jqmData(wrapper="true").ui-page-active'),
 				$link = self.options._stageEvent,
@@ -1563,17 +1560,9 @@
 			// if panel transition
 			if ( $targetPanel.is('body') == false && dial == false ) {
 				
-
 				data.options.fromPage = $targetPanelActivePage;
 				data.options.pageContainer = $targetPanel;
 				
-
-
-
-
-
-
-
 				// block scrollTop to keep popover panels visible when loading a new page into the DOM, without this screen will flash!				
 				if ( $targetPanel.jqmData("panel") == "popover" ) {
 					self.options._panelTransBlockScrollTop = true;
@@ -1585,7 +1574,6 @@
 				} else {
 					// = JQM territory					
 					
-
 					// still, if we are coming from a wrapper page, with panel transitions made, fromPage may not
 					// always be set to the wrapper page, which will cause JQM to drop active class from the panel
 					// page and leave the wrapper page active. 
@@ -1662,17 +1650,9 @@
 						currentActive = $('div.ui-page').filter(function(){ return $(this).jqmData('url') === currentEntry }),
 						getPath = $('div.ui-page').filter(function(){ return $(this).jqmData('url') === $.mobile.path.parseUrl( data.toPage ).pathname }).attr('data-url');					
 					
-
-
-
-
-
-
-
 					// special case = last backwards transition inside a wrapper page
 					if ( self.options._backFix == true ) {						
-
-						
+					
 						// this was derived in pagebeforechange
 						setToPage = $('div.ui-page').filter(function(){ return $(this).jqmData('url') === data.toPage })							
 						// take toPage closest container as pageContainer
@@ -1685,7 +1665,6 @@
 						// internal transition (inside wrapper)
 						} else if ( currentActive.closest('.ui-mobile-viewport').get(0).tagName == "DIV" ) {
 							
-
 							setFromPage = $('div.ui-page').filter(function(){ return $(this).attr('data-url') === currentEntry })															
 							// a backwards transition will always change a page INSIDE a panel (click a link in A1 to change B1 to B2. Reverse = B2>B1)
 							setPageContainer =	setFromPage.closest('.ui-mobile-viewport')							
@@ -1697,7 +1676,6 @@
 							// external transition (wrapper to nested page) 
 							}  else {
 								
-
 								// fromPage will be current entry NOTE: iPad iOS3 and IE require jqmData here
 								setFromPage = $('div.ui-page').filter(function(){ return $(this).jqmData('url') === currentEntry })
 								// as we are going back to a wrapper page, pageContainer must be set to BODY (we could try to deeplink to the data.toPage )
@@ -1725,18 +1703,11 @@
 					data.options.fromPage = setFromPage;
 					data.options.reverse = true;					
 					
-
-
-
-
-
-
 					// set flag 
 					self.options._trans = "panelHash";
 									
 				 } else { 				
 					// JQM transition										
-
 					
 					}				
 				
@@ -1758,13 +1729,13 @@
 		panelTransitionCleaner: function(data, todo, link ) {
 			
 			var self = this,
+				wrap = $('div:jqmData(wrapper="true").ui-page-active'),
 				transition = self.options._trans,
 				tcount = data.options.role != "dialog" ? ( transition == "panelHash" ? ( todo == true ? 0 : -1) : (transition ==  "panelTrans" ? 1 : 0 ) ) : 0;			
 			
 			// +1/-1 aka keep count of panel transitions
-			self.options._transDelta = self.options._transDelta + tcount;
-			
-
+			// self.options._transDelta = self.options._transDelta + tcount;
+			wrap.attr('_transDelta', parseFloat(wrap.attr('_transDelta')) + tcount );
 			// unblock clicker blockers for both jqm and panel transitions
 			self.options._clickInProgress = false;
 				
@@ -1958,25 +1929,15 @@
 					self.options._prevBack = '';
 					return;
 					}				
-				
-				// we identify the last backwards transition using fromHashChange, dialogs and panel-transition-delta counter (+1 forward, -1 backward)				
-				var from = data.options.fromPage;
-				
-
-
-
-
-
-
-
-
-
-
-				if ( data.options.fromHashChange == true && self.options._transDelta == 1 && ( data.options.role != "dialog" )
+				// we identify the last backwards transition using fromHashChange, dialogs and panel-transition-delta counter (+1 forward, -1 backward)
+				var from = data.options.fromPage,
+					wrap = $('div:jqmData(wrapper="true")');
+					
+				// if ( data.options.fromHashChange == true && self.options._transDelta == 1 && ( data.options.role != "dialog" )
+				if ( data.options.fromHashChange == true && wrap.attr('_transDelta') == 1 && ( data.options.role != "dialog" )
 						// internal transitions are hard to pin down... this should work 					
 						&& ( from.parent('body').length === 0  || ( typeof from.jqmData('external-page') === 'undefined' && data.options.fromPage.jqmData("role") != "dialog" ) ) 
 						) {													
-
 						// as the last bogus hashchange data.options cannot be used to indentify from page and crawling back through the 
 						// urlHistory also does not work we simply take the parent wrapper and check which panel is not on data-show="first"
 						// this is the last active panel for our last transition. 
@@ -1984,7 +1945,6 @@
 							isNotActive = isWrap.find('div:jqmData(show="first")').not('.ui-page-active'),
 							isId = isNotActive.attr('id');
 						
-
 						data.toPage = isId;
 						self.options._backFix = true;
 					} 
@@ -1992,8 +1952,6 @@
 				// block trailing hashchange (objects)
 				// TODO: switch to JQM ignoreNextHashChange - previous ignoreMyOwnNextHashChange
 				if (typeof data.toPage !== 'string') {						
-
-
 					self.options._backFix = false;
 					return;
 					}	
@@ -2521,10 +2479,13 @@
 				);	
 			}
 		}
-		
+		/*
 		w.document.addEventListener( "click", function( e ){
+			
 			var link = e.target;
-			if( link && link.className.indexOf( "throw" ) > -1 ){
+			
+			if( link && link.className.indexOf( "throw" ) > -1 ){				
+			
 				var hash = link.href.split( "#" )[ 1 ],
 					elem = w.document.getElementById( hash );
 					
@@ -2535,7 +2496,6 @@
 				}	
 			}	
 		}, false);
-
+		*/
 	}		
 })( this );
-
