@@ -3855,7 +3855,7 @@ $.mobile._maybeDegradeTransition = function( transition ) {
 			return url.pathname + url.search;
 		})(),
 
-		hashChangeTimeout: 200,
+		hashChangeTimeout: 500,
 
 		hashChangeEnableTimer: undefined,
 
