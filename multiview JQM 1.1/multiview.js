@@ -197,21 +197,25 @@
 				
 				.addClass( $.mobile.activePageClass )
 				
-				.attr('_transDelta', 0 )
+				.attr({'_transDelta':0})
 				
 				.find("div:jqmData(role='panel')").addClass('ui-mobile-viewport ui-panel').end()			
 								
 				// flag popovers for enhancement
 				.find("div:jqmData(panel='popover')").addClass("popEnhance").attr({'set':'off'}).end()
 				
+				// prevent dropping panel pages after transition
+				.find("div:jqmData(role='page')").attr('data-internal-page', 'true').end()
+				
+				// add active class to first panel page
+				.find('div:jqmData(role="panel") div:jqmData(show="first")').addClass( $.mobile.activePageClass ).page().end()
+				
 				// flag menu-popover for enhancement in popover mode
 				.closest('html.ui-popover-mode').find('div:jqmData(panel="menu")').addClass("popEnhance").attr({'set':'off'}).end()								
 							
-				.find('div:jqmData(role="panel") div:jqmData(show="first")').addClass( $.mobile.activePageClass );
-
-				// unchainable.... 				
-			
-				// this is so wtf. External pages need a delay ouf at least 400ms, otherwise they get the URL of the previous page assinged
+				//.find('div:jqmData(role="panel") div:jqmData(show="first")').addClass( $.mobile.activePageClass ).addClass("FUCKFACE")
+				
+				// this is so... External wrapper pages need a delay ouf at least 400ms, otherwise they get the URL of the PREVIOUS page assinged
 				// the inital page also tends to not overwrite the data-url="page_ID" if we don't wait... so... we wait...
 				window.setTimeout(function(){ 
 					// overwrite data-url ID
@@ -222,15 +226,7 @@
 					data.toPage = page.attr('data-url');
 					self.options.siteMap[data.toPage] = { type: "init", data: data };					
 					},400);
-				
-				// need to call page(), otherwise fromPage.data("page") is undefined on first panel transition
-				page.find('div:jqmData(role="panel") div:jqmData(show="first")').each( function() {
-					$(this).page();
-					});
-					
-				// prevent dropping panel pages after transition						
-				page.find("div:jqmData(role='page')").attr('data-internal-page', 'true');
-				
+								
 				// pre-set fullscreen mode here, otherwise missing fullscreen class, which causes ui-panel-hidden to not be assigned in fullscreen mode
 				// which confuses toggle_popover buttons - this class will be reset in Gulliver
 				if ( self.framer() == "small" ) {
@@ -255,8 +251,8 @@
 			self._setupPopovers( page );
 			// init make-up
 			self.gulliver();
-			// init panelHeight handler
-			self.panelHeight("init");
+			// init panelHeight handler - done from pageChange
+			// self.panelHeight("init");
 				
 			},
 
@@ -485,7 +481,7 @@
 					
 					// hide switchable
 					$popPanel.css('display','none').addClass("switched-hide");
-					self.panelWidth( true, "showPanel1");
+					self.panelWidth( true );					
 					
 					} else {
 						// (8) regular panel routine
@@ -498,7 +494,7 @@
 						
 						// show switchable
 						$popPanel.css('display','block').removeClass("switched-hide");
-						self.panelWidth( true, "showpanel2");
+						self.panelWidth( true );
 						
 						} else {
 
@@ -1044,8 +1040,8 @@
 		   * @param {string}  update (or recalculate)
 		   * @param {string}  who called
 		   */
-		panelWidth: function( update, fromWhere ) {
-				
+		panelWidth: function( update ) {
+		
 			var self = this,
 				wrap = $('div:jqmData(wrapper="true").ui-page-active'),
 				main = wrap.find('div:jqmData(panel="main")'), 
@@ -1139,9 +1135,9 @@
 				glbF = wrap.find('.ui-footer-global:last'),
 				glbHH = glbH.length > 0 ? glbH.outerHeight() : 0,
 				glbFH = glbF.length > 0 ? glbF.outerHeight() : 0;
-				
+			
 			// no background panels, nothing to do
-			if ( wrap.find('.ui-panel').not('div:jqmData(panel="popover")').length == 0) {					
+			if ( wrap.find('.ui-panel').not('div:jqmData(panel="popover")').length == 0) {									
 				return;
 				}
 				
@@ -1150,8 +1146,7 @@
 			// and any contained panels' pages' content sections. Not on iPad 1. Therefore need to use last()
 			window.setTimeout( function() {	
 							
-				var wrap = $('div:jqmData(wrapper="true").ui-page-active').last(),
-					panels = wrap.find('.ui-panel.ui-panel-active:not(.ui-popover)'),
+				var panels = wrap.find('.ui-panel.ui-panel-active:not(.ui-popover)'),
 					pages = wrap.find('.ui-panel:not(.ui-popover) .ui-page'),
 					contents = wrap.find('.ui-panel:not(.ui-popover) .ui-page .ui-content'),
 
@@ -1233,7 +1228,7 @@
 						}				
 					
 					// again...
-					self.panelWidth(false,"panelHeight")				
+					self.panelWidth(false )									
 				},1);
 	
 			
@@ -1376,6 +1371,7 @@
 				temp, aMatch;
 				
 			if ( scope == "internal") {
+
 				if ( $loopLength >= 2) {
 						
 					// if there are 2+ entries in the urlHistory, we need to crawl back through the history to find the previous entry 
@@ -1386,11 +1382,19 @@
 					// only cleaning up AFTER this function runs, we need to make sure we don't select a duplicate from the history stack.
 					for (var i = $loopLength; i>1; i--) {												
 				
+
+
+
+
+
+
+
 						if ( setPageContainer.jqmData('id') == $.mobile.urlHistory.stack[i-1].pageContainer.jqmData('id') 
 							&& $.mobile.path.parseUrl( $.mobile.urlHistory.stack[i-1].url ).pathname != $.mobile.path.parseUrl( $.mobile.urlHistory.stack[$.mobile.urlHistory.activeIndex].pageUrl ).pathname
 								) {										
 							aMatch = $('div.ui-page').filter(function(){ return $(this).jqmData('url') === $.mobile.path.parseUrl( $.mobile.urlHistory.stack[i-1].url ).pathname });
 							if ( aMatch.length > 0 ){					
+
 								temp =  aMatch;								
 								break;
 								}
@@ -1925,7 +1929,7 @@
 				// probably because the trailing hashChange is triggered to quickly. 
 				// if going backwards and a faulty string (should be object is passed) and this string matches the previous one
 				if (data.options.fromHashChange == true && typeof data.toPage == 'string' && data.toPage == self.options._prevBack ) {						
-					// stop
+					// stop					
 					self.options._prevBack = '';
 					return;
 					}				
@@ -1986,7 +1990,7 @@
 			  * bind to:	pagechange
 		      * purpose: 	prevent JQM from overwriting wrapper padding with local toolbar height
 		      */
-			$(document).on('pagechange.fixedHeight', function() {				
+			$(document).on('pagechange.fixedHeight', function() {							
 				self.panelHeight("pagechange")
 				});
 									
@@ -2052,7 +2056,7 @@
 					// back button
 					} else if ( page.jqmData("show") != "first" ){
 							
-							// set panelHeight
+							// set panelHeight							
 							self.panelHeight("pbc");
 														
 							self.crumble(event, data, page );
@@ -2065,7 +2069,7 @@
 		      */						
 			$(window).on('orientationchange', function(event){
 				self.splitScreen(event);
-				self.panelWidth( true, "orientationchange", "update") 
+				self.panelWidth( true ) 
 				self.panelHeight("or");
 				self.gulliver();
 				});
