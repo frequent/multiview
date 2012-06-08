@@ -5,44 +5,44 @@
  * @copyright 2012 Sven Franck <sven.franck@stokkers.de>
  * @license Dual licensed under the MIT or GPL Version 2 licenses.
  */
-		
+
 (function( $, window) {
-	
+
 	$.widget("mobile.multiview", $.mobile.widget, {
-		
+
 		options: {
-			
+
 			/**
 			  * self.options
 		      * Configurable options
-		      */			
-						
+		      */
+
 			/**
 			  * self.options.lowerThresh|upperThresh
 		      * threshold screen widths
 			  * 0px - 320px 	= "small"	fullscreen-mode
 			  * 320px - 768px	= "medium"	popover-mode, yield-mode or offset-mode
 			  * 768px - 		= "large"	splitview-mode
-		      */		
+		      */
 			lowerThresh: 320,
-			upperThresh: 768, 			
-			
+			upperThresh: 768,
+
 			/**
 			  * self.options.switchable|switchableHideOnLoad
 		      * popover buttons for menu/mid panel will be visible in splitview mode, can be used to toggle hide/show panels
-		      */			
+		      */
 			switchable: false,
 			switchableHideOnLoad: false,
-			
+
 			/**
 			  * self.options.menuTxt|menuBtnTheme|menuBtnIcon|menuBtnIconPos
 		      * configure menu button, can be set here or on the panel using data-menuTxt="some_text"
-		      */			
+		      */
 			menuTxt: 'Menu',
 			menuBtnTheme: 'a',
 			menuBtnIcon: 'gear',
 			menuBtnIconPos: 'left',
-			
+
 			/**
 			  * self.options.midTxt|midBtnTheme|midBtnIcon|midBtnIconPos
 		      * configure mid button, same as above
@@ -51,21 +51,21 @@
 			midBtnTheme: 'a',
 			midBtnIcon: 'gear',
 			midBtnIconPos: 'left',
-			
+
 			/**
 			  * self.options.menuWidth|menuMinWidth
 		      * configure width of menu panel, can also be set on the panel using data-menuWidth="xy%"
 		      */
 			menuWidth: '25%',
 			menuMinWidth: '250px',
-			
+
 			/**
 			  * self.options.midWidth|midMinWidth
 		      * configure width of mid panel, same as above
 		      */
 			midWidth: '25%',
 			midMinWidth: '250px',
-			
+
 			/**
 			  * self.options.siteMap
 		      * stores external pages which are loaded into the site, so fromPage can be identified
@@ -73,89 +73,80 @@
 			  * 
 			  * format [ type: "external|deeplink", data: [data] ] 			  
 			  * access self.options.siteMap[ pathname ]
-		      */						
+		      */
 			siteMap: {},
-			
+
 			/**
 			  * self.options
 		      * Fixed options
-		      */			
+		      */
 
 			/**
 			  * self.options._iPadFixHeight
 		      * iPad does not report the correct height when changing from landscape to portrait. This is a safety.
-		      */			  
+		      */
 			 _iPadFixHeight: 0,
-			  
+
 			 /**
 			  * self.options._prevBack
 		      * sometimes in Firefox the trailing hashChange comes along as string causing double backwards transitions
 			  * (maybe I'm causing this somewhere, but until I find out where, this blocks the 2nd string if it matches the previous one.
-		      */			  
+		      */
 			 _prevBack: '', 
-			  
+
 			/**
 			  * self.options._panelTransBlockScrollTop
 		      * block scrollTop on transitions inside a popover, without this the screen will flash, wenn a scrollTop is attempted
-		      */			  
+		      */
 			 _panelTransBlockScrollTop:'',
 
 			/**
 			  * self.options._blockContextScrollTop
-		      * block popover panel closing on a context transition			  
-		      */			
+		      * block popover panel closing on a context transition 
+		      */
 			_blockContextScrollTop:'',
-			
+
 			/**
 			  * self.options._blockMultiClick
 		      * prevent multiple clicks firing messing up things on Android
-		      */			
+		      */
 			_blockMultiClick: false,
-										
+
 			/**
 			  * self.options._stageEvent
 		      * store click events, so they are available for overriding changepage options
-		      */			
+		      */
 			_stageEvent: '',
-			
-			/**
-			  * self.options._transDelta
-		      * counter for capturing the second-to-last backwards transition
-			  * FIND BETTER WAY
-		      */			
-			//_transDelta: 0,
-			
+
 			/**
 			  * self.options._trans
 		      * flag for panel transition to clean up after multiview
-		      */			
+		      */
 			_trans: '',
-			
+
 			/**
 			  * self.options._backFix
 		      * flag for last backwards panel transition
-		      */			
+		      */
 			_backFix: '',
-			
+
 			/**
 			  * self.options._actualActiveIndex
 		      * the activeIndex of a page we are going back to. If this is a nested page, we are loading the wrapper and need to reset activeIndex afterwards
 		      */
 			_actualActiveIndex: 0,
-			
+
 			/**
 			  * self.options._clickInProgress
 		      * flag to block multiple clicks being triggered
 		      */
 			_clickInProgress: false,
-			
+
 			/**
 			  * self.options._calcInProgress
 		      * flag to block multiple calculations being triggered by multiple page events
 		      */
-			_calcInProgress: false,  
-			
-			
+			_calcInProgress: false,
 		},
 
 /** -------------------------------------- PLUGIN SETUP -------------------------------------- **/		
@@ -164,23 +155,23 @@
 		   * name: 	      	_create		   
 		   * called from: 	plugin trigger = any JQM page with data-wrapper="true" specified
 		   * purpose: 		add classes to <html> and setup all event bindings
-		   */	
+		   */
 		_create: function() {
-			
+
 			var self = this,
 				touchy = $.support.touch ? ' touch ' : ' notouch ',
 				pushy = history.pushState ? ' pushstate ' : ' nopush ',
 				blkLst = $.mobile.fixedtoolbar.prototype.options.supportBlacklist() && $.support.scrollTop ? ' blacklist ' : '',
 				overThrow = $('div:jqmData(scrollmode="overthrow")').length > 0 ? ' overthrow-mode ' : '',
 				base = 'multiview ui-plain-mode'+touchy+pushy+blkLst+overThrow;
-						
+
 			$('html').addClass( base );
-											
+
 			self._popoverBindings();
 			self._mainEventBindings();
-			
+
 		},
-		
+
 		 /**
 		   * name: 	      	setupMultiview
 		   * called from: 	main event bindings, pagebeforeshow.wrapper
@@ -192,68 +183,64 @@
 		setupMultiview: function(event, page) {
 			
 			var self = this, header, data;
-								
+
 			page
-				
+
 				.addClass( $.mobile.activePageClass )
-				
+
 				.attr({'_transDelta':0})
-				
-				.find("div:jqmData(role='panel')").addClass('ui-mobile-viewport ui-panel').end()			
-								
+
+				.find("div:jqmData(role='panel')").addClass('ui-mobile-viewport ui-panel').end()
+
 				// flag popovers for enhancement
 				.find("div:jqmData(panel='popover')").addClass("popEnhance").attr({'set':'off'}).end()
-				
+
 				// prevent dropping panel pages after transition
 				.find("div:jqmData(role='page')").attr('data-internal-page', 'true').end()
-				
+
 				// add active class to first panel page
 				.find('div:jqmData(role="panel") div:jqmData(show="first")').addClass( $.mobile.activePageClass ).page().end()
-				
+
 				// flag menu-popover for enhancement in popover mode
 				.closest('html.ui-popover-mode').find('div:jqmData(panel="menu")').addClass("popEnhance").attr({'set':'off'}).end()								
-							
-				//.find('div:jqmData(role="panel") div:jqmData(show="first")').addClass( $.mobile.activePageClass ).addClass("FUCKFACE")
-				
+
 				// this is so... External wrapper pages need a delay ouf at least 400ms, otherwise they get the URL of the PREVIOUS page assinged
 				// the inital page also tends to not overwrite the data-url="page_ID" if we don't wait... so... we wait...
 				window.setTimeout(function(){ 
 					// overwrite data-url ID
 					page.attr({'data-url':$.mobile.path.parseUrl( window.location.href ).pathname}) 
-										
+
 					// store a reference in the sitemap, so in case it's removed accidentally, we can recover
 					data = {};
 					data.toPage = page.attr('data-url');
 					self.options.siteMap[data.toPage] = { type: "init", data: data };					
 					},400);
-								
+
 				// pre-set fullscreen mode here, otherwise missing fullscreen class, which causes ui-panel-hidden to not be assigned in fullscreen mode
 				// which confuses toggle_popover buttons - this class will be reset in Gulliver
 				if ( self.framer() == "small" ) {
 					$('html').addClass('ui-fullscreen-mode');
 					}
-						
+
 			// if menu/mid/main panel
 			if ( page.find('div:jqmData(panel="main"), div:jqmData(panel="menu"), div:jqmData(panel="mid")').length > 0 ) {
-				
+
 				// global header/footer classes and padding
 				page.children('div:jqmData(role="header"), div:jqmData(role="footer")').each( function() {
 					header = $(this).is( ".ui-header" );
 					$(this).addClass( header ? 'ui-header-global' : 'ui-footer-global' )
 							.attr( "data-position", page.jqmData("scrollmode") == "overthrow" ? "inline" : "fixed" );
 					});
-					
+
 				// fire splitScreen	
 				self.splitScreen("init");
 				}
-							
+
 			// init popovers
 			self._setupPopovers( page );
 			// init make-up
 			self.gulliver();
-			// init panelHeight handler - done from pageChange
-			// self.panelHeight("init");
-				
+
 			},
 
 /** -------------------------------------- POPOVER HANDLER -------------------------------------- **/
