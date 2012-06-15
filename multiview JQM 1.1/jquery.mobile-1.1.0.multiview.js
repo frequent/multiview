@@ -7,6 +7,8 @@
 * http://jquery.org/license
 *
 */
+
+
 (function ( root, doc, factory ) {
 	if ( typeof define === "function" && define.amd ) {
 		// AMD. Register as an anonymous module.
@@ -2642,6 +2644,7 @@ $.mobile._maybeDegradeTransition = function( transition ) {
 
 				// XXX FREQUENT: storing pageContainer in url-history
 				urlHistory.stack.push( {url : url, transition: transition, title: title, pageUrl: pageUrl, role: role, pageContainer: pageContainer } );
+
 				urlHistory.activeIndex = urlHistory.stack.length - 1;				
 			},
 
@@ -2839,8 +2842,9 @@ $.mobile._maybeDegradeTransition = function( transition ) {
 		toPage.data( "page" )._trigger( "beforeshow", null, { prevPage: fromPage || $( "" ) } );
 
 		//clear page loader
-		$.mobile.hidePageLoadingMsg();
-
+		// $.mobile.hidePageLoadingMsg();
+		$.mobile.loading( "hide" );
+		
 		transition = $.mobile._maybeDegradeTransition( transition );
 
 		//find the transition handler for the specified transition. If there
@@ -2853,13 +2857,7 @@ $.mobile._maybeDegradeTransition = function( transition ) {
 
 			//trigger show/hide events
 			if( fromPage ) {
-			// XXX FREQUENT: if fromPage is an internal page it's a panel transition, so the
-			// hide event has to be blocked to avoid dropping the wrapper page. This 
-			// also catches external panel pages, which have been loaded into the DOM and
-			// should be removed when navigation away from them unless data-dom-cache is set. 				
-			if ( $(fromPage).jqmData('internal-page') != true && (fromPage).jqmData('data-dom-cache') != true ) {
 				fromPage.data( "page" )._trigger( "hide", null, { nextPage: toPage } );
-				}
 			}
 
 			//trigger pageshow, define prevPage as either fromPage or empty jQuery obj
@@ -3084,7 +3082,8 @@ $.mobile._maybeDegradeTransition = function( transition ) {
 
 			// This configurable timeout allows cached pages a brief delay to load without showing a message
 			var loadMsgDelay = setTimeout(function(){
-					$.mobile.showPageLoadingMsg();
+					//$.mobile.showPageLoadingMsg();
+					$.mobile.loading( "show" );
 				}, settings.loadMsgDelay ),
 
 				// Shared logic for clearing timeout and removing message.
@@ -3094,7 +3093,8 @@ $.mobile._maybeDegradeTransition = function( transition ) {
 					clearTimeout( loadMsgDelay );
 
 					// Hide loading message
-					$.mobile.hidePageLoadingMsg();
+					// $.mobile.hidePageLoadingMsg();
+					$.mobile.loading( "hide" );
 				};
 		}
 
@@ -3236,11 +3236,12 @@ $.mobile._maybeDegradeTransition = function( transition ) {
 						// Remove loading message.
 						hideMsg();
 
-						// show error message
-						$.mobile.showPageLoadingMsg( $.mobile.pageLoadErrorMessageTheme, $.mobile.pageLoadErrorMessage, true );
+						// show error message						
+						// $.mobile.showPageLoadingMsg( $.mobile.pageLoadErrorMessageTheme, $.mobile.pageLoadErrorMessage, true );
+						$.mobile.loading( "show", { theme: "d", text: "error", textonly: true } );
 
 						// hide after delay
-						setTimeout( $.mobile.hidePageLoadingMsg, 1500 );
+						setTimeout( /*$.mobile.hidePageLoadingMsg*/ $.mobile.loading( "hide" ), 1500 );
 					}
 
 					deferred.reject( absUrl, options );
@@ -8120,6 +8121,7 @@ $( document ).bind( "pagecreate create", function( e ){
 
 })( jQuery );
 
+
 ( function( $, window ) {
 	
 	// This fix addresses an iOS bug, so return early if the UA claims it's something else.
@@ -8418,7 +8420,8 @@ if ( !$.support.boxShadow ) {
 			$window.trigger( "pagecontainercreate" );
 
 			// cue page loading message
-			$.mobile.showPageLoadingMsg();
+			// $.mobile.showPageLoadingMsg();
+			$.mobile.loading( "show" );
 
 			//remove initial build class (only present on first pageshow)
 			hideRenderingClass();
@@ -8433,6 +8436,7 @@ if ( !$.support.boxShadow ) {
 			         ( $( location.hash + ':jqmData(role="page")' ).length ||
 			           $.mobile.path.isPath( location.hash ) ) ) ) || $( window.location.hash ).closest('div:jqmData(role="panel")').length > 0 ) {
 				$('html').data("deep", window.location.hash);
+
 				$.mobile.changePage( $.mobile.firstPage, { transition: "none", reverse: true, changeHash: false, fromHashChange: true } );
 			}
 			// otherwise, trigger a hashchange to load a deeplink
@@ -8497,12 +8501,12 @@ if ( !$.support.boxShadow ) {
 		// with the following shape: { theme: '', text: '', html: '', textVisible: '' }
 		// NOTE that the $.mobile.loading* settings and params past the first are deprecated
 		showPageLoadingMsg: function( theme, msgText, textonly ) {
-			$.mobile.loading( 'show', theme, msgText, textonly );
+			$.mobile.loading( "show", theme, msgText, textonly );
 		},
 
 		// DEPRECATED
 		hidePageLoadingMsg: function() {
-			$.mobile.loading( 'hide' );
+			$.mobile.loading( "hide" );
 		},
 
 		loading: function() {
@@ -8571,8 +8575,7 @@ if ( !$.support.boxShadow ) {
 		// NOTE that the $.mobile.loading* settings and params past the first are deprecated
 		// TODO sweet jesus we need to break some of this out
 		show: function( theme, msgText, textonly ) {
-			this.resetHtml();
-
+			this.resetHtml();			
 			var loadSettings;
 
 			// support for object literal params
@@ -8625,7 +8628,7 @@ if ( !$.support.boxShadow ) {
 			}
 		},
 
-		hide: function() {
+		hide: function() {			
 			$html.removeClass( "ui-loading" );
 
 			if( $.mobile.loadingMessage ){
