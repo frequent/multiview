@@ -134,7 +134,7 @@
 			  * self.options._blockMultiClick
 		      * prevent multiple clicks firing messing up things on Android
 		      */
-			_blockMultiClick: false,
+			// _blockMultiClick: false,
 
 			/**
 			  * self.options._stageEvent
@@ -218,9 +218,8 @@
 							.filter(":jqmData(scrollmode='overthrow')")
 								.find('div.ui-page div.ui-content')
 								.addClass('overthrow');
-					// need to wait for overthrow to be assigned
+					
 					self._popoverBindings();
-
 					next();
 					})
 
@@ -244,7 +243,6 @@
 				self.splitScreen("init");
 				}
 
-			// init popovers, make-up and dimensions
 			self._setupPopovers( page );
 			self.gulliver();
 			},
@@ -1449,7 +1447,7 @@
 				link = self.findClosestLink( e.target ),
 				$link = $( link ), 
 				onePass;
-				
+
 			if ( $(e.target).closest('.ui-popup-container').length > 0 ){				
 				onePass = true;
 				}
@@ -1457,18 +1455,18 @@
 			if ( !link && onePass == false ) {				
 				return;
 				}
-				
-			if ( e.type == "vclick" && onePass == true ){
+			
+			if ( e.type == "vclick" && onePass == true ){				
 				o._blockPopupHavoc = true;
 				onePass = false;
 				}
 		
-			if ( e.type == "vclick" && typeof $(link).jqmData("panel") != "undefined" && $(link).hasClass('toggle_popover') == false ) {
+			if ( e.type == "vclick" && typeof $(link).jqmData("panel") != "undefined" && $(link).hasClass('toggle_popover') == false ) {								
 				// store the click event/link element 					
 				o._stageEvent = $link;					
 				} 
 
-			if ( e.type == "vclick" && typeof $link.jqmData('context') != "undefined" ) {
+			if ( e.type == "vclick" && typeof $link.jqmData('context') != "undefined" ) {				
 				// trigger panelContext					
 				self.panelContext( $link );					
 				}
@@ -1591,7 +1589,7 @@
 					setExt;
 				
 				// stall Android for 300ms
-				window.setTimeout(function () { o._blockMultiClick = false; }, 300);
+				// window.setTimeout(function () { o._blockMultiClick = false; }, 300);
 				
 				// panel transition if prev viewort is a DIV, page is in the sitemap, toPage is a panel page and it's not a dialog!
 				if ( data.options.pageContainer.get(0).tagName != "BODY"   					
@@ -1688,12 +1686,8 @@
 			
 					}
 
-			
 			// clean up 
 			self.panelTransitionCleaner(data, setExt, "");
-				
-				
-				
 		},
 		
 		/**
@@ -1713,7 +1707,7 @@
 				tcount = data.options.role != "dialog" ? ( transition == "panelHash" ? ( todo == true ? 0 : -1) : (transition ==  "panelTrans" ? 1 : 0 ) ) : 0;
 						
 			// always open the transition target panel, if it's not visible (thereby hiding the currently visible panel!)
-			if ( data.options.pageContainer.hasClass('ui-panel-hidden') || !data.options.pageContainer.is(':visible')  ){				
+			if ( data.options.pageContainer.hasClass('ui-panel-hidden') || !data.options.pageContainer.is(':visible')  ){	
 				$(".toggle_popover:jqmData(panel='"+data.options.pageContainer.jqmData('id')+"'):eq(0)").click();
 				}
 			
@@ -1854,7 +1848,11 @@
 		      * purpose: 	show panels - since this button also passes clickrouting, this needs to be reset
 		      */
 			$(document).on('click','a.toggle_popover', function(e) {
-				self.showPanel(e, $(this) );				
+				self.showPanel(e, $(this) );
+				
+				window.setTimeout(function(){
+					 $(e.target).closest('.ui-btn').removeClass('ui-btn-active'); 
+					 },300);
 				});
 			
 			/**
@@ -1937,11 +1935,11 @@
 			  * bind to:	hashchange
 		      * purpose: 	blocking multiple clicks on Android back button - STILL NEEDED?
 		      */  
-			$(window).on('hashchange', function(e, data) {
-				if ( o._blockMultiClick == false ) {
-					o._blockMultiClick = true;
-					}
-				});
+			//$(window).on('hashchange', function(e, data) {
+			//	if ( o._blockMultiClick == false ) {
+			//		o._blockMultiClick = true;
+			//		}
+			//	});
 			
 			/**
 			  * bind to:	pagechange
