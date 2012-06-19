@@ -197,6 +197,7 @@ This is a list of all attributes you can use.
 						
 6. Please note:
  - The plugin currently **ONLY SUPPORTS FIXED TOOLBARS**. I'm working to change this, but so far the CSS has been tricky...
+ - If you are using global toolbars, you can **ONLY** load external pages into a panel. Loading internal pages currently does not work.
  - There are **3 layout modes**: >768px = splitscreen, >468 = popover, <468 = fullscreen. These are settable options now.
  - in **fullscreen-mode**, all popovers are changed to **fullsize JQM pages**, opening a popover in fullscreen pop-transition a regular JQM page. 
  - **Overthrow** is only used for popovers in splitview and popver mode. 
