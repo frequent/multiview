@@ -223,12 +223,6 @@
 					next();
 					})
 
-
-			// initial trace
-			// .data("trace", []);
-			
-			// $(this).data("stack").push('#'+$(this).find('div:jqmData(show="first")').attr('id'));
-			
 			// global toolbars, splitscreen
 			if ( page.find('div:jqmData(panel="main"), div:jqmData(panel="menu"), div:jqmData(panel="mid")').length > 0 ) {
 
@@ -432,22 +426,19 @@
 		
 		/**
 		   * name: 	      	hideAllPanels
-		   * called from: 	clicking a toggle_popover button or from data-autoshow
+		   * called from: 	clicking a toggle_popover button, data-autoshow or panelTransitionCleaner
 		   * purpose: 		show a popover or switchable panel
 		   * @param {event}click event
 		   * @param {object}clicked button
 		   */
-		showPanel: function(e, el) {
+		showPanel: function( panel) {
 			
 			var self = this,
-				o = self.options,
-				cor = el.jqmData("panel"),
-				pop = $('div:jqmData(id="'+cor+'")'),
+				o = self.options,				
+				pop = $('div:jqmData(id="'+panel+'")'),
 				wrap = $('div:jqmData(wrapper="true").ui-page-active'),
 				// wrap = pop.closest('div:jqmData(wrapper="true")'),
 				full = $('html.ui-fullscreen-mode');
-
-			el.addClass('ui-btn-active');
 			
 			if ( pop.is(":visible") ) {
 				
@@ -508,7 +499,7 @@
 								
 								// remeber and clear active pages							
 								$('.ui-page-active')
-									.not( "div:jqmData(wrapper='true'), div:jqmData(id='"+cor+"') .ui-page-active" )
+									.not( "div:jqmData(wrapper='true'), div:jqmData(id='"+panel+"') .ui-page-active" )
 									.addClass("reActivate")
 									.removeClass('ui-page-active');
 										
@@ -1239,7 +1230,7 @@
 		   * @return {object} fromPage
 		   */
 		  activePageCleaner: function( $to, $from ) {
-
+				
 				window.setTimeout(function(){
 				
 				if ( $to.parents('.ui-page-active').length == 0  && $from.parents('.ui-page-active').length == 0 
@@ -1249,23 +1240,7 @@
 					
 					$from.closest(':jqmData(wrapper="true")')
 						.removeClass( $.mobile.activePageClass );
-					}
-				
-				if ( $to.jqmData("role") == "dialog" && $from.parents('.ui-page-active').length != 0 ) {
-					
-					/*
-					// need to wait for JQM transition to cease, otherwise when going to dialogs, body will 
-							// keep ui-viewport-transitioning classes
-							.delay(100)
-								// not sure if this is doesn't break something else here, but I can't query for the
-								// a custom select dialog when it's the first thing clicked, because then fromPage
-								// will still be set to the wrapper
-								.not('div:jqmData(wrapper="true")')
-									// this should add the activePage class back to the panel page that lost it
-									// when a dialog was opened. This must run after JQM cleanFrom.
-									.addClass( $.mobile.activePageClass );
-									*/
-					}
+					}			
 					
 				},100);
 			},
@@ -1327,7 +1302,7 @@
 			var self = this,
 				o = self.options,
 				$loopLength = $.mobile.urlHistory.stack.length-1, 
-				temp, aMatch;
+				temp, aMatch, dUrl;
 				
 			if ( scope == "internal") {
 
@@ -1374,15 +1349,25 @@
 					for (var i = $loopLength; i>=1; i--) {
 
 						// only works with attr()
-						temp = $('div').filter(function(){  return $(this).attr('data-url') === $.mobile.path.parseUrl( $.mobile.urlHistory.stack[i-1].url ).pathname; });
+						temp = $('div.ui-page').filter(function(){  return $(this).attr('data-url') === $.mobile.path.parseUrl( $.mobile.urlHistory.stack[i-1].url ).pathname; });
+												
 						if (temp.jqmData('wrapper') == true ){
 							break;
 							}
 						}
 					}
-					
 
-					return temp;
+					// if a wrapper page is left without reset panels, JQM will try to return to div.wrapper#active_nested_page, 
+					// therefore need to re-construct object in case we are trying to call a nested page or a non-existent page					
+					 if ( typeof temp !== "string" ) {
+						if ( (temp.closest('div:jqmData(role="panel")').length > 0 || o.siteMap[temp.attr('data-url')] == true ) 
+							&& setPageContainer.get(0).tagName == "BODY"){ 							
+							dUrl = temp.closest('div:jqmData(wrapper="true")').attr('data-url')
+							} else { 								
+								dUrl = temp;					
+								}						
+							}				
+					return dUrl;
 				},
 		
 		/**
@@ -1494,7 +1479,7 @@
 				if ( !$('html').hasClass('ui-fullscreen-mode') ) {
 					window.setTimeout(function() {
 					
-						// for iOS3, we need to make sure, pageContainer is set correctly right away, because iOS3.3 needs like
+						// for iOS3, we need to make sure, pageContainer is set correctly right away, because iOS3.2 needs like
 						// 5sec to swallow the first transition. Without setting this, the 2nd transition will be done by JQM
 						// and break the layout
 						$.mobile.pageContainer = contextPanel;
@@ -1527,7 +1512,7 @@
 			
 			// if panel transition
 			if ( $targetPanel.is('body') == false && dial == false ) {
-				
+				//alert("panelTrans");
 				data.options.fromPage = $targetPanelActivePage;
 				data.options.pageContainer = $targetPanel;
 				
@@ -1542,7 +1527,7 @@
 								
 				} else {
 					// = JQM territory					
-					
+					// alert("JQM");
 					// still, if we are coming from a wrapper page, with panel transitions made, fromPage may not
 					// always be set to the wrapper page, which will cause JQM to drop active class from the panel
 					// page and leave the wrapper page active. 
@@ -1577,7 +1562,7 @@
 		   * @param {object}  data
 		   */
 		panelHash: function( e, data ) {
-			
+				
 				var self = this,
 					o = self.options,					
 					isHash = $.mobile.path.parseUrl(data.toPage),
@@ -1589,15 +1574,14 @@
 					setExt;
 				
 				// stall Android for 300ms
-				// window.setTimeout(function () { o._blockMultiClick = false; }, 300);
+				// window.setTimeout(function () { o._blockMultiClick = false; }, 300);				
 				
 				// panel transition if prev viewort is a DIV, page is in the sitemap, toPage is a panel page and it's not a dialog!
 				if ( data.options.pageContainer.get(0).tagName != "BODY"   					
 					|| $('div.ui-page').filter(function(){ return $(this).jqmData('url') === isToPage }).closest('div:jqmData(role="panel")').length != 0 						
 						|| !o.siteMap[data.toPage] == false							
 							) {
-					
-					
+										
 					// PageContainer can be a panel (DIV) or normal viewport (BODY). So there are 4 types of viewport transitions:
 					
 					// #1 <body> to <body> 	= regular JQM backwards transition
@@ -1642,8 +1626,7 @@
 						setExt = false;
 						
 						// internal transition (inside wrapper)
-						} else if ( currentActive.closest('.ui-mobile-viewport').get(0).tagName == "DIV" ) {
-							
+						} else if ( currentActive.closest('.ui-mobile-viewport').get(0).tagName == "DIV" ) {							
 							setFromPage = $('div.ui-page').filter(function(){ return $(this).attr('data-url') === currentEntry })
 							// a backwards transition will always change a page INSIDE a panel (click a link in A1 to change B1 to B2. Reverse = B2>B1)
 							setPageContainer =	setFromPage.closest('.ui-mobile-viewport')
@@ -1679,11 +1662,9 @@
 					// set flag 
 					o._trans = "panelHash";
 					
-					
-					
 				 } else { 				
 					// JQM transition 
-			
+					
 					}
 
 			// clean up 
@@ -1704,11 +1685,28 @@
 				o = self.options,
 				wrap = $('div:jqmData(wrapper="true").ui-page-active'),				
 				transition = o._trans,
-				tcount = data.options.role != "dialog" ? ( transition == "panelHash" ? ( todo == true ? 0 : -1) : (transition ==  "panelTrans" ? 1 : 0 ) ) : 0;
-						
+				full = $('html.ui-fullscreen-mode').length > 0,
+				toPc = data.options.pageContainer,
+				// link precedes fromPage (which is false anyway... 
+				// call B2 from A2 > fromPage = B1, the page being hidden)
+				frPc = link ? link : data.options.fromPage,
+				tcount = data.options.role != "dialog" ? ( transition == "panelHash" ? ( todo == true ? 0 : -1) : (transition ==  "panelTrans" ? 1 : 0 ) ) : 0,
+				isHash, isPage;
+			
+			// TRACE pageContainers on panel transitions to show correct container on fullscreen backwards container!
+			if ( o._trans == "panelTrans" || o._trans == "panelHash" ){
+				if (data.options.fromHashChange == true ) {										
+				//	wrap.data("trace").pop();
+					} else {									
+				//	wrap.data("trace").push( toPc.jqmData('id')  );
+					}				
+				}
+			
 			// always open the transition target panel, if it's not visible (thereby hiding the currently visible panel!)
-			if ( data.options.pageContainer.hasClass('ui-panel-hidden') || !data.options.pageContainer.is(':visible')  ){	
-				$(".toggle_popover:jqmData(panel='"+data.options.pageContainer.jqmData('id')+"'):eq(0)").click();
+			if ( toPc.get(0).tagName == "DIV"  
+					&& ( toPc.hasClass('ui-popover') == true || full == true ) 
+						&& ( toPc.jqmData('id') !== frPc.closest('.ui-mobile-viewport').jqmData('id') ) ){												
+				// self.showPanel( toPc.jqmData('id')  );
 				}
 			
 			// +1/-1 aka keep count of panel transitions			
@@ -1717,7 +1715,7 @@
 				}
 				
 			// clean active classes						
-			self.clearActiveClasses( transition, data.toPage, data.options.fromPage, link );
+			self.clearActiveClasses( transition, data.toPage, frPc, link );
 					
 			// clean up stage event, because backwards transition may have come from a crumbs button click
 			o._stageEvent = '';
@@ -1788,7 +1786,14 @@
 					// has to be in here, because custom select dialogs don't seem to trigger a changePage
 					// if they would, this could go into panelTransitionCleaner, too.
 					// this MUST fire after cleanFrom fires!
-					self.activePageCleaner( $(data.toPage), $(data.options.fromPage) );
+						
+					if ( typeof data.toPage == "string" ){						
+						isHash = $.mobile.path.parseUrl(data.toPage);
+						isPage = isHash.hash.length == 0 ? isHash.pathname : isHash.hash.replace("#","");												
+						}
+					
+					
+					self.activePageCleaner( typeof data.toPage == "object" ? data.toPage : $('div:jqmData(url="'+isPage+'")' ) , frPc );
 									
 					// reset
 					o._backFix = false;
@@ -1848,7 +1853,10 @@
 		      * purpose: 	show panels - since this button also passes clickrouting, this needs to be reset
 		      */
 			$(document).on('click','a.toggle_popover', function(e) {
-				self.showPanel(e, $(this) );
+				
+				$(this).addClass('ui-btn-active');				
+				
+				self.showPanel( $(this).jqmData("panel") );
 				
 				window.setTimeout(function(){
 					 $(e.target).closest('.ui-btn').removeClass('ui-btn-active'); 
@@ -1879,27 +1887,23 @@
 						}
 					}						
 				
-				// Firefox-superfast-trailing-hashchange-double-back-transition-blocker...  (temp fix)				
-				// probably because the trailing hashChange is triggered to quickly. 
+				// Firefox-superfast-trailing-hashchange-double-back-transition-blocker...  (temp fix)								
 				if (data.options.fromHashChange == true && typeof data.toPage == 'string' && ( data.toPage == o._prevBack || o._blockPopupHavoc == true ) ) {
 					o._prevBack = '';
 					o._blockPopupHavoc = false;
 					return;
 					}
-									
+				
 				// identify last panel backwards transition, take toPage [object], convert to string, let it fly, cause chaos.
 				var from = data.options.fromPage,
-					wrap = $('div:jqmData(wrapper="true")');
-				
+					wrap = $('div:jqmData(wrapper="true")');				
 				if ( data.options.fromHashChange == true 
 						&& wrap.attr('_transDelta') == 1 
 							&& ( data.options.role != "dialog" ) 																
 								&& ( from.parent('body').length === 0  
 									|| ( typeof from.jqmData('external-page') === 'undefined' && data.options.fromPage.jqmData("role") != "dialog" ) ) 
 						) {
-						// as the last bogus hashchange data.options cannot be used to indentify from page and crawling back through the 
-						// urlHistory also does not work we simply take the parent wrapper and check which panel is not on data-show="first"
-						// this is the last active panel for our last transition. 
+						// check which panel is NOT on data-show="first". It's data-show="first" page is the backfixed toPage
 						var isWrap = $('div:jqmData(wrapper="true").ui-page-active'),
 							isNot = $('html').hasClass('ui-fullscreen-mode') == true ? ':not(.ui-panel-hidden, :jqmData(panel="main"))' : ':not(.ui-panel-hidden)',
 							isNotActive = isWrap.find('div:jqmData(role="panel")'+isNot+' div:jqmData(show="first"):not(.ui-page-active)'),
@@ -1909,24 +1913,22 @@
 						o._backFix = true;
 					} 
 				
-				// block trailing hashchange (objects) ~ ignoreNextHashChange
-				// exclude dialogs
-				if (typeof data.toPage !== 'string' ) {
+				// block trailing hashchange (objects) - including dialogs/custom selects				
+				if (typeof data.toPage !== 'string' ) {					
 					
-					if ( data.toPage[0].dataset.role != "dialog") {
-						o._backFix = false;						
+					if ( data.options.role != "custom-select" ) {
+						o._backFix = false;							
 						return;
 						} 
 					}
 				
+				// continue to fwd/back transition
 				if ( data.options.fromHashChange == true ) {
-						// set prevBack (can only be a string);
+						// Firefox prevBack
 						o._prevBack = data.toPage;						
 						
-						// backwards transition						
 						self.panelHash( e, data );
-					} else {
-						// forward transition						
+					} else {						
 						self.panelTrans( e, data );
 						}
 				});
@@ -2030,8 +2032,7 @@
 									|| page.closest('div:jqmData(panel="popover")') && ( !$('html').hasClass('ui-fullscreen-mode') || !$('html').hasClass('ui-yield-mode') )){
 
 								page.find('.ui-content').addClass('overthrow');
-								}
-
+								}						
 						} 
 				});
 			

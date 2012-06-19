@@ -521,7 +521,7 @@ $.widget( "mobile.widget", {
 	// TODO create a pull request for jquery ui to trigger this event
 	// in the original _createWidget
 	_createWidget: function() {
-		$.Widget.prototype._createWidget.apply( this, arguments );
+		$.Widget.prototype._createWidget.apply( this, arguments );		
 		this._trigger( 'init' );
 	},
 
@@ -3719,7 +3719,7 @@ $.mobile._maybeDegradeTransition = function( transition ) {
 				reverse = $link.jqmData( "direction" ) === "reverse" ||
 							// deprecated - remove by 1.0
 							$link.jqmData( "back" ),
-
+				
 				//this may need to be more specific as we use data-rel more
 				role = $link.attr( "data-" + $.mobile.ns + "rel" ) || undefined;
 
@@ -7720,8 +7720,9 @@ $( document ).bind( "pagecreate create", function( e ){
 					self.menuType = "page";
 					self.menuPageContent.append( self.list );
 					self.menuPage.find("div .ui-title").text(self.label.text());
-					$.mobile.changePage( self.menuPage, {
-						transition: $.mobile.defaultDialogTransition
+					$.mobile.changePage( self.menuPage, {	
+						// XXX FRE: added role to custom select
+						transition: $.mobile.defaultDialogTransition, role: "custom-select"
 					});
 				} else {
 					self.menuType = "overlay";
@@ -8430,17 +8431,16 @@ if ( !$.support.boxShadow ) {
 			// the hash is not valid (contains more than one # or does not start with #)
 			// or there is no page with that hash, change to the first page in the DOM
 			// Remember, however, that the hash can also be a path!
-			// XXX FREQUENT - also include deeplink panel pages		
+			// XXX FREQUENT - also include deeplink panel pages				
 			if ( ( ! ( $.mobile.hashListeningEnabled &&
 			         $.mobile.path.isHashValid( location.hash ) &&
 			         ( $( location.hash + ':jqmData(role="page")' ).length ||
-			           $.mobile.path.isPath( location.hash ) ) ) ) || $( window.location.hash ).closest('div:jqmData(role="panel")').length > 0 ) {
-				$('html').data("deep", window.location.hash);
-
+			           $.mobile.path.isPath( location.hash ) ) ) ) || $( window.location.hash ).closest('div:jqmData(role="panel")').length > 0  ) {
+				$('html').data("deep", window.location.hash);					
 				$.mobile.changePage( $.mobile.firstPage, { transition: "none", reverse: true, changeHash: false, fromHashChange: true } );
 			}
 			// otherwise, trigger a hashchange to load a deeplink
-			else {
+			else {				
 				$window.trigger( "hashchange", [ true ] );
 			}
 		}
