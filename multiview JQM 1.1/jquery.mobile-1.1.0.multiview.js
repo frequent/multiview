@@ -8,7 +8,6 @@
 *
 */
 
-
 (function ( root, doc, factory ) {
 	if ( typeof define === "function" && define.amd ) {
 		// AMD. Register as an anonymous module.
@@ -21,6 +20,7 @@
 		factory( root.jQuery, root, doc );
 	}
 }( this, document, function ( jQuery, window, document, undefined ) {
+
 /*!
  * jQuery UI Widget @VERSION
  *
@@ -830,13 +830,14 @@ $.widget( "mobile.widget", {
 		return $.removeData( elem, $.mobile.nsNormalize( prop ) );
 	};
 
-	$.fn.removeWithDependents = function() {
+	$.fn.removeWithDependents = function() {		
 		$.removeWithDependents( this );
 	};
 
 	$.removeWithDependents = function( elem ) {
-		var $elem = $( elem );
-
+		
+		var $elem = $( elem );		
+		
 		( $elem.jqmData('dependents') || $() ).remove();
 		$elem.remove();
 	};
@@ -2506,15 +2507,18 @@ $.mobile._maybeDegradeTransition = function( transition ) {
 			},
 
 			convertUrlToDataUrl: function( absUrl ) {
+				
 				var u = path.parseUrl( absUrl );
-				if ( path.isEmbeddedPage( u ) ) {
+				
+				if ( path.isEmbeddedPage( u ) ) {										
 				    // For embedded pages, remove the dialog hash key as in getFilePath(),
-				    // otherwise the Data Url won't match the id of the embedded Page.
+				    // otherwise the Data Url won't match the id of the embedded Page.					
 					return u.hash.split( dialogHashKey )[0].replace( /^#/, "" );
 				} else if ( path.isSameDomain( u, documentBase ) ) {
+					
 					return u.hrefNoHash.replace( documentBase.domain, "" ).split( dialogHashKey )[0];
 				}
-
+				
 				return window.decodeURIComponent(absUrl);
 			},
 
@@ -2594,6 +2598,7 @@ $.mobile._maybeDegradeTransition = function( transition ) {
 			},
 
 			isEmbeddedPage: function( url ) {
+			
 				var u = path.parseUrl( url );
 
 				//if the path is absolute, then we need to compare the url against
@@ -2715,7 +2720,7 @@ $.mobile._maybeDegradeTransition = function( transition ) {
 			element: ( $base.length ? $base : $( "<base>", { href: documentBase.hrefNoHash } ).prependTo( $head ) ),
 
 			//set the generated BASE element's href attribute to a new page's base path
-			set: function( href ) {
+			set: function( href ) {				
 				base.element.attr( "href", path.makeUrlAbsolute( href, documentBase ) );
 			},
 
@@ -2832,9 +2837,9 @@ $.mobile._maybeDegradeTransition = function( transition ) {
 	};
 
 	//function for transitioning between two existing pages
-	function transitionPages( toPage, fromPage, transition, reverse ) {
-
-		if( fromPage ) {
+	function transitionPages( toPage, fromPage, transition, reverse ) {		
+		
+		if( fromPage ) {			
 			//trigger before show/hide events
 			fromPage.data( "page" )._trigger( "beforehide", null, { nextPage: toPage } );
 		}
@@ -2852,14 +2857,14 @@ $.mobile._maybeDegradeTransition = function( transition ) {
 		//call the handler immediately to kick-off the transition.
 		var th = $.mobile.transitionHandlers[ transition || "default" ] || $.mobile.defaultTransitionHandler,
 			promise = th( transition, reverse, toPage, fromPage );
-
+		
 		promise.done(function() {
-
+			
 			//trigger show/hide events
-			if( fromPage ) {
+			if( fromPage ) {				
 				fromPage.data( "page" )._trigger( "hide", null, { nextPage: toPage } );
 			}
-
+			
 			//trigger pageshow, define prevPage as either fromPage or empty jQuery obj
 			toPage.data( "page" )._trigger( "show", null, { prevPage: fromPage || $( "" ) } );
 		});
@@ -2922,11 +2927,20 @@ $.mobile._maybeDegradeTransition = function( transition ) {
 
 	$.mobile.dialogHashKey = dialogHashKey;
 
-
-
 	//enable cross-domain page support
 	$.mobile.allowCrossDomainPages = false;
 
+	
+	// XXX FRE EXPOSE DOCUMENT URL
+	$.mobile.setDocumentUrl = function() {		
+		documentUrl = path.parseUrl( location.href );
+	};
+	
+	// XXX FRE EXPOSE DOCUMENT BASE URL
+	$.mobile.setDocumentBase = function() {		
+		documentBase = $base.length ? path.parseUrl( path.makeUrlAbsolute( $base.attr( "href" ), documentUrl.href ) ) : documentUrl;
+	};
+	
 	//return the original document url
 	$.mobile.getDocumentUrl = function(asParsedObject) {
 		return asParsedObject ? $.extend( {}, documentUrl ) : documentUrl.href;
@@ -2938,19 +2952,21 @@ $.mobile._maybeDegradeTransition = function( transition ) {
 	};
 
 	$.mobile._bindPageRemove = function() {
+	
 		var page = $(this);
-
+		
 		// when dom caching is not enabled or the page is embedded bind to remove the page on hide
 		if( !page.data("page").options.domCache
-				&& page.is(":jqmData(external-page='true')") ) {
-
-			page.bind( 'pagehide.remove', function() {
+				&& page.is(":jqmData(external-page='true')") ) {				
+			
+			page.bind( 'pagehide.remove', function() {				
+				
 				var $this = $( this ),
 					prEvent = new $.Event( "pageremove" );
 
 				$this.trigger( prEvent );
-
-				if( !prEvent.isDefaultPrevented() ){
+				
+				if( !prEvent.isDefaultPrevented() ){					
 					$this.removeWithDependents();
 				}
 			});
@@ -2961,6 +2977,7 @@ $.mobile._maybeDegradeTransition = function( transition ) {
 	$.mobile.loadPage = function( url, options ) {
 		// This function uses deferred notifications to let callers
 		// know when the page is done loading, or if an error has occurred.
+		
 		var deferred = $.Deferred(),
 
 			// The default loadPage options with overrides specified by
@@ -2975,25 +2992,24 @@ $.mobile._maybeDegradeTransition = function( transition ) {
 			// so that it can be removed after the new version of the
 			// page is loaded off the network.
 			dupCachedPage = null,
-
+			
 			// determine the current base url
 			findBaseWithDefault = function(){
 				var closestBase = ( $.mobile.activePage && getClosestBaseUrl( $.mobile.activePage ) );
 				return closestBase || documentBase.hrefNoHash;
 			},
-
+			
 			// The absolute version of the URL passed into the function. This
 			// version of the URL may contain dialog/subpage params in it.
-			absUrl = path.makeUrlAbsolute( url, findBaseWithDefault() );
-
-
+			absUrl = path.makeUrlAbsolute( url, findBaseWithDefault() );		
+			
 		// If the caller provided data, and we're using "get" request,
 		// append the data to the URL.
 		if ( settings.data && settings.type === "get" ) {
 			absUrl = path.addSearchParams( absUrl, settings.data );
 			settings.data = undefined;
 		}
-
+		
 		// If the caller is using a "post" request, reloadPage must be true
 		if(  settings.data && settings.type === "post" ){
 			settings.reloadPage = true;
@@ -3002,7 +3018,7 @@ $.mobile._maybeDegradeTransition = function( transition ) {
 			// The absolute version of the URL minus any dialog/subpage params.
 			// In otherwords the real URL of the page to be loaded.
 		var fileUrl = path.getFilePath( absUrl ),
-
+	
 			// The version of the Url actually stored in the data-url attribute of
 			// the page. For embedded pages, it is just the id of the page. For pages
 			// within the same domain as the document base, it is the site relative
@@ -3015,12 +3031,12 @@ $.mobile._maybeDegradeTransition = function( transition ) {
 
 		// Check to see if the page already exists in the DOM.
 		page = settings.pageContainer.children( ":jqmData(url='" + dataUrl + "')" );
-
+		
 		// If we failed to find the page, check to see if the url is a
 		// reference to an embedded page. If so, it may have been dynamically
 		// injected by a developer, in which case it would be lacking a data-url
 		// attribute and in need of enhancement.
-		if ( page.length === 0 && dataUrl && !path.isPath( dataUrl ) ) {
+		if ( page.length === 0 && dataUrl && !path.isPath( dataUrl ) ) {			
 			page = settings.pageContainer.children( "#" + dataUrl )
 				.attr( "data-" + $.mobile.ns + "url", dataUrl )
 				.jqmData( "url", dataUrl );
@@ -3029,7 +3045,7 @@ $.mobile._maybeDegradeTransition = function( transition ) {
 		// If we failed to find a page in the DOM, check the URL to see if it
 		// refers to the first page in the application. If it isn't a reference
 		// to the first page and refers to non-existent embedded page, error out.
-		if ( page.length === 0 ) {
+		if ( page.length === 0 ) {			
 			if ( $.mobile.firstPage && path.isFirstPageUrl( fileUrl ) ) {
 				// Check to make sure our cached-first-page is actually
 				// in the DOM. Some user deployed apps are pruning the first
@@ -3049,16 +3065,16 @@ $.mobile._maybeDegradeTransition = function( transition ) {
 		}
 
 		// Reset base to the default document base.
-		if ( base ) {
+		if ( base ) {			
 			base.reset();
 		}
-
+		
 		// If the page we are interested in is already in the DOM,
 		// and the caller did not indicate that we should force a
 		// reload of the file, we are done. Otherwise, track the
 		// existing page as a duplicated.
-		if ( page.length ) {
-			if ( !settings.reloadPage ) {
+		if ( page.length ) {			
+			if ( !settings.reloadPage ) {				
 				enhancePage( page, settings.role );
 				deferred.resolve( absUrl, options, page );
 				return deferred.promise();
@@ -3074,12 +3090,11 @@ $.mobile._maybeDegradeTransition = function( transition ) {
 		mpc.trigger( pblEvent, triggerData );
 
 		// If the default behavior is prevented, stop here!
-		if( pblEvent.isDefaultPrevented() ){
+		if( pblEvent.isDefaultPrevented() ){			
 			return deferred.promise();
 		}
 
-		if ( settings.showLoadMsg ) {
-
+		if ( settings.showLoadMsg ) {			
 			// This configurable timeout allows cached pages a brief delay to load without showing a message
 			var loadMsgDelay = setTimeout(function(){
 					//$.mobile.showPageLoadingMsg();
@@ -3098,7 +3113,7 @@ $.mobile._maybeDegradeTransition = function( transition ) {
 				};
 		}
 
-		if ( !( $.mobile.allowCrossDomainPages || path.isSameDomain( documentUrl, absUrl ) ) ) {
+		if ( !( $.mobile.allowCrossDomainPages || path.isSameDomain( documentUrl, absUrl ) ) ) {			
 			deferred.reject( absUrl, options );
 		} else {
 			// Load the new page.
@@ -3177,7 +3192,7 @@ $.mobile._maybeDegradeTransition = function( transition ) {
 						.attr( "data-" + $.mobile.ns + "external-page", true )
 						.appendTo( settings.pageContainer );
 
-					// wait for page creation to leverage options defined on widget
+					// wait for page creation to leverage options defined on widget					
 					page.one( 'pagecreate', $.mobile._bindPageRemove );
 
 					enhancePage( page, settings.role );
@@ -3286,37 +3301,35 @@ $.mobile._maybeDegradeTransition = function( transition ) {
 
 		// Let listeners know we're about to change the current page.
 		mpc.trigger( pbcEvent, triggerData );
-
+		
 		// If the default behavior is prevented, stop here!
-		if( pbcEvent.isDefaultPrevented() ){
+		if( pbcEvent.isDefaultPrevented() ){			
 			return;
 		}
 
 		// We allow "pagebeforechange" observers to modify the toPage in the trigger
-		// data to allow for redirects. Make sure our toPage is updated.
-
+		// data to allow for redirects. Make sure our toPage is updated.		
 		toPage = triggerData.toPage;
-
+		
 		// Set the isPageTransitioning flag to prevent any requests from
 		// entering this method while we are in the midst of loading a page
 		// or transitioning.
 
 		isPageTransitioning = true;
-
+		
 		// If the caller passed us a url, call loadPage()
 		// to make sure it is loaded into the DOM. We'll listen
 		// to the promise object it returns so we know when
 		// it is done loading or if an error ocurred.
 		if ( typeof toPage == "string" ) {
 			$.mobile.loadPage( toPage, settings )
-				.done(function( url, options, newPage, dupCachedPage ) {
+				.done(function( url, options, newPage, dupCachedPage ) {					
 					isPageTransitioning = false;
 					options.duplicateCachedPage = dupCachedPage;
-					$.mobile.changePage( newPage, options );
+					$.mobile.changePage( newPage, options );					
 				})
-				.fail(function( url, options ) {
-					isPageTransitioning = false;
-
+				.fail(function( url, options ) {					
+					isPageTransitioning = false;					
 					//clear out the active button state
 					removeActiveLinkClass( true );
 
@@ -3326,7 +3339,7 @@ $.mobile._maybeDegradeTransition = function( transition ) {
 				});
 			return;
 		}
-
+		
 		// If we are going to the first-page of the application, we need to make
 		// sure settings.dataUrl is set to the application document url. This allows
 		// us to avoid generating a document url with an id hash in the case where the
@@ -3359,7 +3372,7 @@ $.mobile._maybeDegradeTransition = function( transition ) {
 		// to either turn off transition animations, or make sure that an appropriate
 		// animation transition is used.
 		if( fromPage && fromPage[0] === toPage[0] && !settings.allowSamePageTransition ) {
-			isPageTransitioning = false;
+			isPageTransitioning = false;			
 			mpc.trigger( "pagechange", triggerData );
 
 			// Even if there is no page change to be done, we should keep the urlHistory in sync with the hash changes
@@ -3373,14 +3386,15 @@ $.mobile._maybeDegradeTransition = function( transition ) {
 
 			return;
 		}
-
+		
 		// We need to make sure the page we are given has already been enhanced.
 		enhancePage( toPage, settings.role );
-
+		
 		// If the changePage request was sent from a hashChange event, check to see if the
 		// page is already within the urlHistory stack. If so, we'll assume the user hit
 		// the forward/back button and will try to match the transition accordingly.
 		if( settings.fromHashChange ) {
+			
 			urlHistory.directHashChange({
 				currentUrl:	url,
 				isBack:		function() { historyDir = -1; },
@@ -3432,13 +3446,13 @@ $.mobile._maybeDegradeTransition = function( transition ) {
 				url += dialogHashKey;
 			}
 		}
-
+		
 		// Set the location hash.
 		if( settings.changeHash !== false && url ) {
 			//disable hash listening temporarily
 			urlHistory.ignoreNextHashChange = true;
 			//update hash and history
-			path.set( url );
+			path.set( url );			
 		}
 
 		// if title element wasn't found, try the page div data attr too
@@ -3450,7 +3464,7 @@ $.mobile._maybeDegradeTransition = function( transition ) {
 		if ( !toPage.jqmData( "title" ) ) {
 			toPage.jqmData( "title", pageTitle );
 		}
-
+		
 		// Make sure we have a transition defined.
 		settings.transition = settings.transition
 			|| ( ( historyDir && !activeIsInitialPage ) ? active.transition : undefined )
@@ -3470,7 +3484,7 @@ $.mobile._maybeDegradeTransition = function( transition ) {
 
 		// If we're navigating back in the URL history, set reverse accordingly.
 		settings.reverse = settings.reverse || historyDir < 0;
-
+		
 		transitionPages( toPage, fromPage, settings.transition, settings.reverse )
 			.done(function( name, reverse, $to, $from, alreadyFocused ) {
 				removeActiveLinkClass();
@@ -3490,7 +3504,7 @@ $.mobile._maybeDegradeTransition = function( transition ) {
 
 				releasePageTransitionLock();
 
-				// Let listeners know we're all done changing the current page.
+				// Let listeners know we're all done changing the current page.				
 				mpc.trigger( "pagechange", triggerData );
 			});
 	};
@@ -3808,7 +3822,7 @@ $.mobile._maybeDegradeTransition = function( transition ) {
 			}
 
 			//if to is defined, load it
-			if ( to ) {
+			if ( to ) {				
 				// At this point, 'to' can be one of 3 things, a cached page element from
 				// a history stack entry, an id, or site-relative/absolute URL. If 'to' is
 				// an id, we need to resolve it against the documentBase, not the location.href,
@@ -3816,7 +3830,7 @@ $.mobile._maybeDegradeTransition = function( transition ) {
 				// that crosses from an external page/dialog to an internal page/dialog.
 				to = ( typeof to === "string" && !path.isPath( to ) ) ? ( path.makeUrlAbsolute( '#' + to, documentBase ) ) : to;
 				$.mobile.changePage( to, changePageOptions );
-			}	else {
+			}	else {				
 				//there's no hash, go to the first page in the dom
 				$.mobile.changePage( $.mobile.firstPage, changePageOptions );
 			}
@@ -7569,7 +7583,7 @@ $( document ).bind( "pagecreate create", function( e ){
 					// to allow for the parent page removal from actions other than the use
 					// of a dialog sized custom select
 					//
-					// doing this here provides for the back button on the custom select dialog
+					// doing this here provides for the back button on the custom select dialog					
 					$.mobile._bindPageRemove.call( self.thisPage );
 				});
 
@@ -7724,6 +7738,7 @@ $( document ).bind( "pagecreate create", function( e ){
 						// XXX FRE: added role to custom select
 						transition: $.mobile.defaultDialogTransition, role: "custom-select"
 					});
+					alert("yo");
 				} else {
 					self.menuType = "overlay";
 
@@ -8360,7 +8375,7 @@ if ( !$.support.boxShadow ) {
 	var	$html = $( "html" ),
 			$head = $( "head" ),
 			$window = $( window );
-
+	
 	// trigger mobileinit event - useful hook for configuring $.mobile settings before they're used
 	$( window.document ).trigger( "mobileinit" );
 
@@ -8390,8 +8405,10 @@ if ( !$.support.boxShadow ) {
 	}
 
 	$.extend($.mobile, {
+		
 		// find and enhance the pages in the dom and transition to the first page.
 		initializePage: function() {
+					
 			// find present pages
 			var $pages = $( ":jqmData(role='page'), :jqmData(role='dialog')" );
 
@@ -8436,7 +8453,7 @@ if ( !$.support.boxShadow ) {
 			         $.mobile.path.isHashValid( location.hash ) &&
 			         ( $( location.hash + ':jqmData(role="page")' ).length ||
 			           $.mobile.path.isPath( location.hash ) ) ) ) || $( window.location.hash ).closest('div:jqmData(role="panel")').length > 0  ) {
-				$('html').data("deep", window.location.hash);					
+				$('html').data("deep", window.location.hash);								
 				$.mobile.changePage( $.mobile.firstPage, { transition: "none", reverse: true, changeHash: false, fromHashChange: true } );
 			}
 			// otherwise, trigger a hashchange to load a deeplink
@@ -8472,7 +8489,7 @@ if ( !$.support.boxShadow ) {
 		}
 
 		//dom-ready inits
-		if( $.mobile.autoInitializePage ){
+		if( $.mobile.autoInitializePage ){			
 			$.mobile.initializePage();
 		}
 
@@ -8644,6 +8661,5 @@ if ( !$.support.boxShadow ) {
 		$.mobile.loaderWidget = $.mobile.loaderWidget || $( $.mobile.loader.prototype.defaultHtml ).loader();
 	});
 })(jQuery, this);
-
 
 }));
