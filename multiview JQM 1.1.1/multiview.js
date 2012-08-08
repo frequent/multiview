@@ -326,9 +326,9 @@
 					.filter( ".ui-triangle-bottom" )
 						.prepend( thatPop.find('.popover_triangle').length == 0 ? '<div class="popover_triangle" />' : '' )
 						.end()
-					.filter( ":jqmData(autoshow='once')" )
-						.delay(10).closest('html').find(".toggle_popover:jqmData(panel='"+thatPop.jqmData('id')+"'):eq(0)").click().end().end()
-						.delay(10).jqmRemoveData("autoshow").removeAttr('data-autoshow');
+					//.filter( ":jqmData(autoshow='once')" )
+					//	.delay(10).closest('html').find(".toggle_popover:jqmData(panel='"+thatPop.jqmData('id')+"'):eq(0)").click().end().end()
+					//	.delay(10).jqmRemoveData("autoshow").removeAttr('data-autoshow');
 				}
 		},
 
@@ -431,7 +431,7 @@
 		   * @param {string}to check who called
 		   */
 		hideAllPanels: function(from) {
-		
+			
 			var self = this, main,
 				o = self.options,
 				wrap = $('div:jqmData(wrapper="true").ui-page-active'),
@@ -476,7 +476,7 @@
 				$('.androidSucks').removeClass('ui-disabled androidSucks').removeAttr('disabled');
 				
 				// reset background height
-				self.panelHeight("background", '', "clear" )	
+				self.panelHeight("background", "clear" )	
 				
 				$('.toggle_popover').removeClass('ui-btn-active');
 				}			
@@ -490,9 +490,10 @@
 		   * @param {object}clicked button
 		   */
 		showPanel: function( panel) {
+			
 			var self = this,
 				o = self.options,	
-				wrap = $('div:jqmData(wrapper="true")').length != 1 ? $('div:jqmData(wrapper="true")').last() : $('div:jqmData(wrapper="true").ui-page-active'),
+				wrap = $('div:jqmData(wrapper="true")').length > 1 ? $('div:jqmData(wrapper="true")').last() : $('div:jqmData(wrapper="true")'),
 				pop = wrap.find('div:jqmData(id="'+panel+'")'),				
 				full = $('html.ui-fullscreen-mode');
 				
@@ -544,7 +545,7 @@
 									// JQM always adds 43px padding, if any active page has a 43px header. 
 									//.attr({'style':'padding-top 0px !important'})
 									.queue(function(next){
-										pop.removeClass('in slide pop');
+										pop.removeClass('in');
 										// reset										
 										next();
 										});
@@ -568,11 +569,12 @@
 									.find(".ui-btn, input, select, textarea")
 										.addClass('ui-disabled androidSucks')
 										.attr('disabled','disabled');	
+										
 								// and since Android never minds and also disables the page that should be enabled
 								pop.find('.androidSucks').removeClass('ui-disabled androidSucks').removeAttr('disabled');
 								// tweak background page height	to enable hardware-scrolling by setting height of all pages to height of active popover								
 								// lock background
-								self.panelHeight( "background", pop.find('.ui-page-active').length > 0 ?  pop.find('.ui-page-active') : pop.find('div:jqmData(show="first")'), "set" )
+								self.panelHeight( "background", "set" )
 								}
 
 							
@@ -622,7 +624,7 @@
 			
 			var self = this,
 				o = self.options,
-				wrap = wrap = $('div:jqmData(wrapper="true")').length != 1 ? $('div:jqmData(wrapper="true")').last() : $('div:jqmData(wrapper="true").ui-page-active'),
+				wrap = wrap = $('div:jqmData(wrapper="true")').length > 1 ? $('div:jqmData(wrapper="true")').last() : $('div:jqmData(wrapper="true")'),
 				main = wrap.find('div:jqmData(panel="main")'),
 				menu = wrap.find('div:jqmData(panel="menu")'),
 				mid = wrap.find('div:jqmData(panel="mid")'),
@@ -804,7 +806,7 @@
 		
 			var self = this,
 				o = self.options,
-				wrap = wrap = $('div:jqmData(wrapper="true")').length != 1 ? $('div:jqmData(wrapper="true")').last() : $('div:jqmData(wrapper="true").ui-page-active'),
+				wrap = wrap = $('div:jqmData(wrapper="true")').length > 1 ? $('div:jqmData(wrapper="true")').last() : $('div:jqmData(wrapper="true")'),
 				popover = wrap.find('div:jqmData(panel="popover")'),
 				yield = $('div:jqmData(yieldmode="true")').length > 0,
 				full = $('html.ui-fullscreen-mode').length > 0,				
@@ -863,7 +865,7 @@
 			
 			var self = this,
 				o = self.options,
-				wrap = $('div:jqmData(wrapper="true")').length != 1 ? $('div:jqmData(wrapper="true")').last() : $('div:jqmData(wrapper="true").ui-page-active'),
+				wrap = $('div:jqmData(wrapper="true")').length > 1 ? $('div:jqmData(wrapper="true")').last() : $('div:jqmData(wrapper="true")'),
 				popover = wrap.find('div:jqmData(panel="popover")'), 
 				over = wrap.jqmData("scrollmode") == true, 
 				_switch = o.switchable || wrap.jqmData("switchable"),
@@ -928,7 +930,7 @@
 			
 			var self = this,
 				o = self.options,
-				wrap = $('div:jqmData(wrapper="true")').length != 1 ? $('div:jqmData(wrapper="true")').last() : $('div:jqmData(wrapper="true").ui-page-active'),
+				wrap = $('div:jqmData(wrapper="true")').length > 1 ? $('div:jqmData(wrapper="true")').last() : $('div:jqmData(wrapper="true")'),
 				$window = $(window);
 			
 			if ( wrap.find('div:jqmData(panel="menu"), div:jqmData(panel="main"), div:jqmData(panel="mid")').length == 0 ) {
@@ -1018,7 +1020,9 @@
 					
 				$(".iconposSwitcher-div label, .iconposSwitcher-select label, .hideLabel")
 					.addClass("ui-hidden-accessible");
-										
+
+				$('html').removeClass('ui-popover-mode ui-splitview-mode')
+				
 				} else {
 					$('html').removeClass('ui-fullscreen-mode');
 					}
@@ -1051,7 +1055,7 @@
 			
 			var self = this,
 				o = self.options,
-				wrap = $('div:jqmData(wrapper="true")').length != 1 ? $('div:jqmData(wrapper="true")').last() : $('div:jqmData(wrapper="true").ui-page-active'),
+				wrap = $('div:jqmData(wrapper="true")').length > 1 ? $('div:jqmData(wrapper="true")').last() : $('div:jqmData(wrapper="true")'),
 				pop = $('.ui-popover');
 
 			// no background panels, no widths to set
@@ -1122,8 +1126,8 @@
 		   *                  for whichever call. Multiple calls will return wrong values, causing the page height
 		   *                  to be distorted.
 		   */
-		panelHeight: function (from, page, mode) {	
-			
+		panelHeight: function (from, mode) {	
+
 			// If not using overthrow, reference element for scrolling is the WRAPPER page = the wrapper scrolls = it needs height set
 			// based on child elements! Not setting height on the WRAPPER will throw off fixed toolbars, because min-height: 420px will
 			// be used by JQM.
@@ -1135,7 +1139,7 @@
 			
 			var self = this,	
 				o = self.options,
-				wrap = $('div:jqmData(wrapper="true")').length != 1 ? $('div:jqmData(wrapper="true")').last() : $('div:jqmData(wrapper="true").ui-page-active'),
+				wrap = $('div:jqmData(wrapper="true")').length > 1 ? $('div:jqmData(wrapper="true")').last() : $('div:jqmData(wrapper="true")'),
 				panels = wrap.find('div:jqmData(role="panel")').not('div:jqmData(panel="popover")').add( $('.ui-fullscreen-mode div:jqmData(panel="popover"), .ui-fullscreen-mode div:jqmData(panel="menu"), .ui-fullscreen-mode div:jqmData(panel="mid")') ),				
 				backPanels = $('div:jqmData(panel="main"), div:jqmData(panel="mid"), div:jqmData(panel="menu")'),
 				pages = backPanels.length > 0 ? panels.find('div:jqmData(role="page")') : wrap.add( panels.find('div:jqmData(role="page")') ),
@@ -1146,11 +1150,13 @@
 				}
 			// make sure initial call passes only once - otherwise first run will set wrong values, 2nd run will not do anything
 			if ( o._autoInitFunc == false ){
+			//	console.log("end autoinit");
 			//	return;
 				}
 	
 			// no wrapper pages? we are done!
 			if ( pages.length == 0 ) {
+			//	console.log("end length");
 				return;				
 				}
 				
@@ -1202,7 +1208,7 @@
 					// on non background panel, blacklist browsers with content smaller than screenheight, use delta
 					o._iPadFixHeight = ( blacklist == true && solo == true && delta > cH ) ? delta : ( cH > o._iPadFixHeight ? cH : o._iPadFixHeight );
 					};
-				
+
 				}
 			// highest pageHeight in DOM	
 			iO = parseFloat(o._iPadFixHeight);
@@ -1237,28 +1243,33 @@
 						 kidPadBot = wrap.find('div:jqmData(role="page")').find('div:jqmData(role="footer")'),
 						 kTH = kidPadTop.length > 0 ? parseFloat( kidPadTop.outerHeight() ) : 0,
 						 kTB = kidPadBot.length > 0 ? parseFloat( kidPadBot.outerHeight() ) : 0;
-						 
-					wrap.css({ "min-height" : delta-kTH-kTB });
-					panels.add( pages ).css({ "min-height" : delta-kTH-kTB });
+					
+					// delta-kTH-kTB would be perfect, if content never expands below available screen 
+					ref = iO > delta-kTH-kTB ? iO+glbF+glbH : delta-kTH-kTB;
+					wrap.css({ "min-height" : ref  });
+					panels.css({ "min-height" : ref });
+					// need borders....
+					pages.css({ "min-height" : ref-2})
 
 					// need to set contents individually because of local toolbar margin
 					for ( var i = 0; i < contents.length; i++){	
 						
 						var ct = contents.eq(i),
 							lclH = ct.siblings('.ui-header:eq(0)'),
-							lclF = ct.siblings('.ui-footer:eq(0)');
+							lclF = ct.siblings('.ui-footer:eq(0)'),
+							lclHH = lclH.length == 0 ? 0 : parseFloat( lclH.outerHeight() ),
+							lclFH = lclF.length == 0 ? 0 : parseFloat( lclF.outerHeight() );
 							
 							// if highest content height is larger than screen, use it, otherwise take
 							// otherwise if solo (like JQM page, take delta (screen less toolbars )
 							// otherwise if splitview AND all panels are lower than the screen(!), take delta less local toolbars
 							
-							
-							ct.css({"min-height": solo == true ? delta-30 : ( iO > delta-30 - lclH - lclF ? iO : delta-30 - lclH - lclF ),
+							ct.css({"min-height": solo == true ? delta-30 : ( iO > delta-30 - lclHH - lclFH ? iO : delta-30 - lclHH - lclFH ),
 									// only blacklist gets margin, otherwise content overlaps into toolbars
 									"margin-top": blacklist == true & solo == false ? parseFloat( lclH.outerHeight() )   : 0, 
 									"margin-bottom": blacklist == true && solo == false ?  parseFloat( lclF.outerHeight() ) : 0
 									});	
-							
+
 							// iPhone... 
 							if ( blacklist == true && full == true 
 								&& ( ct.closest('div:jqmData(panel="menu"), div:jqmData(panel="mid")').length > 0 )  ){
@@ -1269,7 +1280,7 @@
 						}
 
 					}
-				/*
+				
 				// reset non-background panels in popover mode (not done above)
 				if ( $('html').hasClass('ui-popover-mode') ) { 
 					wrap.css({'min-height':gsH, })
@@ -1279,16 +1290,15 @@
 									.find('.ui-content')
 										.css({ "min-height": "", "margin-top":"0px", "margin-bottom":"0px" });
 					}
-				*/
+				
 				// fullscreen handler
 				if ( $('html').hasClass('ui-fullscreen-mode') ){
-					
 					/*
 					// blacklist
 					if ( blacklist == true ){
 						
 						popct = $('div:jqmData(panel="popover") div:jqmData(role="content")');
-						
+
 						for ( var i = 0; i < popct.length; i++){	
 							var ct = popct.eq(i),
 								lclH = ct.siblings('.ui-header:eq(0)'),
@@ -1300,52 +1310,16 @@
 						
 							}
 						}
-					
-					// backGroundPageHeight
-					// if a popover is open, tweak the before to lock page height to active popover height ( former backgroundPageHeight)
-					if ( from == "background" ){	
-						var back = $('div:jqmData(panel="popover") .ui-page-active, div:jqmData(panel="menu").pop_fullscreen .ui-page-active, div:jqmData(panel="mid").pop_fullscreen .ui-page-active');
-						
-						// only tweak if a popover is opened
-						if ( back.length > 0 && mode == "set" ) {
-
-							// not sure this is better = wrap = $('div:jqmData(wrapper="true").ui-page-active'),
-							var allActive = wrap.find('div:jqmData(role="page")').not( back ).add( wrap ), 
-								pH = back == "" ? 0 : back.outerHeight()-glbH-glbF,
-								cH = back == "" ? 0 : parseFloat( back.find('div:jqmData(role="content")').css('height') )+glbH+glbF,
-								maxHeight = pH > cH+glbH+glbF ? pH : cH+glbH+glbF < gsH ? gsH : cH+glbH+glbF-30;
-							
-							// only tweak if popover is opened
-							for ( var i = 0; i < allActive.length;i++){
-								var act = allActive.eq(i);
-								act
-									// store
-									.attr({'remH':act.css('height'), 'remMh': act.css('min-height') })
-									// label
-									.addClass("shrunk")
-									// tweak
-									.css({'min-height': maxHeight, 'height':'100%', 'overflow': 'hidden' });
-								}
-							}
-					
-						// clear
-						if ( mode == "clear")  {
-						
-							for ( var j = 0; j < $('.shrunk').length; j++){
-							$('.shrunk').each( function() {
-								var shr = $('.shrunk').eq(i);
-									shr
-										// reset
-										.css({'min-height': shr.attr('remH'), 'height':shr.attr('remMh'), 'overflow': 'visible' }) })
-										.removeClass('shrunk');
-								}
-							}
-						}
 					*/
+					// backGroundPageHeight
+					// if a popover is open, set all active page heights to popover height
+					if ( from == "background" ){	
+						mode == "set" ? self.backgroundPageHeight("set") : self.backgroundPageHeight("clear");
+						// done
+						return;
+						}
 					}
-					
-					
-					
+			
 			// this MUST fire after the above... 
 			window.setTimeout( function(){ 
 				self.panelWidth( false, "panelHeight" );
@@ -1353,7 +1327,52 @@
 
 			},
 		
-
+			/**
+			* name: backgroundPageHeight
+			* called from: pagebeforeshow on popover panels, showPanel ("set"), hidePanel("clear")
+			* purpose: In fullscreen mode (smartphone) popovers are opened as fullscreen pages, so when opening a popover
+			* there will be an active background page (say 2000px length). If the popover is only 400px length
+			* you can scroll down and see 1600px of the background page. To prevent this and allow hardware
+			* scrolling (no overthrow), this function takes the popover active page height and sets it to
+			* the background page (switch from 2000px to 400px) while the popover is visible.
+			* @param {object} page
+			* @param {string} mode set|clear
+			*/
+			backgroundPageHeight: function (mode) { 
+			
+				var back = $('div:jqmData(panel="popover") .ui-page-active, div:jqmData(panel="menu").pop_fullscreen .ui-page-active, div:jqmData(panel="mid").pop_fullscreen .ui-page-active');
+						
+				// only tweak if a popover is opened
+				if ( back.length > 0 && mode == "set" ) {
+					var wrap = $('div:jqmData(wrapper="true")').length > 1 ? $('div:jqmData(wrapper="true")').last() : $('div:jqmData(wrapper="true")'),
+						allActive = wrap.find('div:jqmData(role="page")').not( back ).add( wrap )
+						limit = back.css('min-height');
+					
+					// only tweak if popover is opened
+					for ( var i = 0; i < allActive.length;i++){
+						var act = allActive.eq(i);
+						act
+							// store
+							.attr({'remH':act.css('height'), 'remMh': act.css('max-height') })
+							// label
+							.addClass("shrunk")
+							// tweak
+							.css({'max-height': limit, 'height':'100%', 'overflow': 'hidden' });
+						}
+					}
+			
+			
+				// clear
+				if ( mode == "clear")  {
+					for ( var j = 0; j < $('.shrunk').length; j++){
+						$('.shrunk').each( function() {
+							var shr = $('.shrunk').eq(i);
+								shr
+									.css({'max-height': shr.attr('remMh'), 'height':shr.attr('remH'), 'overflow': 'visible' }) })
+									.removeClass('shrunk');
+						}
+					}
+			},
 
 		
 /** -------------------------------------- UTILS (some from JQM ) -------------------------------------- **/
@@ -1461,7 +1480,7 @@
 			
 			var self = this,
 				o = self.options,
-				wrap = wrap = $('div:jqmData(wrapper="true")').length != 1 ? $('div:jqmData(wrapper="true")').last() : $('div:jqmData(wrapper="true").ui-page-active'),
+				wrap = wrap = $('div:jqmData(wrapper="true")').length > 1 ? $('div:jqmData(wrapper="true")').last() : $('div:jqmData(wrapper="true")'),
 				$loopLength = $.mobile.urlHistory.stack.length-1, 
 				temp, aMatch, parsedPath, dUrl;
 				
@@ -1675,7 +1694,7 @@
 			
 			var	self = this,
 				o = self.options,
-				wrap = wrap = $('div:jqmData(wrapper="true")').length != 1 ? $('div:jqmData(wrapper="true")').last() : $('div:jqmData(wrapper="true").ui-page-active'),
+				wrap = wrap = $('div:jqmData(wrapper="true")').length > 1 ? $('div:jqmData(wrapper="true")').last() : $('div:jqmData(wrapper="true")'),
 				$link = o._stageEvent,
 				dial = data.options.role == "dialog" ? true : ( $link && $link.jqmData("rel") == "dialog" ? true :  false ),
 				$targetPanelID = $( $link ).jqmData('panel'),
@@ -1807,7 +1826,7 @@
 					
 					// special case = last backwards transition inside a wrapper page
 					if ( o._backFix == true ) {	
-						var thisWrap = $('div:jqmData(wrapper="true")').length != 1 ? $('div:jqmData(wrapper="true")').last() : $('div:jqmData(wrapper="true").ui-page-active');
+						var thiswrap = $('div:jqmData(wrapper="true")').length > 1 ? $('div:jqmData(wrapper="true")').last() : $('div:jqmData(wrapper="true")');
 						// this was derived in pagebeforechange - be careful to only select from active wrapper! 
 						setToPage = thisWrap.find('.ui-page').filter(function(){ return $(this).jqmData('url') === data.toPage });						
 						// take toPage closest container as pageContainer
@@ -2163,6 +2182,7 @@
 					// $('html').addClass('ui-swipe-active');					
 					e.preventDefault();
 					e.stopPropagation();
+					// console.log("BLOCK1");
 					return;
 					}
 				/*
@@ -2171,6 +2191,7 @@
 					$(window).trigger('pageclear');					
 					e.preventDefault();
 					e.stopPropagation();
+					// console.log("BLOCK2");					
 					return false;
 					}
 				*/
@@ -2182,6 +2203,7 @@
 						$('html').removeClass('selDiaPopBlock');
 					// },250)					
 					e.preventDefault();	
+					// console.log("BLOCK3");					
 					return;
 					}							
 				// store external pages in sitemap
@@ -2196,12 +2218,13 @@
 				if (data.options.fromHashChange == true && typeof data.toPage == 'string' && ( data.toPage == o._prevBack || o._blockPopupHavoc == true ) ) {					
 					o._prevBack = '';
 					o._blockPopupHavoc = false;
+					// console.log("BLOCK4");					
 					return;					
 					}
 					
 				// identify last panel backwards transition, take toPage [object], convert to string, let it fly, cause chaos.
 				var from = data.options.fromPage,
-					wrap = $('div:jqmData(wrapper="true")').length != 1 ? $('div:jqmData(wrapper="true")').last() : $('div:jqmData(wrapper="true").ui-page-active');
+					wrap = $('div:jqmData(wrapper="true")').length > 1 ? $('div:jqmData(wrapper="true")').last() : $('div:jqmData(wrapper="true")');
 
 				// blacklist only passes an object for last JQM backwards transition. 
 				if ( data.options.fromHashChange == true && $('html').hasClass('blacklist') == true ) {						
@@ -2227,6 +2250,7 @@
 								&& ( from.parent('body').length === 0  
 									|| ( typeof from.jqmData('external-page') === 'undefined' && data.options.fromPage.jqmData("role") != "dialog" ) )										
 						) {						
+						// console.log("BACKFIX");
 						// check which panel is NOT on data-show="first". It's data-show="first" page is the backfixed toPage
 						var isWrap = $('div:jqmData(wrapper="true").ui-page-active'),
 							isNot = $('html').hasClass('ui-fullscreen-mode') == true ? ':not(.ui-panel-hidden, :jqmData(panel="main"))' : ':not(.ui-panel-hidden)',
@@ -2241,11 +2265,13 @@
 					if ( data.options.role != "custom-select" ) {							
 							//e.stopPropagation();
 							o._backFix = false;	
+							//console.log("BLOCK6");								
 							return;
 							} else {																			
 								//e.stopImmediatePropagation();
 								//e.stopPropagation();
 								e.preventDefault();
+								//console.log("BLOCK7");
 								return;
 								}					
 					}				
@@ -2351,7 +2377,8 @@
 					} else if ( page.jqmData("show") != "first") {
 
 							// ? back button
-							if( o.backBtnOff == false && data.prevPage.jqmData("wrapper") != true ){								
+							if( ( o.backBtnOff == false || page.closest('div:jqmData(wrapper="true")').jqmData("backBtnOff") != true ) 
+									&& data.prevPage.jqmData("wrapper") != true ){								
 								self.crumble(event, data, page );
 								}
 							
