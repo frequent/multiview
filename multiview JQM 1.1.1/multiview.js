@@ -1776,7 +1776,7 @@
 					isHash = $.mobile.path.parseUrl(data.toPage),
 					isToPage = isHash.hash.length == 0 ? isHash.pathname : isHash.hash.replace("#",""),
 					temp,
-					setFromPage,
+					setToPage,
 					setPageContainer,
 					setFromPage,
 					setExt;
@@ -1826,9 +1826,9 @@
 					
 					// special case = last backwards transition inside a wrapper page
 					if ( o._backFix == true ) {	
-						var thiswrap = $('div:jqmData(wrapper="true")').length > 1 ? $('div:jqmData(wrapper="true")').last() : $('div:jqmData(wrapper="true")');
+						var thiswrap = $('div:jqmData(wrapper="true")').length > 1 ? $('div:jqmData(wrapper="true")').last() : $('div:jqmData(wrapper="true")');						
 						// this was derived in pagebeforechange - be careful to only select from active wrapper! 
-						setToPage = thisWrap.find('.ui-page').filter(function(){ return $(this).jqmData('url') === data.toPage });						
+						setToPage = thiswrap.find('.ui-page').filter(function(){ return $(this).jqmData('url') === data.toPage });						
 						// take toPage closest container as pageContainer
 						setPageContainer = setToPage.closest('.ui-mobile-viewport');
 						// set from Page to the page currently active on the panel
