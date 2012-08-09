@@ -72,7 +72,7 @@ div[data-wrapper="true"] 								{ margin: 0px; padding: 0px; width: inherit; }
 /* div[data-wrapper="true"] div.ui-page				{ position: relative;}
 NOTE: not sure this breaks things, but it sure eases transitions vs. default pos: absolute */
 
-.ui-content                      								{ overflow: visible; } 
+/* .ui-content                      								{ overflow: visible; }  */
 
 
 .ui-splitview-hidden { 

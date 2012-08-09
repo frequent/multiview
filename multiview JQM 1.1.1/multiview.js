@@ -867,7 +867,7 @@
 				o = self.options,
 				wrap = $('div:jqmData(wrapper="true")').length > 1 ? $('div:jqmData(wrapper="true")').last() : $('div:jqmData(wrapper="true")'),
 				popover = wrap.find('div:jqmData(panel="popover")'), 
-				over = wrap.jqmData("scrollmode") == true, 
+				over = wrap.jqmData("scrollmode") == "overthrow", 
 				_switch = o.switchable || wrap.jqmData("switchable"),
 				switchOnLoad = o.switchableHideOnLoad || wrap.jqmData("switchableHideOnLoad"),
 				popClasses = 'ui-popover pop_menuBox pop_midBox ui-triangle-top ui-panel-visible ui-triangel-bottom ui-triangle-undefined',
