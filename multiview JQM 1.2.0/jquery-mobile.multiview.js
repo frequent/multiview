@@ -3209,8 +3209,7 @@ $.mobile.getMaxScrollForTransition = $.mobile.getMaxScrollForTransition || defau
 
 	//direct focus to the page title, or otherwise first focusable element
 	$.mobile.focusPage = function ( page ) {
-	// XXX FRE NOT SURE THIS WORKS in requireJS/IE
-	/* 
+	
 		var autofocus = page.find( "[autofocus]" ),
 			pageTitle = page.find( ".ui-title:eq(0)" );
 
@@ -3224,7 +3223,7 @@ $.mobile.getMaxScrollForTransition = $.mobile.getMaxScrollForTransition || defau
 		} else{
 			page.focus();
 		}
-		*/
+
 	};
 
 	//remove active classes after page transition or error
