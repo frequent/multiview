@@ -1748,8 +1748,8 @@
 				// Here JQM thinks this is a multipage-transition and tries to append the page to the initial wrapper page
 				// hard to catch.... 	
 				
-				if ( wrap.attr('data-url') != parsedToPage.pathname ){				
-					// data.options.dataUrl = parsedToPage.domain + wrap.jqmData('url') + parsedToPage.hash;
+				if ( wrap.attr('data-url') != parsedToPage.pathname ){	
+					//data.options.dataUrl = parsedToPage.domain + wrap.jqmData('url') + parsedToPage.hash;
 					// data.options.dataUrl = parsedToPage;
 					// data.options.dataUrl = "http://localhost/register.cfm#languages";
 					// data.toPage = parsedToPage.href;					
@@ -2120,22 +2120,23 @@
 			var self = this,
 				o = self.options;
 			
-			/**
-			  * bind to:	pageRemove
-		      * purpose: 	would you know... there is a pageremove event... 
-		      */
-			$( document ).bind( "pageremove", $('div:jqmData(role="page")'), function( e ){				
-				if ( o._rmv == "panel" ){																			
-					
-					// what is stopped here
-					// e.preventDefault();
-					// e.stopPropagation();
-					// Backwards panel transitions on external wrapper pages trigger multiple pageremove events
-					// I'm not sure why, but using a timeout avoids resetting o._rmv before the bubbles have passed
-					// TODO: find a better way to do this or the cause of the 2nd pageremove! 
-					window.setTimeout(function(){ o._rmv = "jqm"; },250);
-					}				
-				});
+		/**
+		  * bind to:	pageRemove
+		  * purpose: 	would you know... there is a pageremove event... when pulling a 2nd wrapper page into 
+		  *             the DOM, the url will change to page1/#page2 (pushstate page2). When doing a panel
+		  *             transition on page2, JQM will try to remove page2 and replace it with the panel page
+		  *             like so: page1/#page2_panel_page, thereby(!) removeing page2 from the DOM, which will
+		  *             break the page. This binding will check for panel transitions and whether the page to
+		  *             be removed in the panel transition is the parent wrapper page. If so, the pageremove is
+		  *             prevented.
+		  */
+		$( document ).bind( "pageremove", $('div:jqmData(role="page")'), function( e ){	
+			if ( o._rmv == "panel" && $(e.target).jqmData("wrapper") == true ){
+				e.preventDefault();
+				// multiple pageremove events are triggered. Wait before resetting o._rmv until the bubbles have passed
+				window.setTimeout(function(){ o._rmv = "jqm"; },250);
+				}				
+			});
 			
 			/**
 			  * bind to:	pagebeforeshow
