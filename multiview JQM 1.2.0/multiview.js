@@ -1,7 +1,7 @@
 /**
  * jQuery Mobile Framework : "multiview" plugin
  * @author Sven Franck <sven.franck@stokkers.de>
- * @version v1.1 ~ JQM 1.2a (August 2012)
+ * @version v1.1 ~ JQM 1.2.0a (August 2012)
  * @copyright 2012 Sven Franck <sven.franck@stokkers.de>
  * @license Dual licensed under the MIT or GPL Version 2 licenses.
  */
@@ -502,9 +502,8 @@
 				wrap = $('div:jqmData(wrapper="true")').length > 1 ? $('div:jqmData(wrapper="true")').last() : $('div:jqmData(wrapper="true")'),
 				pop = wrap.find('div:jqmData(id="'+panel+'")'),				
 				full = $('html.ui-fullscreen-mode');
-				
+			
 			if ( pop.is(":visible") ) {
-				
 				if ( pop.hasClass('switchable') && wrap.jqmData('switchable') ) {
 					
 					// hide switchable
@@ -647,33 +646,39 @@
 						glHd : loHd.length ? 
 							loHd : wrap.find('div:jqmData(panel="main") .ui-content');
 				
-				if ( menu.length == 0 && mid.length == 0 ) {
-					return;
-					}
-	
-				// menu button 
-				if ( menu.length > 0 && main.find( '.menuToggle' ).length == 0 ) {
-					
-					var mnId = wrap.find('div:jqmData(panel="menu")').jqmData('id'),
-						mnIc = menu.jqmData('menu-icon') || o.menuBtnIcon,
-						mnIp = menu.jqmData('menu-iconpos') || o.menuBtnIconPos,
-						mnTh = menu.jqmData('menu-theme') || o.menuBtnTheme,
-						mnTx = menu.jqmData('menu-text') || o.menuTxt,
-						
-						mnBt = self.buttonUp( '#', 'ui-btn-up-'+mnTh+' ui-btn ui-btn-icon-'+mnIp+' ui-shadow  iconposSwitcher-a toggle_popover mmToggle menuToggle', mnTh, mnId, mnIp, mnTx, mnIc, 'pop', '', ''  );
-												
-					}
+			// switchable classes - moved from function end to here, because on or-change, no new buttons will be created
+			// function will stop early without re-assigning switchable class
+			if (buttonType == "switchable") {
+				menu.add( mid ).addClass('switchable');
+				}
 				
-				// mid button 
-				if ( mid.length > 0 && main.find( '.midToggle' ).length == 0 ) {
-					var mdId = wrap.find('div:jqmData(panel="mid")').jqmData('id'),
-						mdIc = mid.jqmData('mid-icon') || o.midBtnIcon,
-						mdIp = mid.jqmData('mid-iconpos') || o.midBtnIconPos,
-						mdTh = mid.jqmData('mid-theme') || o.midBtnTheme,
-						mdTx = mid.jqmData('mid-text') || o.midTxt,
-												
-						mdBt = self.buttonUp( '#', 'ui-btn-up-'+mdTh+' ui-btn ui-btn-icon-'+mdIp+'  iconposSwitcher-a toggle_popover mmToggle midToggle', mdTh, mdId, mdIp, mdTx, mdIc, 'pop', '', ''  );
-					}
+			if ( menu.length == 0 && mid.length == 0 ) {
+				return;
+				}
+			
+			// menu button 
+			if ( menu.length > 0 && main.find( '.menuToggle' ).length == 0 ) {
+				
+				var mnId = wrap.find('div:jqmData(panel="menu")').jqmData('id'),
+					mnIc = menu.jqmData('menu-icon') || o.menuBtnIcon,
+					mnIp = menu.jqmData('menu-iconpos') || o.menuBtnIconPos,
+					mnTh = menu.jqmData('menu-theme') || o.menuBtnTheme,
+					mnTx = menu.jqmData('menu-text') || o.menuTxt,
+					
+					mnBt = self.buttonUp( '#', 'ui-btn-up-'+mnTh+' ui-btn ui-btn-icon-'+mnIp+' ui-shadow  iconposSwitcher-a toggle_popover mmToggle menuToggle', mnTh, mnId, mnIp, mnTx, mnIc, 'pop', '', ''  );
+				
+				}
+			
+			// mid button 
+			if ( mid.length > 0 && main.find( '.midToggle' ).length == 0 ) {
+				var mdId = wrap.find('div:jqmData(panel="mid")').jqmData('id'),
+					mdIc = mid.jqmData('mid-icon') || o.midBtnIcon,
+					mdIp = mid.jqmData('mid-iconpos') || o.midBtnIconPos,
+					mdTh = mid.jqmData('mid-theme') || o.midBtnTheme,
+					mdTx = mid.jqmData('mid-text') || o.midTxt,
+											
+					mdBt = self.buttonUp( '#', 'ui-btn-up-'+mdTh+' ui-btn ui-btn-icon-'+mdIp+'  iconposSwitcher-a toggle_popover mmToggle midToggle', mdTh, mdId, mdIp, mdTx, mdIc, 'pop', '', ''  );
+				}
 			
 			if ( mnBt == "" && mdBt == "" ){
 				return;
@@ -684,11 +689,6 @@
 						} else {
 							$buttons = mnBt.add( mdBt );
 							}
-				
-			// switchable classes			
-			if (buttonType == "switchable") {
-				menu.add( mid ).addClass('switchable');
-				}
 			
 			// handover
 			self.setBtns( "add", drop, $buttons );
@@ -914,12 +914,12 @@
 			popover.removeClass('pop_fullscreen').addClass('ui-popover')
 
 			// toggle buttons		
-			if ( _switch ){				
+			if ( _switch == true ){		
+				
 				self.popoverBtn("switchable");
 				} else {
 					// remove any toggle buttons left if switching from popover to splitview					
 					$(".mmToggle").remove();
-					
 					// update header button controlgroup
 					self.setBtns("update")
 					}
@@ -1771,6 +1771,7 @@
 				o._trans = "panelTrans";
 								
 				} else {
+					
 					// = JQM territory															
 					// still, if we are coming from a wrapper page, with panel transitions made, fromPage may not
 					// always be set to the wrapper page, which will cause JQM to drop active class from the panel
@@ -2120,23 +2121,23 @@
 			var self = this,
 				o = self.options;
 			
-		/**
-		  * bind to:	pageRemove
-		  * purpose: 	would you know... there is a pageremove event... when pulling a 2nd wrapper page into 
-		  *             the DOM, the url will change to page1/#page2 (pushstate page2). When doing a panel
-		  *             transition on page2, JQM will try to remove page2 and replace it with the panel page
-		  *             like so: page1/#page2_panel_page, thereby(!) removeing page2 from the DOM, which will
-		  *             break the page. This binding will check for panel transitions and whether the page to
-		  *             be removed in the panel transition is the parent wrapper page. If so, the pageremove is
-		  *             prevented.
-		  */
-		$( document ).bind( "pageremove", $('div:jqmData(role="page")'), function( e ){	
-			if ( o._rmv == "panel" && $(e.target).jqmData("wrapper") == true ){
-				e.preventDefault();
-				// multiple pageremove events are triggered. Wait before resetting o._rmv until the bubbles have passed
-				window.setTimeout(function(){ o._rmv = "jqm"; },250);
-				}				
-			});
+			/**
+			  * bind to:	pageRemove
+		      * purpose: 	would you know... there is a pageremove event... when pulling a 2nd wrapper page into 
+			  *             the DOM, the url will change to page1/#page2 (pushstate page2). When doing a panel
+			  *             transition on page2, JQM will try to remove page2 and replace it with the panel page
+			  *             like so: page1/#page2_panel_page, thereby(!) removeing page2 from the DOM, which will
+			  *             break the page. This binding will check for panel transitions and whether the page to
+			  *             be removed in the panel transition is the parent wrapper page. If so, the pageremove is
+			  *             prevented.
+		      */
+			$( document ).bind( "pageremove", $('div:jqmData(role="page")'), function( e ){	
+				if ( o._rmv == "panel" && $(e.target).jqmData("wrapper") == true ){
+					e.preventDefault();
+					// multiple pageremove events are triggered. Wait before resetting o._rmv until the bubbles have passed
+					window.setTimeout(function(){ o._rmv = "jqm"; },250);
+					}				
+				});
 			
 			/**
 			  * bind to:	pagebeforeshow
@@ -2191,7 +2192,6 @@
 		      * purpose: 	show panels - since this button also passes clickrouting, this needs to be reset
 		      */
 			$(document).on('click','a.toggle_popover', function(e) {
-				
 				$(this).addClass('ui-btn-active');				
 				
 				self.showPanel( $(this).jqmData("panel") );
