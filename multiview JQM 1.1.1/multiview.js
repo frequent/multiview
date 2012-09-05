@@ -1,4 +1,3 @@
-
 /**
  * jQuery Mobile Framework : "multiview" plugin
  * @author Sven Franck <sven.franck@stokkers.de>
@@ -2441,8 +2440,9 @@
 	});
 	
 /** -------------------------------------- PLUGIN TRIGGER -------------------------------------- **/
-
-	$('div:jqmData(wrapper="true")').multiview();
+         $(document).bind('pageinit', function(event) {
+	  $('div:jqmData(wrapper="true")').multiview();
+         });
 
 
 	
