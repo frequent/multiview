@@ -2499,8 +2499,9 @@
 	});
 	
 /** -------------------------------------- PLUGIN TRIGGER -------------------------------------- **/
-
-	$('div:jqmData(wrapper="true")').multiview();
+    $(document).bind('pageinit', function(event) {
+    	$('div:jqmData(wrapper="true")').multiview();
+    });
 
 
 	
